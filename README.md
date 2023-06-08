@@ -44,5 +44,4 @@ oe.status() - Returns the currently playing station name.
 oe.volume("up|down|mute|unmute")
 ```
 
--- You would not believe your eyes if ten million fireflies
-Lit up the world as I fell asleep
+-- You would not believe your eyes if ten million fireflies lit up the world as I fell asleep
