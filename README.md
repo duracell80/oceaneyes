@@ -12,7 +12,7 @@ Future proof your investment with hardware that contains station management onbo
 - As buyers, make preset and station data a high priority in product research
 - As buyers, ask for technical teardowns by community members to ensure a device can boot / function beyond a service shutdown
 - As reviewers, communicate to buyers the features of a device that would allow the device to operate if the provider withdrew
-- As reviewers, communicate to buyers in update reviews if a device has been purposefully broken by a brand
+- As reviewers, communicate to buyers in update reviews if a device has been broken by a brand and offer their remediation path
 - As providers, free the station database or category browser from an online only service, consider offline data storage
 - As providers, cache the entire database onboard in a format like sqlite3, schedule updates to the URL's directly to the device
 - As providers, allow end users to update this cache of data in the event you as a provider become unable / unwilling to
