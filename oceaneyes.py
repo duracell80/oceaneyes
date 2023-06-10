@@ -140,10 +140,16 @@ def list_get():
 					station_urls.append(data_url)
 			c+=1
 		i+=1
-	print(station_genres)
 
 	return station_names, station_urls, station_countries, station_genres
 
+def decode_country():
+	string = "TBD"
+	return string
+
+def decode_genre():
+	string = "TBD"
+	return string
 
 def list(format = "plain"):
 	name, url, country, genre = list_get()
