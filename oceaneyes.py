@@ -6,7 +6,8 @@ import sys, requests, json
 
 
 
-global headers
+global headers, url_placeholder
+url_placeholder = "https://streaming.radio.co/s5c5da6a36/listen"
 headers = {
 	"User-Agent": "Mozilla/5.0 (Linux; Android 12; Pixel 6 Build/SD1A.210817.023; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/94.0.4606.71 Mobile Safari/537.36",
 	"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -123,7 +124,7 @@ def list_get():
 				if s[c] is not None:
 					data_item = str(s[c]).replace("myFavChannelList.push", "").split('"')
 					data_name = str(html_decode(str(data_item[1])))
-					data_url  = str(data_item[3]).replace("****** Channel URL is maintained by Skytune", "https://streaming.radio.co/s5c5da6a36/listen")
+					data_url  = str(data_item[3]).replace("****** Channel URL is maintained by Skytune", url_placeholder)
 					# URL's maintained by Skytune are masked, play birdsong instead
 
 					station_names.append(data_name)
@@ -139,27 +140,57 @@ def list(format = "plain"):
 	name, url = list_get()
 
 	n = 0
+
+	list	= ""
 	pls_1 	= "[playlist]"
 	pls_2 	= "NumberOfEntries=0"
 	pls	= str(pls_1)
 	m3u 	= "#EXTM3U"
+	jsn	= ""
+	jsn_1	= '{"stations":['
+	jsn_2	= ']}'
+	csv	= "" # comma
+	ssv	= "" # semicolon
+
+	print(str(int(len(name))))
 
 	while n < int(len(name)):
 		if name is not None:
 			if format == "plain":
-				print(name[n] + " : " + url[n])
-				n+=1
+				list += name[n] + " [" + url[n] + "]\n"
 			elif format == "csv":
-                        	print(name[n] + "," + url[n])
-                        	n+=1
+				csv += name[n] + "," + url[n] + "\n"
+			elif format == "ssv":
+                                ssv += name[n] + ";" + url[n] + "\n"
 			elif format == "pls":
-                                pls += '\nFile' + str(int(n)+1)  + '="' + str(url[n]) + '"\nTitle' + str(int(n)+1)  + '=' + str(name[n])
-                                n+=1
+                                pls += '\nFile' + str(int(n)+1)  + '=' + str(url[n]) + '\nTitle' + str(int(n)+1)  + '=' + str(name[n]) + '\nLength' + str(int(n+1)) + '=-1'
+			elif format == "m3u":
+                                m3u += '\n#EXTINF:-1, ' + str(name[n])  + '\n'+ str(url[n])
+			elif format == "json":
+				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '"}'
+				if int(int(n)+1) != int(len(name)):
+					jsn += ','
 			else:
-				print("Format not supplied (plain, pls, m3u, csv)")
-	if format == "pls":
+				print("Error: Format not supplied (plain, pls, m3u, csv, ssv)")
+			n+=1
+
+	if format == "plain":
+		list = list
+	elif format == "csv":
+		list = csv
+	elif format == "ssv":
+		list = ssv
+	elif format == "pls":
 		pls += "\n" + str(pls_2).replace("0", str(int(len(name))))
-		print(pls)
+		list = pls
+	elif format == "m3u":
+		list = m3u
+	elif format == "json":
+		list = str(jsn_1) + str(jsn) + str(jsn_2)
+	else:
+		list = "Birdsong," + str(url_placeholder)
+
+	return list
 
 
 
