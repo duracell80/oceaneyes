@@ -14,9 +14,9 @@ def main():
 	#oe.play(<fav id (int)>)
 	#oe.play(1)
 
-	print(oe.status())
+	#print(oe.status())
 
-	#print(oe.list("pls"))
+	print(oe.list("json"))
 
 
 if __name__ == "__main__":

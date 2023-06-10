@@ -98,8 +98,10 @@ def volume(dir = "down"):
 
 
 def list_get():
-	station_names = []
-	station_urls  = []
+	station_countries 	= []
+	station_genres		= []
+	station_names 		= []
+	station_urls  		= []
 
 	r = requests.get(url + "/php/favList.php?PG=0")
 	s = str(r.text).split("\n")
@@ -124,20 +126,27 @@ def list_get():
 				if s[c] is not None:
 					data_item = str(s[c]).replace("myFavChannelList.push", "").split('"')
 					data_name = str(html_decode(str(data_item[1])))
+					data_cbit = str(html_decode(str(data_item[4]))).replace("]", "").replace(");", "").split("[")
+					data_cont = str(data_cbit[2][:-1])
+					data_genr = str(data_cbit[3])
+
+
 					data_url  = str(data_item[3]).replace("****** Channel URL is maintained by Skytune", url_placeholder)
 					# URL's maintained by Skytune are masked, play birdsong instead
 
+					station_countries.append(data_cont)
+					station_genres.append(data_genr)
 					station_names.append(data_name)
 					station_urls.append(data_url)
 			c+=1
 		i+=1
+	print(station_genres)
 
-
-	return station_names, station_urls
+	return station_names, station_urls, station_countries, station_genres
 
 
 def list(format = "plain"):
-	name, url = list_get()
+	name, url, country, genre = list_get()
 
 	n = 0
 
@@ -168,7 +177,7 @@ def list(format = "plain"):
 				#["Radio SoBro","https://streamer.radio.co/s951fc6edc/listen",0,[[1,1,75],[2,24]]]
 				#["Station name", "Station URL",int,[[Country Code],[Genre Code]]]
 
-				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '"}'
+				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '","country":"' + str(country[n])  + '","genre":"' + str(genre[n]) + '"}'
 				if int(int(n)+1) != int(len(name)):
 					jsn += ','
 			else:
