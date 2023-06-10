@@ -77,8 +77,10 @@ oe.volume("up|down|mute|unmute")
 - Control volume upon system events such as phone or video calls or when playing videos
 
 ### What is Right to Repair?
-https://www.zdnet.com/home-and-office/sustainability/right-to-repair-what-it-means-and-why-it-matters-to-you/
+https://www.eff.org/issues/right-to-repair
 
 https://www.repair.org/stand-up
+
+https://www.zdnet.com/home-and-office/sustainability/right-to-repair-what-it-means-and-why-it-matters-to-you/
 
 https://hackaday.io/project/183339-saving-a-reciva-box-from-the-landfill
