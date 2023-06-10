@@ -17,7 +17,7 @@ Future proof your investment with hardware that contains station management onbo
 - As providers, cache the entire database in a format like sqlite3, schedule updates directly to the device
 - As providers, allow end users to update this cache of data also
 - As providers, standardize an import and export file format that allows portablity of preset data
-- As providers, protect buyers of your products with a sandboxed portion of the device that the user can own, even a samba share could save the device from landfil
+- As providers, protect buyers of your products with a sandboxed portion of the device that the user can own, even a simple samba share and M3U file could save the device from landfill!
 - As providers, offer more than one way for the device to browse a list of stations
 - As buyers, reviewers and providers; maintain a healthy ecosystem by investing in open software and right to repair
 
