@@ -9,10 +9,11 @@ Open Source our radio preset systems! Sick and tired of Internet Radio portals s
 Future proof your investment with hardware that contains station management onboard. Ocean Digital's products provide a better way to ensure our hardware keeps on working even if they discontinue their skytune service. Tested on the Ocean Digital WR-26F, and likely compatible with other radios that contain a similar server to manage favourites.
 
 ### Ways we can solve this problem
-- Don't tie the station database or category browser to an online only service
-- Cache the database onboard the radio
-- Allow end users to manage and update this cache of data
-- Standardize an import and export file format that allows portablity of preset data from one device to the next
+- As buyers, make preset and station data a high priority in product research
+- As providers, don't tie the station database or category browser to an online only service
+- As providers, Cache the database onboard the radio in an open format like sqlite3
+- As providers, Allow end users to manage and update this cache of data
+- As providers, Standardize an import and export file format that allows portablity of preset data from one device to the next
 
 OceanEyes hopes to provide easier and consistent programming access to the onboard preset server.
 
