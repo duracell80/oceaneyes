@@ -3,7 +3,7 @@ import sys, time
 import oceaneyes as oe
 
 def main():
-	settings, stations = oe.init("192.168.1.200")
+	settings, stations = oe.init("192.168.2.20")
 	ip = settings["ipaddress"]
 
 	#oe.volume("down")
@@ -14,7 +14,9 @@ def main():
 	#oe.play(<fav id (int)>)
 	#oe.play(1)
 
-	print(oe.status())
+	#print(oe.status())
+
+	print(oe.list("plain"))
 
 
 if __name__ == "__main__":
