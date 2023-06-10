@@ -14,6 +14,7 @@ Future proof your investment with hardware that contains station management onbo
 - As providers, cache the entire database onboard in a format like sqlite3, schedule updates to the URL's directly to the device
 - As providers, allow end users to update this cache of data in the event you as a provider become unable / unwilling to
 - As providers, standardize an import and export file format that allows portablity of preset data from one device to the next
+- As providers, protect buyers of your products by allowing open access to a sandboxed portion of the device that the user can own
 
 It's just you, me and an MP3 player. OceanEyes hopes to provide easier and consistent programming access to the onboard preset server.
 
