@@ -16,7 +16,7 @@ def main():
 
 	print(oe.status())
 
-	print(oe.list("json"))
+	#print(oe.list("pls"))
 
 
 if __name__ == "__main__":

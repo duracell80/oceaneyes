@@ -152,8 +152,6 @@ def list(format = "plain"):
 	csv	= "" # comma
 	ssv	= "" # semicolon
 
-	print(str(int(len(name))))
-
 	while n < int(len(name)):
 		if name is not None:
 			if format == "plain":
@@ -167,6 +165,9 @@ def list(format = "plain"):
 			elif format == "m3u":
                                 m3u += '\n#EXTINF:-1, ' + str(name[n])  + '\n'+ str(url[n])
 			elif format == "json":
+				#["Radio SoBro","https://streamer.radio.co/s951fc6edc/listen",0,[[1,1,75],[2,24]]]
+				#["Station name", "Station URL",int,[[Country Code],[Genre Code]]]
+
 				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '"}'
 				if int(int(n)+1) != int(len(name)):
 					jsn += ','
