@@ -10,10 +10,10 @@ Future proof your investment with hardware that contains station management onbo
 
 ### Ways we can solve this problem
 - As buyers, make preset and station data a high priority in product research
-- As providers, don't tie the station database or category browser to an online only service
-- As providers, Cache the database onboard the radio in an open format like sqlite3
-- As providers, Allow end users to manage and update this cache of data
-- As providers, Standardize an import and export file format that allows portablity of preset data from one device to the next
+- As providers, free the station database or category browser from an online only service, consider offline data storage
+- As providers, cache the entire database onboard the radio in an open format like sqlite3 and schedule OTA updates to the URL's directly to the device
+- As providers, allow end users to manage and update this cache of data in the event you as a provider become unable or unwilling to
+- As providers, standardize an import and export file format that allows portablity of preset data from one device to the next
 
 OceanEyes hopes to provide easier and consistent programming access to the onboard preset server.
 
