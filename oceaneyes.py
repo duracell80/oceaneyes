@@ -143,11 +143,40 @@ def list_get():
 
 	return station_names, station_urls, station_countries, station_genres
 
-def decode_country():
-	string = "TBD"
-	return string
+def decode_country(codes):
+	# 1  = Americas
+	# 1  = United States
+	# 34 = Alabama
 
-def decode_genre():
+
+	R1 = {
+		"name" : "Americas",
+		"data" : {
+			"country": "United States",
+			"1": {
+				"34": "Alabama",
+				"35": "Alaska"
+			},
+                        "country": "Canada",
+                        "2": {
+				"134": "Alberta",
+				"135": "British"
+			}
+		}
+	}
+
+	locations = {
+		"R1" : R1
+	}
+
+	# locations["R1"]["data"]["2"]["134"]
+
+	c = str(codes).split(",")
+	string = str(c[0])
+
+	return codes
+
+def decode_genre(codes):
 	string = "TBD"
 	return string
 
@@ -183,7 +212,7 @@ def list(format = "plain"):
 				#["Radio SoBro","https://streamer.radio.co/s951fc6edc/listen",0,[[1,1,75],[2,24]]]
 				#["Station name", "Station URL",int,[[Country Code],[Genre Code]]]
 
-				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '","country":"' + str(country[n])  + '","genre":"' + str(genre[n]) + '"}'
+				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '","country":"' + str(decode_country(country[n]))  + '","genre":"' + str(genre[n]) + '"}'
 				if int(int(n)+1) != int(len(name)):
 					jsn += ','
 			else:
