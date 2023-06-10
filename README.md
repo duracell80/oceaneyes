@@ -2,7 +2,7 @@
 Python API for Ocean Digital Internet Radios
 https://www.oceandigitalshop.com/internet-radio
 
-Open Source our radio preset systems! Sick and tired of Internet Radio portals shutting down? Help send a message to the industry that the potential of service shutdowns is leading to the dimise of a whole product category and it need not be this way. Own your URL's!
+Open Source our radio preset systems! Sick and tired of Internet Radio portals shutting down? Help send a message to the industry that the potential of service shutdowns is leading to the dimise of a whole product category and it need not be this way, Internet Radio as a standalone category can continue to grow if we invest in teh right ways to allow people to manage their own databases. Own your URL's!
 
 Future proof your investment with hardware that contains station management onboard. Ocean Digital's products provide a better way to ensure our hardware keeps on working even if they discontinue their skytune service. Tested on the Ocean Digital WR-26F, and likely compatible with other radios that contain a similar server to manage favourites.
 
