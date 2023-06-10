@@ -54,7 +54,7 @@ $ chmod +x *.py
 $ ./main.py
 ```
 
-## API Methods:
+### API methods:
 ```
 oe.play(<favourite index id>)
 
@@ -63,3 +63,12 @@ oe.volume("up|down|mute|unmute")
 ```
 
 -- You would not believe your eyes if ten million fireflies lit up the world as I fell asleep
+
+### Ideas and features
+- Automate station selection on a schedule
+- Automate emergency alerts by changing the station to an emergency broadcast and back again
+- Automate the import of favourites from a local database or online community radio browser
+- Export presets in as many formats as possible
+- Display now playing data in a Home Automation Dashboard
+- Analyse listening habits and own this data yourself
+- Control volume upon system events such as phone or video calls or when playing videos
