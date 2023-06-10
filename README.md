@@ -9,17 +9,17 @@ Open Source our radio preset systems! Sick and tired of Internet Radio portals s
 Future proof your investment with hardware that contains station management onboard. Ocean Digital's products provide a better way to ensure our hardware keeps on working even if they discontinue their skytune service. Tested on the Ocean Digital WR-26F, and likely compatible with other radios that contain a similar server to manage favourites.
 
 ### Ways we can solve this problem
-- As buyers, make preset and station data a high priority in product research
-- As buyers, ask for technical teardowns by community members to ensure a device can boot / function beyond a service shutdown
-- As reviewers, communicate to buyers the features of a device that would allow the device to operate if the provider withdrew
-- As reviewers, communicate to buyers in update reviews if a device has been broken by a brand and offer their remediation path
-- As providers, free the station database or category browser from an online only service, consider offline data storage
-- As providers, cache the entire database onboard in a format like sqlite3, schedule updates to the URL's directly to the device
-- As providers, allow end users to update this cache of data in the event you as a provider become unable / unwilling to
-- As providers, standardize an import and export file format that allows portablity of preset data from one device to the next
-- As providers, protect buyers of your products by allowing open access to a sandboxed portion of the device that the user can own
-- As providers, offer more than one way for the device to browse a list of stations, for example via DLNA or UPnP
-- As buyers, reviewers and providers; maintain a healthy ecosystem by investing in the redundency of data and right to repair
+- As buyers, make preset data a high priority in product research
+- As buyers, ask for technical teardowns by community members
+- As reviewers, review the features of a device that would allow the device to operate without service
+- As reviewers, update reviews if a device has been broken by a brand and offer their remediation path
+- As providers, free the station database or category browser from an online only service
+- As providers, cache the entire database in a format like sqlite3, schedule updates directly to the device
+- As providers, allow end users to update this cache of data also
+- As providers, standardize an import and export file format that allows portablity of preset data
+- As providers, protect buyers of your products with a sandboxed portion of the device that the user can own
+- As providers, offer more than one way for the device to browse a list of stations
+- As buyers, reviewers and providers; maintain a healthy ecosystem by investing in open software and right to repair
 
 It's just you, me and an MP3 player. OceanEyes hopes to provide easier and consistent programming access to the onboard preset server.
 
