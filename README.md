@@ -67,7 +67,6 @@ oe.volume("up|down|mute|unmute")
 
 ### Ideas and features
 - Evolve the onboard web server to allow more playback controls and device configuration
-
 - Automate station selection on a schedule
 - Automate emergency alerts by changing the station to an emergency broadcast and back again
 - Automate the import of favourites from a local database or online community radio browser
@@ -83,4 +82,5 @@ https://www.repair.org/stand-up
 
 Why?
 https://www.zdnet.com/home-and-office/sustainability/right-to-repair-what-it-means-and-why-it-matters-to-you/
+
 https://hackaday.io/project/183339-saving-a-reciva-box-from-the-landfill
