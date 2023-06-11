@@ -1,9 +1,5 @@
 #!/usr/bin/python3
-import sys, requests, json
-#from bs4 import BeautifulSoup
-#from requests_html import HTMLSession
-
-
+import sys, time, requests, json
 
 
 global headers, url_placeholder
@@ -76,6 +72,24 @@ def play(ch = 0):
 	r = requests.get(url + "/doApi.cgi", params = {"AI":"16", "CI": str(ch - 1)})
 	return
 
+def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp3", chcountry = "-1", chgenre = "-1", chplay = False):
+	t = 0
+	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
+	c = get_total("fav", r)
+	p = requests.get(url + "/addCh.cgi?EX=0&chName=" + str(chname) + "&chUrl=" + str(churl)  + "chCountry=" + str(chcountry) + "&chGenre=" + str(chgenre))
+
+	time.sleep(5)
+	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
+	t = get_total("fav", r)
+
+	if t > c:
+		code = 200
+		station = str(chname)
+	else:
+		code = 201
+		station = "None"
+
+	return code, station
 
 
 def add_current():

@@ -16,15 +16,19 @@ def main():
 
 	print(oe.status())
 
-	# Add current to favourites
-	code, station = oe.add_current()
+	code, station = oe.add("Vivaldi", "https://stream.0nlineradio.com/vivaldi", "1,1,43", "2,18", False)
 	if code == 200:
 		print("Added  : " + station)
 
+	# Add current to favourites
+	#code, station = oe.add_current()
+	#if code == 200:
+	#	print("Added  : " + station)
+
 	# Del current from favourites
-	code, station = oe.del_current()
-	if code == 200:
-		print("Deleted: " + station)
+	#code, station = oe.del_current()
+	#if code == 200:
+	#	print("Deleted: " + station)
 
 	#print(oe.list("json"))
 
