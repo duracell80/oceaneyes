@@ -98,6 +98,26 @@ def add_current():
 
 	return code, station[1]
 
+def del_current():
+	# Get current number of favs first
+	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
+	c = get_total("fav", r)
+
+	# Del currently playing
+	r = requests.get(url + "/doApi.cgi", params = {"AI":"4"})
+	t = get_total("fav", r)
+
+	# Read currently playing
+	current = status()
+	station = current.split(": ")
+
+	if t < c:
+		code    = 200
+	else:
+		code    = 201
+
+	return code, station[1]
+
 
 def volume(dir = "down"):
 	# volume down 	VL=-1

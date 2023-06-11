@@ -16,9 +16,15 @@ def main():
 
 	print(oe.status())
 
-	code, station = oe.add_current()
+	# Add current to favourites
+	#code, station = oe.add_current()
+	#if code == 200:
+	#	print("Added  : " + station)
+
+	# Del current from favourites
+	code, station = oe.del_current()
 	if code == 200:
-		print("Favourited: " + station)
+		print("Deleted: " + station)
 
 	#print(oe.list("json"))
 
