@@ -80,43 +80,55 @@ def play(ch = 0):
 
 def add_current():
 	# Get current number of favs first
+	t = 0
 	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
 	c = get_total("fav", r)
 
-	# Set new fav
-	r = requests.get(url + "/doApi.cgi", params = {"AI":"8"})
-	t = get_total("fav", r)
-
-	# Read currently playing
 	current = status()
-	station = current.split(": ")
+	if "stopped" in current.lower():
+		station = "none"
+	else:
+		# Set new fav
+		r = requests.get(url + "/doApi.cgi", params = {"AI":"8"})
+		t = get_total("fav", r)
+
+		# Read currently playing
+		current = status()
+		currspl = current.split(": ")
+		station = currspl[1]
 
 	if t > c:
 		code 	= 200
 	else:
 		code 	= 201
 
-	return code, station[1]
+	return code, station
 
 def del_current():
 	# Get current number of favs first
+	t = 0
 	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
 	c = get_total("fav", r)
 
-	# Del currently playing
-	r = requests.get(url + "/doApi.cgi", params = {"AI":"4"})
-	t = get_total("fav", r)
-
-	# Read currently playing
 	current = status()
-	station = current.split(": ")
+	if "stopped" in current.lower():
+		station = "none"
+	else:
+		# Del currently playing
+		r = requests.get(url + "/doApi.cgi", params = {"AI":"4"})
+		t = get_total("fav", r)
+
+		# Read currently playing
+		current = status()
+		currspl = current.split(": ")
+		station = currspl[1]
 
 	if t < c:
 		code    = 200
 	else:
 		code    = 201
 
-	return code, station[1]
+	return code, station
 
 
 def volume(dir = "down"):
@@ -197,42 +209,6 @@ def list_get():
 
 	return station_names, station_urls, station_countries, station_genres
 
-def decode_country(codes):
-	# 1  = Americas
-	# 1  = United States
-	# 34 = Alabama
-
-
-	R1 = {
-		"name" : "Americas",
-		"data" : {
-			"country": "United States",
-			"1": {
-				"34": "Alabama",
-				"35": "Alaska"
-			},
-                        "country": "Canada",
-                        "2": {
-				"134": "Alberta",
-				"135": "British"
-			}
-		}
-	}
-
-	locations = {
-		"R1" : R1
-	}
-
-	# locations["R1"]["data"]["2"]["134"]
-
-	c = str(codes).split(",")
-	string = str(c[0])
-
-	return codes
-
-def decode_genre(codes):
-	string = "TBD"
-	return string
 
 def list(format = "plain"):
 	name, url, country, genre = list_get()
@@ -307,6 +283,46 @@ def html_decode(s):
 	for code in htmlCodes:
 		s = s.replace(code[1], code[0])
 	return s
+
+def decode_genre(codes):
+	string = "TBD"
+	return string
+
+
+
+def decode_country(codes):
+	# /php/get_CG.php
+	# 1  = Americas
+	# 1  = United States
+	# 34 = Alabama
+
+
+	R1 = {
+		"name" : "Americas",
+		"data" : {
+			"country": "United States",
+			"1": {
+				"34": "Alabama",
+				"35": "Alaska"
+			},
+			"country": "Canada",
+			"2": {
+				"134": "Alberta",
+				"135": "British"
+			}
+		}
+ 	}
+
+	locations = {
+		"R1" : R1
+	}
+
+	# locations["R1"]["data"]["2"]["134"]
+
+	c = str(codes).split(",")
+	string = str(c[0])
+
+	return codes
 
 
 

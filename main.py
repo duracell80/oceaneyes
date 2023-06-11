@@ -17,9 +17,9 @@ def main():
 	print(oe.status())
 
 	# Add current to favourites
-	#code, station = oe.add_current()
-	#if code == 200:
-	#	print("Added  : " + station)
+	code, station = oe.add_current()
+	if code == 200:
+		print("Added  : " + station)
 
 	# Del current from favourites
 	code, station = oe.del_current()
