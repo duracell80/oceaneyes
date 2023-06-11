@@ -48,6 +48,16 @@ def init(ip = "192.168.1.100"):
 
 
 
+def get_total(thing = "fav", r = ""):
+	if thing == "fav":
+		s = str(r.text).split("\n")
+		i = len(s)
+		c = s[i-2].split(":")
+		f = c[2].split(",")
+		t = int(f[0])
+
+	return t
+
 
 
 def status():
@@ -60,9 +70,33 @@ def status():
 		status = "Stopped"
 	return  status
 
+
+
 def play(ch = 0):
 	r = requests.get(url + "/doApi.cgi", params = {"AI":"16", "CI": str(ch - 1)})
 	return
+
+
+
+def add_current():
+	# Get current number of favs first
+	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
+	c = get_total("fav", r)
+
+	# Set new fav
+	r = requests.get(url + "/doApi.cgi", params = {"AI":"8"})
+	t = get_total("fav", r)
+
+	# Read currently playing
+	current = status()
+	station = current.split(": ")
+
+	if t > c:
+		code 	= 200
+	else:
+		code 	= 201
+
+	return code, station[1]
 
 
 def volume(dir = "down"):

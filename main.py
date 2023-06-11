@@ -16,6 +16,10 @@ def main():
 
 	print(oe.status())
 
+	code, station = oe.add_current()
+	if code == 200:
+		print("Favourited: " + station)
+
 	#print(oe.list("json"))
 
 
