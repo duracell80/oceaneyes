@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys, time, requests, json
+import sys, time, requests, urllib.parse, json
 
 
 global headers, url_placeholder
@@ -57,13 +57,18 @@ def get_total(thing = "fav", r = ""):
 
 
 def status():
-	r = requests.get(url + "/php/playing.php")
-	d = json.loads(str(r.text).replace("'", '"'))
+	status = "Unknown"
+	try:
+		r = requests.get(url + "/php/playing.php")
+		d = json.loads(str(r.text).replace("'", '"'))
 
-	if d["result"] == "success":
-		status = "Playing: " + d["name"]
-	else:
-		status = "Stopped"
+		if d["result"] == "success":
+			status = "IP Playing: " + d["name"]
+		else:
+			status = "IP Stopped"
+	except Exception as e:
+		status = "Offline"
+
 	return  status
 
 
@@ -72,11 +77,13 @@ def play(ch = 0):
 	r = requests.get(url + "/doApi.cgi", params = {"AI":"16", "CI": str(ch - 1)})
 	return
 
+
+
 def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp3", chcountry = "-1", chgenre = "-1", chplay = False):
 	t = 0
 	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
 	c = get_total("fav", r)
-	p = requests.get(url + "/addCh.cgi?EX=0&chName=" + str(chname) + "&chUrl=" + str(churl)  + "chCountry=" + str(chcountry) + "&chGenre=" + str(chgenre))
+	p = requests.get(url + "/addCh.cgi?EX=0&chName=" + str(chname) + "&chUrl=" + str(churl)  + "&chCountry=" + str(chcountry) + "&chGenre=" + str(chgenre))
 
 	time.sleep(5)
 	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
@@ -90,6 +97,39 @@ def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp
 		station = "None"
 
 	return code, station
+
+
+
+def add_import(filename = "./import.pls"):
+	c=0
+
+	if ".pls" in filename:
+		lines = [i.split("=") for i in open(filename).readlines()]
+		while c < int(len(lines)-1):
+			if "file" in str(lines[c][0]).lower() and "://" in str(lines[c][1]).lower():
+				churl		= str(urllib.parse.quote_plus(str(lines[c][1]).replace("\n", "")))
+				chname		= str(lines[c+1][1]).replace("\n", "")
+				chcountry	= "3;17;-1"
+				chgenre		= "2;14"
+
+				#print(churl)
+
+				# Add the station from this line in *.pls
+				d = "/addCh.cgi?EX=0&chName=" + str(urllib.parse.quote_plus(str(chname))) + "&chUrl=" + str(churl) + "&chCountry="+ str(chcountry) + "&chGenre=" + str(chgenre)
+				#print(d)
+				#p = requests.get(url + "/addCh.cgi?EX=0&chName=" + str(chname) + "&chUrl=" + str(churl) + "&chCountry=" + str(chcountry) + "&chGenre=" + str(chgenre))
+				#print(p.text)
+
+				#time.sleep(20)
+			c+=1
+		print(d)
+		#p = requests.get(url + "/addCh.cgi?EX=0&chName=" + str(chname) + "&chUrl=" + str(churl) + "&chCountry=" + str(chcountry) + "&chGenre=" + str(chgenre))
+	else:
+		lines = open(filename).readlines()
+
+	string = "WIP"
+	return string
+
 
 
 def add_current():
@@ -317,24 +357,99 @@ def decode_country(codes):
 			"country": "United States",
 			"1": {
 				"34": "Alabama",
-				"35": "Alaska"
+				"35": "Alaska",
+				"36": "Arizona",
+				"37": "Arkansas",
+				"38": "California",
+				"39": "Colorado",
+				"40": "Connecticut",
+				"41": "Delaware",
+				"42": "Florida",
+				"43": "Georgia",
+				"85": "Public Area",
+				"44": "Hawaii",
+				"45": "Idaho",
+				"46": "Illinois",
+				"47": "Indiana",
+				"48": "Iowa",
+				"49": "Kansas",
+				"50": "Kentucky",
+				"51": "Louisiana",
+				"52": "Maine",
+				"53": "Maryland",
+				"54": "Massachusetts",
+				"55": "Michigan",
+				"56": "Minnesota",
+				"57": "Mississippi",
+				"58": "Missouri",
+				"59": "Montana",
+				"60": "Nebraska",
+				"61": "Nevada",
+				"62": "New Hampshire",
+				"63": "New Jersey",
+				"64": "New Mexico",
+				"65": "New York",
+				"66": "North Carolina",
+				"67": "North Dakota",
+				"68": "Ohio",
+				"69": "Oklahoma",
+				"70": "Oregon",
+				"71": "Pennsylvania",
+				"72": "Rhode Island",
+				"73": "South Carolina",
+				"74": "South Dakota",
+				"75": "Tennessee",
+				"76": "Texas",
+				"77": "Utah",
+				"78": "Vermont",
+				"79": "Virginia",
+				"80": "Washington",
+				"88": "Washington D.C.",
+				"81": "West Virgina",
+				"82": "Wisconsin",
+				"83": "Wyoming"
 			},
 			"country": "Canada",
 			"2": {
 				"134": "Alberta",
-				"135": "British"
+				"135": "British Columbia",
+				"136": "Manitoba",
+				"137": "New Brunswick",
+				"138": "Newfoundland",
+				"139": "Northwest Territories",
+				"140": "Nova Scotia",
+				"141": "Nunavut",
+				"142": "Ontario",
+				"143": "Prince Albert Island",
+				"144": "Qubec",
+				"145": "Saskatchewan",
+				"146": "Yukon"
 			}
 		}
  	}
 
+	R2 = {
+                "name" : "Europe",
+                "data" : {
+                        "country": "Europe",
+                        "3": {
+                                "17" : "United Kingdom",
+				"150": "Albania"
+			}
+		}
+	}
+
+
+
 	locations = {
-		"R1" : R1
+		"R1" : R1,
+		"R2" : R2
 	}
 
 	# locations["R1"]["data"]["2"]["134"]
 
-	c = str(codes).split(",")
-	string = str(c[0])
+	#c = str(codes).split(",")
+	#string = str(c[0])
 
 	return codes
 
