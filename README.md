@@ -46,7 +46,7 @@ $ ./main.py
 
 ### API methods:
 ```
-oe.play(<favourite index id>)
+oe.play("<favourite index id>")
 
 oe.status() - Returns the currently playing station name.
 oe.volume("up|down|mute|unmute")
