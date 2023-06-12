@@ -199,6 +199,13 @@ def del_current():
 
 	return code, station
 
+def move(f = "2", t = "1"):
+	#/moveCh.cgi?CI=49&DI=48&EX=0
+	# offset by 1 so -1 off values supplied in method
+
+	string = "TBD"
+	return string
+
 
 def volume(dir = "down"):
 	# volume down 	VL=-1
