@@ -78,57 +78,72 @@ def play(ch = 0):
 	return
 
 
+def delete(chid = "100"):
+	#/delCh.cgi?CI=46
+	chid = str(int(chid)-1)
+	r = requests.get(url + "/delCh.cgi", params = {"CI":chid})
+	return
+
 
 def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp3", chcountry = "-1", chgenre = "-1", chplay = False):
 	t = 0
 	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
 	c = get_total("fav", r)
-	p = requests.get(url + "/addCh.cgi?EX=0&chName=" + str(chname) + "&chUrl=" + str(churl)  + "&chCountry=" + str(chcountry) + "&chGenre=" + str(chgenre))
 
-	time.sleep(5)
-	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
-	t = get_total("fav", r)
-
-	if t > c:
-		code = 200
-		station = str(chname)
+	if c > 99:
+		code = 403
+		station = "Presets Full"
+		return code, station
 	else:
-		code = 201
-		station = "None"
+		f = {'EX': '0', 'chName': str(chname), 'chUrl': str(churl), 'chCountry': str(chcountry), 'chGenre': str(chgenre)}
+		r = requests.post(url + "/addCh.cgi", data=f)
 
-	return code, station
+		time.sleep(8)
+		s = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
+		t = get_total("fav", s)
+
+		if t > c:
+			code = 200
+			station = str(chname)
+		else:
+			code = 201
+			station = "None"
+
+		return code, station
 
 
 
-def add_import(filename = "./import.pls"):
+def add_import(filename = "./import.pls", encode = False):
 	c=0
+	s=0
+	added = ""
 
 	if ".pls" in filename:
+		print("[i] Importing station presets from " + str(filename))
 		lines = [i.split("=") for i in open(filename).readlines()]
-		while c < int(len(lines)-1):
+		t = int(len(lines)-1)
+
+		while c < t:
 			if "file" in str(lines[c][0]).lower() and "://" in str(lines[c][1]).lower():
-				churl		= str(urllib.parse.quote_plus(str(lines[c][1]).replace("\n", "")))
-				chname		= str(lines[c+1][1]).replace("\n", "")
+				s+=1
+				if encode:
+					churl           = str(urllib.parse.quote_plus(str(lines[c][1]).replace("\n", "")))
+					chname		= str(urllib.parse.quote_plus(str(lines[c+1][1]).replace("\n", "")))
+				else:
+					churl           = str(lines[c][1]).replace("\n", "")
+					chname          = str(lines[c+1][1]).replace("\n", "")
 				chcountry	= "3;17;-1"
 				chgenre		= "2;14"
 
-				#print(churl)
-
-				# Add the station from this line in *.pls
-				d = "/addCh.cgi?EX=0&chName=" + str(urllib.parse.quote_plus(str(chname))) + "&chUrl=" + str(churl) + "&chCountry="+ str(chcountry) + "&chGenre=" + str(chgenre)
-				#print(d)
-				#p = requests.get(url + "/addCh.cgi?EX=0&chName=" + str(chname) + "&chUrl=" + str(churl) + "&chCountry=" + str(chcountry) + "&chGenre=" + str(chgenre))
-				#print(p.text)
-
-				#time.sleep(20)
+				print("[+] " + str(s) + " of " + str(int((t/3))) + " ...")
+				code, station = add(chname, churl, chcountry, chgenre, False)
+				added += str(str(code) + "," + str(station) + "," + str(churl) + "\n")
 			c+=1
-		print(d)
-		#p = requests.get(url + "/addCh.cgi?EX=0&chName=" + str(chname) + "&chUrl=" + str(churl) + "&chCountry=" + str(chcountry) + "&chGenre=" + str(chgenre))
 	else:
 		lines = open(filename).readlines()
+		added = "None"
 
-	string = "WIP"
-	return string
+	return added
 
 
 

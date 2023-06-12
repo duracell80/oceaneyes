@@ -18,13 +18,16 @@ def main():
 
 	#oe.decode_country("0,3,17,-1")
 
+	#oe.delete("47")
+
 	# Add stations from a text file
-	#oe.add_import("./import.pls")
+	#added = oe.add_import("./import.pls", False)
+	#print("\n" + added)
 
 	# Add a new station not on skytune
-	#code, station = oe.add("Vivaldi", "https://stream.0nlineradio.com/vivaldi", "1,1,43", "2,18", False)
+	#code, station = oe.add("Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", False)
 	#if code == 200:
-		#print("Added  : " + station)
+	#	print("Added  : " + station)
 
 	# Add current to favourites
 	#code, station = oe.add_current()
