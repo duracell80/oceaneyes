@@ -353,8 +353,114 @@ def html_decode(s):
 		s = s.replace(code[1], code[0])
 	return s
 
-def decode_genre(codes):
-	string = "TBD"
+def decode_genre(code_1 = 1, code_2 = 66):
+	G1 = {
+                "name" : "Talk",
+                "data" : {
+                        "genre" : "Talks-based",
+                        "1": {
+				"4"  : "Arts and Culture",
+				"80" : "Business, Finance and Politics",
+				"74" : "Chinese Story Telling",
+				"3"  : "Comedy and Humor",
+				"5"  : "Education",
+				"6"  : "Entertainment and Life Style",
+				"2"  : "Kids and Family",
+				"11" : "News, Traffic and Weather",
+				"7"  : "News,Talk and Information",
+				"45" : "Old Time Radio",
+				"66" : "Public Radio",
+				"8"  : "Religious",
+				"10" : "Science and Technology",
+				"9"  : "Sports",
+			}
+		}
+	}
+
+	G2 = {
+		"name" : "Music",
+		"data" : {
+			"genre" : "Music",
+			"2": {
+				"88" : "00s and 10s",
+				"89" : "20s 30s 40s and Earlier",
+				"1"  : "50s 60s and Oldies",
+				"13" : "70s 80s 90s and Classic Hits",
+				"65" : "AC - Hot",
+				"28" : "AC - Soft AC",
+				"75" : "Acoustic and Instrumental",
+				"14" : "Adult Contemporary",
+				"56" : "African, Tropical and Caribbean",
+				"70" : "Art Music",
+				"57" : "Asian Music",
+				"84" : "Big Bands",
+				"78" : "Bluegrass",
+				"17" : "Blues, Soul and Funk",
+				"58" : "Bollywood",
+				"81" : "Chill-out and Lounge",
+				"73" : "Chinese Pop",
+				"72" : "Chinese Traditional Music",
+				"54" : "Christian Contemporary and Christian Rock",
+				"18" : "Classical, Opera and Culture",
+				"49" : "College Rock",
+				"31" : "Community Radio (Variety)",
+				"24" : "Country Music",
+				"19" : "Dance and Disco",
+				"40" : "Drama",
+				"87" : "Drum and Bass",
+				"85" : "Easy Listening and Relaxation",
+				"20" : "EDM, Club, Trance, House & Techno",
+				"53" : "European Music",
+				"35" : "Folk Music",
+				"33" : "Guitar & Piano",
+				"27" : "HipHop, RnB, Rap and Urban",
+				"55" : "Holiday and Seasonal",
+				"60" : "Islamic",
+				"21" : "Jazz",
+				"22" : "Jazz - Smooth Jazz",
+				"69" : "Latin, Spanish and Portugal Music",
+				"48" : "Legends",
+				"42" : "LGBTQ",
+				"43" : "Live Shows",
+				"82" : "Love and Romantic",
+				"46" : "Mexican Music",
+				"44" : "Mid East",
+				"32" : "Mix, Remix and Retro",
+				"50" : "Movie Soundtracks",
+				"77" : "Nature Sounds and Spa Music",
+				"25" : "New Age Music",
+				"26" : "New Releases, Indie and Unsigned Artists",
+				"64" : "News and Music",
+				"76" : "Nostalgia",
+				"59" : "Office",
+				"23" : "Pop",
+				"71" : "Punjabi",
+				"83" : "Reggae",
+				"15" : "Rock - Alternative and Indie Rock",
+				"52" : "Rock - Classic Rock",
+				"29" : "Rock - Heavy Rock",
+				"38" : "Rock - Punk and Goth",
+				"30" : "Rock - Soft Rock",
+				"37" : "Schlager",
+				"16" : "Sleep and Meditation",
+				"39" : "Spiritual",
+				"41" : "Tamil",
+				"12" : "Teen Pop",
+				"86" : "Top 40 and CHR",
+				"36" : "Underground Music",
+				"68" : "Various",
+				"34" : "Workout and Exercises",
+				"51" : "World Music"
+			}
+		}
+	}
+
+	genres = {
+		"G1" : G1,
+		"G2" : G2
+	}
+
+	string = str(genres["G"+str(code_1)]["data"][str(code_1)][str(code_2)])
 	return string
 
 
