@@ -74,20 +74,28 @@ def status():
 
 def info_get(chid = "1"):
 	chid = str(int(chid)-1)
-	chname = ""
-	churl  = ""
-	chcountry = ""
-	chgenre = ""
 
-	station_ids, station_names, station_urls, station_countries, station_genres = list_get()
+	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
+	t = get_total("fav", r)
 
-	chid      = station_ids[int(chid))]
-	chname    = station_names[int(chid)]
-	churl     = station_urls[int(chid)]
-	chcountry = station_countries[int(chid)]
-	chgenre   = station_genres[int(chid)]
+	if int(chid) > t:
+		chname = "Bird Song Radio"
+		churl  = str(url_placeholder)
+		chcountry = "United Kingdom"
+		chgenre = "Nature Sounds and Spa Music"
+	else:
+		station_ids, station_names, station_urls, station_countries, station_genres = list_get()
 
-	return chid, chname, churl, chcountry, chgenre
+		chid      = station_ids[int(chid)]
+		chname    = station_names[int(chid)]
+		churl     = station_urls[int(chid)]
+		chcountry = station_countries[int(chid)]
+		chgenre   = station_genres[int(chid)]
+
+		genre_bit = chgenre.split(",")
+		genre_str = decode_genre(code_1 = int(genre_bit[0]), code_2 = int(genre_bit[1]))
+
+	return chid, chname, churl, chcountry, genre_str
 
 
 def play(ch = 0):
@@ -297,11 +305,11 @@ def list_get():
 		while c < int(len(s)):
 			if c >= 2 and c < int(len(s)-2):
 				if s[c] is not None:
-					data_item = str(s[c]).replace("myFavChannelList.push", "").split('"')
-					data_name = str(html_decode(str(data_item[1])))
-					data_cbit = str(html_decode(str(data_item[4]))).replace("]", "").replace(");", "").split("[")
-					data_cont = str(data_cbit[2][:-1])
-					data_genr = str(data_cbit[3])
+					data_item  = str(s[c]).replace("myFavChannelList.push", "").split('"')
+					data_name  = str(html_decode(str(data_item[1])))
+					data_cbit  = str(html_decode(str(data_item[4]))).replace("]", "").replace(");", "").split("[")
+					data_cont  = str(data_cbit[2][:-1])
+					data_genre = str(data_cbit[3])
 
 					data_url  = str(data_item[3]).replace("****** Channel URL is maintained by Skytune", url_placeholder)
 					# URL's maintained by Skytune are masked, play birdsong instead
@@ -348,11 +356,13 @@ def list_get():
 					elif h == "910":
 						h = str("100")
 
+					#print(str(int(h)) + ";" + str(data_name) + ";" + str(data_url) + ";" + str(data_cont) + ";" + str(data_genre))
+
 					station_countries.append(data_cont)
-					station_genres.append(data_genr)
+					station_genres.append(data_genre)
 					station_names.append(data_name)
 					station_urls.append(data_url)
-					station_ids.append(str(int(h)))
+					station_ids.append(str(int(h)-1))
 			c+=1
 		i+=1
 
@@ -377,21 +387,24 @@ def list(format = "plain"):
 
 	while n < int(len(name)):
 		if name is not None:
+			genre_bit = genre[n].split(",")
+			genre_str = decode_genre(code_1 = int(genre_bit[0]), code_2 = int(genre_bit[1]))
+
 			if format == "plain":
-				list += name[n] + " [" + url[n] + "]\n"
+				list += str(int(n)+1) + ":" + name[n] + " [url=" + url[n] + "] [genre=" + str(genre_str)  + "]\n"
 			elif format == "csv":
-				csv += name[n] + "," + url[n] + "\n"
+				csv += str(int(n)+1) + "," + name[n] + "," + url[n] + "," + str(genre_str) + "\n"
 			elif format == "ssv":
-                                ssv += name[n] + ";" + url[n] + "\n"
+                                ssv += str(int(n)+1) + ";" + name[n] + ";" + url[n] + ";" + str(genre_str) + "\n"
 			elif format == "pls":
                                 pls += '\nFile' + str(int(n)+1)  + '=' + str(url[n]) + '\nTitle' + str(int(n)+1)  + '=' + str(name[n]) + '\nLength' + str(int(n+1)) + '=-1'
 			elif format == "m3u":
-                                m3u += '\n#EXTINF:-1, ' + str(name[n])  + '\n'+ str(url[n])
+                                m3u += '\n#EXTINF:-1, ' + str(name[n]) + ' \n'+ str(url[n])
 			elif format == "json":
 				#["Radio SoBro","https://streamer.radio.co/s951fc6edc/listen",0,[[1,1,75],[2,24]]]
 				#["Station name", "Station URL",int,[[Country Code],[Genre Code]]]
 
-				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '","country":"' + str(decode_country(country[n]))  + '","genre":"' + str(genre[n]) + '"}'
+				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '","country":"' + str(decode_country(country[n]))  + '","genre":"' + str(genre_str) + '"}'
 				if int(int(n)+1) != int(len(name)):
 					jsn += ','
 			else:
@@ -438,7 +451,7 @@ def decode_genre(code_1 = 1, code_2 = 66):
                 "name" : "Talk",
                 "data" : {
                         "genre" : "Talks-based",
-                        "1": {
+			"1" : {
 				"4"  : "Arts and Culture",
 				"80" : "Business, Finance and Politics",
 				"74" : "Chinese Story Telling",
@@ -539,8 +552,11 @@ def decode_genre(code_1 = 1, code_2 = 66):
 		"G1" : G1,
 		"G2" : G2
 	}
+	if code_1 == -1:
+		string = "Genre Not Set"
+	else:
+		string = str(genres["G"+str(code_1)]["data"][str(code_1)][str(code_2)])
 
-	string = str(genres["G"+str(code_1)]["data"][str(code_1)][str(code_2)])
 	return string
 
 

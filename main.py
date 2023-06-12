@@ -21,12 +21,12 @@ def main():
 	#print(oe.move("2", "1"))
 
 	#oe.decode_country("0,3,17,-1")
-	#print(oe.decode_genre("1", "6"))
+	#print(oe.decode_genre("-1", "1", "6"))
 
 	#oe.delete("47")
 
-	chid, chname, churl, chcountry, chgenre = oe.info_get("1")
-	print(chname)
+	#chid, chname, churl, chcountry, chgenre = oe.info_get("1")
+	#print(chid + "," + chname + "," + churl + "," + chcountry + "," + chgenre)
 
 	# Add stations from a text file
 	#added = oe.add_import("./import.pls", False)
@@ -47,6 +47,9 @@ def main():
 	#if code == 200:
 	#	print("Deleted: " + station)
 
+	#print(oe.list("json"))
+	#print(oe.list("csv"))
+	#print(oe.list("m3u"))
 	#print(oe.list("pls"))
 
 
