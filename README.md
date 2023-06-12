@@ -117,6 +117,8 @@ https://hackaday.io/project/183339-saving-a-reciva-box-from-the-landfill
 - Renkforce RF-IR-MONOV2
 - CC WiFi 3 Internet Radio (with Skytune)
 
-To protect your investment and lengthen the life of your device, avoid known Reciva radios, like older CC Crane's, Grace Digital's Sangean's, and Sirius radios that have a vested interest in broadcast technologies like satelite radio. Avoid Pure and Pure Evoke's and Inscabin's, Lemega's, NakiRadio, Sungale's, most Sangean's, AUNA's.
+To protect your investment and lengthen the life of your device ask community members or reviewers if the device let's you add your own station URL's directly. Avoid known Reciva radios, like older CC Crane's, Grace Digital's, and Sirius radios that have a vested interest in broadcast technologies like satelite radio. Frontier service based devices are also risky unless adding station URl's directly is allowed via upgrade. 
 
-Non-Skytune Radios that have long life potenital: Tivoli, Logitech, Brennan, Raspbery Pi, as well as settop boxes or streaming devices like Roku, Amazon Fire, Apple TV, Now TV, Android or Android TV devices, Chromecast and AirPlay devices.
+Avoid Pure and Pure Evoke's and Inscabin's, Lemega's, NakiRadio, Sungale's, most Sangean's, AUNA's.
+
+Non-Skytune Radios that have long life potenital: Tivoli, Logitech, Brennan, Raspbery Pi / DIY devices and Single Board based retro handhelds, as well as set-top boxes or streaming devices like Roku, Amazon Fire, Apple TV or iOS devices, Now TV, Android or Android TV devices, Chromecast and AirPlay devices.
