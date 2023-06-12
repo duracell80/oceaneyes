@@ -16,6 +16,8 @@ def main():
 
 	print(oe.status())
 
+	#print(oe.move("2", "1"))
+
 	#oe.decode_country("0,3,17,-1")
 	#print(oe.decode_genre("1", "6"))
 

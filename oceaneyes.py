@@ -202,9 +202,20 @@ def del_current():
 def move(f = "2", t = "1"):
 	#/moveCh.cgi?CI=49&DI=48&EX=0
 	# offset by 1 so -1 off values supplied in method
+	f = int(int(f)-1)
+	t = int(int(f)-1)
 
-	string = "TBD"
-	return string
+	v = requests.get(url + "/php/favList.php", params = {"PG":"0"})
+	c = get_total("fav", v)
+
+	if f > 99 or t > 99 or t > c or f > c or f < 0 or t < 0:
+		string = "500, Cannot move - presets out of range"
+		return string
+	else:
+		r = requests.post(url + "/moveCh.cgi?EX=0&CI="+ str(int(f)) +"&DI="+ str(int(t)))
+
+		string = "200, Moved preset " + str(int(f)+1) + " to " + str(int(t)+1)
+		return string
 
 
 def volume(dir = "down"):

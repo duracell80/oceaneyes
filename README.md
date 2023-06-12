@@ -117,10 +117,12 @@ https://www.zdnet.com/home-and-office/sustainability/right-to-repair-what-it-mea
 https://hackaday.io/project/183339-saving-a-reciva-box-from-the-landfill
 
 ### Radios that may use Skytune:
-- Most Ocean Digital's
+- Most Ocean Digital's 
+- Ocean's (WR-50CD, WR-26F, WR-336F, WR-336N, WR-210N, WR-880N, WR-23D, WR-230SF)
 - Denver Electronics IR-140 Internet Radio
 - Release WiFi Internet Radios
 - Renkforce RF-IR-MONOV2
+- Opticum Ton4 DAB+, Internet, FM Radio
 - CC WiFi 3 Internet Radio (with Skytune)
 
 To protect your investment and lengthen the life of your device ask community members or reviewers if the device let's you add your own station URL's directly. Avoid known Reciva radios, like older CC Crane's, Grace Digital's, and Sirius radios that have a vested interest in broadcast technologies like satelite radio. Frontier service based devices are also risky unless adding station URl's directly is allowed via upgrade. 
