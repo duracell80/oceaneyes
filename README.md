@@ -16,21 +16,27 @@ import oceaneyes as oe
 def main():
 	settings, stations = oe.init("192.168.1.200")
 	ip = settings["ipaddress"]
-
-	#oe.volume("down")
-	#oe.volume("up")
-	#oe.volume("mute")
-	#oe.volume("unmute")
-
-	#oe.play(<fav id (int)>)
-	#oe.play(1)
-
+	
 	print(oe.status())
 
 
 if __name__ == "__main__":
 	main()
 ```
+### Example of bulk import from *.pls
+```
+oe.add_import("./import.pls", False)
+
+[i] Importing station presets from ./import.pls
+[+] 1 of 3.0 ...
+[+] 2 of 3.0 ...
+[+] 3 of 3.0 ...
+
+200,OpenFM - EDM Anthems,http://stream.open.fm/361
+200,OpenFM - Trance,http://stream.open.fm/7
+200,OpenFM - House,http://stream.open.fm/5
+```
+
 ### Run in terminal
 
 ```
