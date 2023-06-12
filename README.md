@@ -44,9 +44,34 @@ oe.play(<favourite index id>)
 
 oe.status() - Returns the currently playing station name.
 oe.volume("up|down|mute|unmute")
+
+# Decode a country or genre code
+oe.decode_country("0,3,17,-1")
+
+# Delete a preset by index
+oe.delete("47")
+
+# Add a new station not on skytune
+code, station = oe.add("Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", False)
+if code == 200:
+    print("Added  : " + station)
+
+# Add stations from a text file
+added = oe.add_import("./import.pls", False)
+print("\n" + added)
+
+# Add current playing to favourites
+code, station = oe.add_current()
+if code == 200:
+    print("Added  : " + station)
 ```
 
 -- You would not believe your eyes if ten million fireflies lit up the world as I fell asleep
+
+### Useful Resources
+- https://github.com/pfbrowning/od-radio-sync
+- https://www.radio-browser.info
+- https://www.skytune.net
 
 ### Ideas and features
 - Evolve the onboard web server to allow more playback controls and device configuration
@@ -84,3 +109,14 @@ https://www.repair.org/stand-up
 https://www.zdnet.com/home-and-office/sustainability/right-to-repair-what-it-means-and-why-it-matters-to-you/
 
 https://hackaday.io/project/183339-saving-a-reciva-box-from-the-landfill
+
+### Radios that may use Skytune:
+- Most Ocean Digital's
+- Denver Electronics IR-140 Internet Radio
+- Release WiFi Internet Radios
+- Renkforce RF-IR-MONOV2
+- CC WiFi 3 Internet Radio (with Skytune)
+
+To protect your investment and lengthen the life of your device, avoid known Reciva radios, like older CC Crane's, Grace Digital's Sangean's, and Sirius radios that have a vested interest in broadcast technologies like satelite radio. Avoid Pure and Pure Evoke's and Inscabin's, Lemega's, NakiRadio, Sungale's, most Sangean's, AUNA's.
+
+Non-Skytune Radios that have long life potenital: Tivoli, Logitech, Brennan, Raspbery Pi, as well as settop boxes or streaming devices like Roku, Amazon Fire, Apple TV, Now TV, Android or Android TV devices, Chromecast and AirPlay devices.
