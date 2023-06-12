@@ -16,12 +16,17 @@ def main():
 
 	print(oe.status())
 
+	#print(oe.list("plain"))
+
 	#print(oe.move("2", "1"))
 
 	#oe.decode_country("0,3,17,-1")
 	#print(oe.decode_genre("1", "6"))
 
 	#oe.delete("47")
+
+	chid, chname, churl, chcountry, chgenre = oe.info_get("1")
+	print(chname)
 
 	# Add stations from a text file
 	#added = oe.add_import("./import.pls", False)

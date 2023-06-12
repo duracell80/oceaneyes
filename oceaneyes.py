@@ -72,6 +72,23 @@ def status():
 	return  status
 
 
+def info_get(chid = "1"):
+	chid = str(int(chid)-1)
+	chname = ""
+	churl  = ""
+	chcountry = ""
+	chgenre = ""
+
+	station_ids, station_names, station_urls, station_countries, station_genres = list_get()
+
+	chid      = station_ids[int(chid))]
+	chname    = station_names[int(chid)]
+	churl     = station_urls[int(chid)]
+	chcountry = station_countries[int(chid)]
+	chgenre   = station_genres[int(chid)]
+
+	return chid, chname, churl, chcountry, chgenre
+
 
 def play(ch = 0):
 	r = requests.get(url + "/doApi.cgi", params = {"AI":"16", "CI": str(ch - 1)})
@@ -255,6 +272,7 @@ def list_get():
 	station_genres		= []
 	station_names 		= []
 	station_urls  		= []
+	station_ids		= []
 
 	r = requests.get(url + "/php/favList.php?PG=0")
 	s = str(r.text).split("\n")
@@ -264,11 +282,13 @@ def list_get():
 
 	data_size = int(n[0])			# Total of favourites
 	data_page = round(data_size/10)		# Pages of favourites
+	data_delta= abs(int(data_size) - int(data_page*10))
 
-	#if int(data_size) < int(data_page * 10):
-	#	data_page = data_page -1 	# Correct page number
+	if data_delta > 0:
+		data_page += 1
 
 	i = 0
+	h = 0
 	while i < data_page:
 		c = 0
 		r = requests.get(url + "/php/favList.php?PG=" + str(i))
@@ -283,22 +303,64 @@ def list_get():
 					data_cont = str(data_cbit[2][:-1])
 					data_genr = str(data_cbit[3])
 
-
 					data_url  = str(data_item[3]).replace("****** Channel URL is maintained by Skytune", url_placeholder)
 					# URL's maintained by Skytune are masked, play birdsong instead
+
+					if i == 0:
+						h = str(str(int(c-1)))
+					elif i == 1:
+						h = str("1" + str(int(c-1)))
+					elif i == 2:
+						h = str("2" + str(int(c-1)))
+					elif i == 3:
+						h = str("3" + str(int(c-1)))
+					elif i == 4:
+						h = str("4" + str(int(c-1)))
+					elif i == 5:
+						h = str("5" + str(int(c-1)))
+					elif i == 6:
+						h = str("6" + str(int(c-1)))
+					elif i == 7:
+						h = str("7" + str(int(c-1)))
+					elif i == 8:
+						h = str("8" + str(int(c-1)))
+					elif i == 9:
+						h = str("9" + str(int(c-1)))
+					else:
+						h = "0"
+
+					if h == "110":
+						h = str("20")
+					elif h == "210":
+						h = str("30")
+					elif h == "310":
+						h = str("40")
+					elif h == "410":
+						h = str("50")
+					elif h == "510":
+						h = str("60")
+					elif h == "610":
+						h = str("70")
+					elif h == "710":
+						h = str("80")
+					elif h == "810":
+						h = str("90")
+					elif h == "910":
+						h = str("100")
 
 					station_countries.append(data_cont)
 					station_genres.append(data_genr)
 					station_names.append(data_name)
 					station_urls.append(data_url)
+					station_ids.append(str(int(h)))
 			c+=1
 		i+=1
 
-	return station_names, station_urls, station_countries, station_genres
+	return station_ids, station_names, station_urls, station_countries, station_genres
 
 
 def list(format = "plain"):
-	name, url, country, genre = list_get()
+	id, name, url, country, genre = list_get()
 
 	n = 0
 
