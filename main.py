@@ -6,51 +6,60 @@ def main():
 	settings, stations = oe.init("192.168.2.20")
 	ip = settings["ipaddress"]
 
-	#oe.volume("down")
-	#oe.volume("up")
-	#oe.volume("mute")
-	#oe.volume("unmute")
+	if oe.is_online():
 
-	#oe.play(<fav id (int)>)
-	#oe.play(1)
+		print(oe.status())
 
-	print(oe.status())
+		#oe.volume("down")
+		#oe.volume("up")
+		#oe.volume("mute")
+		#oe.volume("unmute")
 
-	#print(oe.list("plain"))
+		#oe.play(<fav id (int)>)
+		#oe.play(1)
+		#oe.delete("47")
 
-	#print(oe.move("2", "1"))
+		fav_remaining 	= oe.get_remaining("fav")
+		fav_total	= oe.get_total("fav")
 
-	#oe.decode_country("0,3,17,-1")
-	#print(oe.decode_genre("-1", "1", "6"))
+		print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
 
-	#oe.delete("47")
 
-	#chid, chname, churl, chcountry, chgenre = oe.info_get("1")
-	#print(chid + "," + chname + "," + churl + "," + chcountry + "," + chgenre)
+		#print(oe.list("plain"))
+		#print(oe.list("json"))
+		#print(oe.list("csv"))
+		#print(oe.list("m3u"))
+		print(oe.list("pls"))
 
-	# Add stations from a text file
-	#added = oe.add_import("./import.pls", False)
-	#print("\n" + added)
+		#print(oe.move("2", "1"))
 
-	# Add a new station not on skytune
-	#code, station = oe.add("Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", False)
-	#if code == 200:
-	#	print("Added  : " + station)
+		#oe.decode_country("0,3,17,-1")
+		#print(oe.decode_genre("-1", "1", "6"))
 
-	# Add current to favourites
-	#code, station = oe.add_current()
-	#if code == 200:
-	#	print("Added  : " + station)
 
-	# Del current from favourites
-	#code, station = oe.del_current()
-	#if code == 200:
-	#	print("Deleted: " + station)
+		#chid, chname, churl, chcountry, chgenre = oe.info_get("1")
+		#print(chid + "," + chname + "," + churl + "," + chcountry + "," + chgenre)
 
-	#print(oe.list("json"))
-	#print(oe.list("csv"))
-	#print(oe.list("m3u"))
-	#print(oe.list("pls"))
+		# Add stations from a text file
+		#added = oe.add_import("./import.pls", False)
+		#print("\n" + added)
+
+		# Add a new station not on skytune
+		#code, station = oe.add("Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", False)
+		#if code == 200:
+		#	print("Added  : " + station)
+
+		# Add current to favourites
+		#code, station = oe.add_current()
+		#if code == 200:
+		#	print("Added  : " + station)
+
+		# Del current from favourites
+		#code, station = oe.del_current()
+		#if code == 200:
+		#	print("Deleted: " + station)
+	else:
+		print("Radio offline")
 
 
 if __name__ == "__main__":

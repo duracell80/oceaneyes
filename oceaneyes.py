@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys, time, requests, urllib.parse, json
+import sys, time, socket, requests, urllib.parse, json
 
 
 global headers, url_placeholder
@@ -18,8 +18,10 @@ def main():
 	return
 
 
-def init(ip = "192.168.1.100"):
-	global url; url = "http://" + ip
+def init(ipaddr = "192.168.1.100"):
+	global url, ip
+	ip  = str(ipaddr)
+	url = "http://" + ipaddr
 
 	settings = {
 		"ipaddress" : ip,
@@ -43,9 +45,27 @@ def init(ip = "192.168.1.100"):
 	return settings, stations
 
 
+def is_online():
+	args = socket.getaddrinfo(ip, 80, socket.AF_INET, socket.SOCK_STREAM)
+	for family, socktype, proto, canonname, sockaddr in args:
+		s = socket.socket(family, socktype, proto)
+		try:
+			s.connect(sockaddr)
+		except socket.error:
+			return False
+		else:
+			s.close()
+			r = requests.get(url + "/php/favList.php?PG=0", headers=headers)
+			if r.status_code == 404:
+				return False
+			else:
+				return True
 
-def get_total(thing = "fav", r = ""):
+
+def get_total(thing = "fav"):
+	t = 0
 	if thing == "fav":
+		r = requests.get(url + "/php/favList.php?PG=0")
 		s = str(r.text).split("\n")
 		i = len(s)
 		c = s[i-2].split(":")
@@ -54,6 +74,12 @@ def get_total(thing = "fav", r = ""):
 
 	return t
 
+def get_remaining(thing = "fav"):
+	t = 0
+	if thing == "fav":
+		f = int(get_total("fav"))
+		t = 99 - f
+	return int(t)
 
 
 def status():
@@ -67,7 +93,7 @@ def status():
 		else:
 			status = "IP Stopped"
 	except Exception as e:
-		status = "Offline"
+		status = "Unknown"
 
 	return  status
 
@@ -75,8 +101,7 @@ def status():
 def info_get(chid = "1"):
 	chid = str(int(chid)-1)
 
-	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
-	t = get_total("fav", r)
+	t = get_total("fav")
 
 	if int(chid) > t:
 		chname = "Bird Song Radio"
@@ -112,8 +137,7 @@ def delete(chid = "100"):
 
 def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp3", chcountry = "-1", chgenre = "-1", chplay = False):
 	t = 0
-	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
-	c = get_total("fav", r)
+	c = get_total("fav")
 
 	if c > 99:
 		code = 403
@@ -124,8 +148,7 @@ def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp
 		r = requests.post(url + "/addCh.cgi", data=f)
 
 		time.sleep(8)
-		s = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
-		t = get_total("fav", s)
+		t = get_total("fav")
 
 		if t > c:
 			code = 200
@@ -175,8 +198,7 @@ def add_import(filename = "./import.pls", encode = False):
 def add_current():
 	# Get current number of favs first
 	t = 0
-	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
-	c = get_total("fav", r)
+	c = get_total("fav")
 
 	current = status()
 	if "stopped" in current.lower():
@@ -184,7 +206,7 @@ def add_current():
 	else:
 		# Set new fav
 		r = requests.get(url + "/doApi.cgi", params = {"AI":"8"})
-		t = get_total("fav", r)
+		t = get_total("fav")
 
 		# Read currently playing
 		current = status()
@@ -201,8 +223,7 @@ def add_current():
 def del_current():
 	# Get current number of favs first
 	t = 0
-	r = requests.get(url + "/php/favList.php?PG=0", params = {"PG":"0"})
-	c = get_total("fav", r)
+	c = get_total("fav")
 
 	current = status()
 	if "stopped" in current.lower():
@@ -210,7 +231,7 @@ def del_current():
 	else:
 		# Del currently playing
 		r = requests.get(url + "/doApi.cgi", params = {"AI":"4"})
-		t = get_total("fav", r)
+		t = get_total("fav")
 
 		# Read currently playing
 		current = status()
@@ -230,8 +251,7 @@ def move(f = "2", t = "1"):
 	f = int(int(f)-1)
 	t = int(int(f)-1)
 
-	v = requests.get(url + "/php/favList.php", params = {"PG":"0"})
-	c = get_total("fav", v)
+	c = get_total("fav")
 
 	if f > 99 or t > 99 or t > c or f > c or f < 0 or t < 0:
 		string = "500, Cannot move - presets out of range"
