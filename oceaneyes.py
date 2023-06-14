@@ -187,8 +187,33 @@ def add_import(filename = "./import.pls", encode = False):
 				code, station = add(chname, churl, chcountry, chgenre, False)
 				added += str(str(code) + "," + str(station) + "," + str(churl) + "\n")
 			c+=1
+	elif ".json" in filename:
+		# Get genres into global scope
+		decode_genre(1, 11)
+
+		print("[i] Importing station presets from " + str(filename))
+
+		with open(filename) as json_file:
+			data = json.load(json_file)
+
+		for q in data['stations']:
+			t = int(len(data['stations']))
+		for i in data['stations']:
+			s+=1
+			chname		= str(i['name'])
+			churl		= str(i['url'])
+			chcountry       = str(i['country'])
+			chgenre         = str(i['genre'])
+
+			code, chgenre = encode_genre(str(i['genre']))
+			print("[+] " + str(s) + " of " + str(int(t)) + " ...")
+
+			code, station = add(chname, churl, chcountry, chgenre, False)
+			added += str(str(code) + "," + str(chname) + "," + str(churl) + "," + str(chgenre) + "\n")
+
+			c+=1
 	else:
-		lines = open(filename).readlines()
+		#lines = open(filename).readlines()
 		added = "None"
 
 	return added
@@ -389,7 +414,7 @@ def list_get():
 	return station_ids, station_names, station_urls, station_countries, station_genres
 
 
-def list(format = "plain"):
+def get_list(format = "plain"):
 	id, name, url, country, genre = list_get()
 
 	n = 0
@@ -568,6 +593,7 @@ def decode_genre(code_1 = 1, code_2 = 66):
 		}
 	}
 
+	global genres
 	genres = {
 		"G1" : G1,
 		"G2" : G2
@@ -575,11 +601,27 @@ def decode_genre(code_1 = 1, code_2 = 66):
 	if code_1 == -1:
 		string = "Genre Not Set"
 	else:
-		string = str(genres["G"+str(code_1)]["data"][str(code_1)][str(code_2)])
+			string = str(genres["G"+str(code_1)]["data"][str(code_1)][str(code_2)])
 
 	return string
 
+def encode_genre(gstring = "Various"):
+	code 	 = 0
+	key_list = list(genres["G2"]["data"]["2"].keys())
+	val_list = list(genres["G2"]["data"]["2"].values())
 
+	try:
+		p = val_list.index(str(gstring))
+		c = 200
+		g = "2," + key_list[p]
+	except NameError:
+  		code = 504
+	except ValueError:
+		code = 404
+	except:
+		code = 604
+
+	return int(c), str(g)
 
 def decode_country(codes):
 	# /php/get_CG.php

@@ -17,19 +17,19 @@ def main():
 
 		#oe.play(<fav id (int)>)
 		#oe.play(1)
-		#oe.delete("47")
+		#oe.delete("54")
 
-		fav_remaining 	= oe.get_remaining("fav")
-		fav_total	= oe.get_total("fav")
+		#fav_remaining 	= oe.get_remaining("fav")
+		#fav_total	= oe.get_total("fav")
 
 		print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
 
 
-		#print(oe.list("plain"))
-		#print(oe.list("json"))
-		#print(oe.list("csv"))
-		#print(oe.list("m3u"))
-		print(oe.list("pls"))
+		#print(oe.get_list("plain"))
+		#print(oe.get_list("json"))
+		#print(oe.get_list("csv"))
+		#print(oe.get_list("m3u"))
+		#print(oe.get_list("pls"))
 
 		#print(oe.move("2", "1"))
 
@@ -40,9 +40,14 @@ def main():
 		#chid, chname, churl, chcountry, chgenre = oe.info_get("1")
 		#print(chid + "," + chname + "," + churl + "," + chcountry + "," + chgenre)
 
-		# Add stations from a text file
+		# Add stations from a pls file
 		#added = oe.add_import("./import.pls", False)
 		#print("\n" + added)
+
+		# Add stations from a json file
+		#added = oe.add_import("./import.json", False)
+		#print("\n" + added)
+
 
 		# Add a new station not on skytune
 		#code, station = oe.add("Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", False)

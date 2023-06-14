@@ -1,0 +1,25 @@
+{
+  "stations": [
+    {
+      "channel": "1",
+      "name": "80s on DASH Radio",
+      "url": "http://ice55.securenetsystems.net/DASH7",
+      "country": "United States",
+      "genre": "Top 40 and CHR"
+    },
+    {
+      "channel": "2",
+      "name": "90s on DASH Radio",
+      "url": "http://ice55.securenetsystems.net/DASH1",
+      "country": "United States",
+      "genre": "Top 40 and CHR"
+    },
+    {
+      "channel": "3",
+      "name": "LoFi on DASH Radio",
+      "url": "https://ice55.securenetsystems.net/DASH25",
+      "country": "United States",
+      "genre": "Chill-out and Lounge"
+    }
+  ]
+}
