@@ -642,6 +642,47 @@ def decode_country(codes):
 	# 1  = United States
 	# 34 = Alabama
 
+	R5 = {
+		"name" : "Africa",
+		"data" : {
+			"country": "Africa",
+			"5": {
+				"51"  : "Algeria",
+				"52"  : "Angola",
+				"261" : "Burkina Faso",
+				"262" : "Burundi",
+                                "267" : "Cabo Verde",
+				"108" : "Cameroon",
+                                "259" : "Congo Brazzaville",
+                                "176" : "Cote-dIvoire",
+                                "109" : "DR Congo",
+                                "184" : "Ethiopia",
+				"188" : "Gambia",
+                                "110" : "Ghana",
+                                "112" : "Kenya",
+                                "113" : "Madagascar",
+                                "263" : "Malawi (Republic of Malawi)",
+                                "114" : "Mali",
+                                "115" : "Mauritius",
+                                "55"  : "Morocco",
+                                "264" : "Mozambique (Republic of Mozambique)",
+                                "116" : "Namibia",
+				"189" : "Niger",
+                                "27"  : "Nigeria",
+                                "256" : "Rwanda",
+                                "117" : "Senegal",
+                                "266" : "Seychelles",
+                                "190" : "Sierra Leone",
+                                "28"  : "Sudan",
+                                "186" : "Tanzania",
+                                "118" : "Tunisia",
+                                "185" : "Uganda",
+				"187" : "Zambia",
+				"149" : "Zimbabwe",
+
+			}
+		}
+	}
 
 	R1 = {
 		"name" : "Americas",
@@ -726,7 +767,53 @@ def decode_country(codes):
                         "country": "Europe",
                         "3": {
                                 "17" : "United Kingdom",
-				"150": "Albania"
+				"150": "Albania",
+				"72" : "Austria",
+				"152": "Belarus",
+				"73" : "Belgium",
+				"74" : "Bosnia and Herzegovina",
+				"75" : "Bulgaria",
+				"76" : "Croatia",
+				"77" : "Cyprus",
+				"78" : "Czech Republic",
+				"80" : "Estonia",
+				"154": "Faroe Islands",
+				"81" : "Finland",
+				"299": "For test only",
+                                "16" : "France",
+                                "173": "Georgia",
+                                "15" : "Germany",
+                                "155": "Gibraltar",
+                                "82" : "Greece",
+                                "83" : "Hungary",
+                                "84" : "Iceland",
+                                "33" : "Ireland",
+                                "19" : "Italy",
+                                "183": "Kosovo",
+				"85" : "Latvia",
+                                "156": "Liechtenstein",
+                                "86" : "Lithuania",
+                                "87" : "Luxembourg",
+                                "157": "Macedonia",
+                                "88" : "Malta",
+                                "158": "Moldova",
+                                "89" : "Monaco",
+                                "159": "Montenegro",
+                                "32" : "Netherlands",
+                                "160": "Netherlands Antilles",
+				"25" : "Norway",
+                                "23" : "Poland",
+                                "22" : "Portugal",
+                                "90" : "Romania",
+                                "20" : "Russia",
+                                "91" : "Serbia",
+                                "92" : "Slovakia",
+                                "172": "Slovenia",
+                                "18" : "Spain",
+                                "24" : "Sweden",
+                                "21" : "Switzerland",
+				"94" : "Ukraine",
+                                "95" : "Vatican"
 			}
 		}
 	}
@@ -735,7 +822,8 @@ def decode_country(codes):
 
 	locations = {
 		"R1" : R1,
-		"R2" : R2
+		"R2" : R2,
+		"R5" : R5
 	}
 
 	# locations["R1"]["data"]["2"]["134"]
