@@ -19,8 +19,8 @@ def main():
 		#oe.play(1)
 		#oe.delete("54")
 
-		#fav_remaining 	= oe.get_remaining("fav")
-		#fav_total	= oe.get_total("fav")
+		fav_remaining 	= oe.get_remaining("fav")
+		fav_total	= oe.get_total("fav")
 
 		print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
 

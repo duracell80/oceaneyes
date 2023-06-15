@@ -20,6 +20,13 @@
       "url": "https://ice55.securenetsystems.net/DASH25",
       "country": "United States",
       "genre": "Chill-out and Lounge"
+    },
+    {
+      "channel": "4",
+      "name": "On Sport FM (Egypt)",
+      "url": "https://carina.streamerr.co:2020/stream/OnSportFM",
+      "country": "Egypt",
+      "genre": "Sports"
     }
   ]
 }

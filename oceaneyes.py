@@ -208,9 +208,10 @@ def add_import(filename = "./import.pls", encode = False):
 			code, chgenre = encode_genre(str(i['genre']))
 			print("[+] " + str(s) + " of " + str(int(t)) + " ...")
 
-			code, station = add(chname, churl, chcountry, chgenre, False)
-			added += str(str(code) + "," + str(chname) + "," + str(churl) + "," + str(chgenre) + "\n")
+			#code, station = add(chname, churl, chcountry, chgenre, False)
+			added += str(str(code) + "," + str(chname) + "," + str(churl) + "," + str(chgenre) + "," + str(chcountry) + "\n")
 
+			print(added)
 			c+=1
 	else:
 		#lines = open(filename).readlines()
@@ -613,11 +614,23 @@ def encode_genre(gstring = "Various"):
 	try:
 		p = val_list.index(str(gstring))
 		c = 200
-		g = "2," + key_list[p]
+		g = "2;" + key_list[p]
 	except NameError:
   		code = 504
 	except ValueError:
 		code = 404
+		key_list = list(genres["G1"]["data"]["1"].keys())
+		val_list = list(genres["G1"]["data"]["1"].values())
+		try:
+			p = val_list.index(str(gstring))
+			c = 200
+			g = "1;" + key_list[p]
+		except NameError:
+			code = 504
+		except ValueError:
+			code = 404
+		except:
+			code = 604
 	except:
 		code = 604
 
