@@ -762,6 +762,82 @@ def decode_country(codes):
  	}
 
 	R2 = {
+                "name" : "Asia",
+                "data" : {
+                        "country": "Asia",
+                        "2": {
+                                "138": "Afghanistan",
+                                "139": "Armenia",
+				"140": "Azerbaijan",
+				"34" : "Bangladesh",
+				"141": "Brunei Darussalam",
+				"177": "Cambodia",
+				"6"  : {
+					"country": "China",
+					"4"  : "Anhui",
+					"5"  : "Beijing",
+					"90" : "China Internet stations",
+					"1"  : "China National Radio",
+					"6"  : "Chongqing",
+					"7"  : "Fujian",
+					"8"  : "Gansu",
+					"9"  : "Guangdong",
+					"10" : "Guangxi",
+					"11" : "Guizhou",
+					"12" : "Hainan",
+					"13" : "Hebei",
+                                        "15" : "Heilongjiang",
+                                        "14" : "Henan",
+					"2"  : "Hong Kong SAR",
+                                        "16" : "Hubei",
+                                        "17" : "Hunan",
+                                        "19" : "Jiangsu",
+                                        "20" : "Jiangxi",
+                                        "18" : "Jilin",
+                                        "21" : "Liaoning",
+                                        "160": "Macau SAR",
+					"22" : "Neimenggu",
+                                        "23" : "Ningxia",
+                                        "24" : "Qinghai",
+                                        "84" : "Shaanxi",
+                                        "25" : "Shandong",
+                                        "27" : "Shanghai",
+                                        "26" : "Shanxi",
+                                        "28" : "Sichuan",
+                                        "159": "Taiwan Region",
+                                        "29" : "Tianjin",
+					"31" : "Xinjiang",
+					"30" : "Xizang",
+					"32" : "Yunnan",
+					"33" : "Zhejiang",
+				},
+				"9"  : "India",
+				"36" : "Indonesia",
+				"8"  : "Japan",
+				"179": "Kazakhstan",
+				"7"  : "Korea (South)",
+				"174": "Kurdistan",
+				"142": "Kyrgyzstan",
+				"37" : "Laos",
+				"40" : "Malaysia",
+				"143": "Maldives",
+				"257": "Mongolia",
+				"258": "Myanmar",
+				"98" : "Nepal",
+				"38" : "Pakistan",
+				"39" : "Philippines",
+				"10" : "Singapore",
+				"42" : "Sri Lanka",
+				"41" : "Thailand",
+				"96" : "Turkey",
+				"175": "Uzbekistan",
+				"11" : "Vietnam"
+			}
+		}
+	}
+
+
+	R3 = {
                 "name" : "Europe",
                 "data" : {
                         "country": "Europe",
@@ -782,7 +858,25 @@ def decode_country(codes):
 				"299": "For test only",
                                 "16" : "France",
                                 "173": "Georgia",
-                                "15" : "Germany",
+                                "15" : {
+					"country" : "Germany",
+					"93" : "Baden-Wurttemberg",
+					"94" : "Bavaria",
+					"95" : "Berlin",
+					"96" : "Brandenburg",
+					"97" : "Bremen",
+					"98" : "Hamburg",
+					"99" : "Hessen",
+					"100": "Lower Saxony",
+					"101": "Mecklenburg-Vorpommern",
+					"102": "North Rhine-Westphalia",
+					"103": "Rhineland-Palatinate",
+					"104": "Saarland",
+					"105": "Saxony",
+					"106": "Saxony-Anhalt",
+					"107": "Schleswig-Holstein",
+					"108": "Thuringia"
+				},
                                 "155": "Gibraltar",
                                 "82" : "Greece",
                                 "83" : "Hungary",
@@ -818,12 +912,60 @@ def decode_country(codes):
 		}
 	}
 
+	R4 = {
+                "name" : "MidEast",
+                "data" : {
+                        "country": "MidEast",
+                        "4": {
+                                "44" : "Iran",
+                                "43" : "Iraq",
+				"26" : "Israel",
+				"45" : "Jordan",
+				"46" : "Kuwait",
+				"47" : "Lebanon",
+				"180": "Oman",
+				"144": "Palestine",
+				"145": "Qatar",
+				"146": "Saudi Arabia",
+				"49" : "Syria",
+				"148": "United Arab Emirates"
+			}
+		}
+	}
+
+	R6 = {
+                "name" : "Oceania",
+                "data" : {
+                        "country": "Oceania",
+                        "6": {
+                                "30" : "Australia",
+                                "164": "Bermuda",
+                                "165": "Cook Islands",
+                                "166": "Fiji",
+                                "167": "French Polynesia",
+                                "168": "Guam",
+                                "169": "Micronesia",
+                                "170": "New Caledonia",
+                                "31" : "New Zealand",
+                                "161": "Northern Mariana",
+                                "104": "Others",
+                                "171": "Palau",
+				"265": "Ppua New Guinea",
+				"119": "Samoa",
+				"260": "Vanuatu"
+                        }
+                }
+        }
+
 
 
 	locations = {
 		"R1" : R1,
 		"R2" : R2,
-		"R5" : R5
+		"R3" : R3,
+		"R4" : R4,
+		"R5" : R5,
+		"R6" : R6
 	}
 
 	# locations["R1"]["data"]["2"]["134"]
