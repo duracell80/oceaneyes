@@ -16,13 +16,16 @@ def main():
 		#oe.volume("unmute")
 
 		#oe.play(<fav id (int)>)
-		#oe.play(1)
+		#oe.play("1")
 		#oe.delete("54")
+		#oe.edit("53", "Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", "0")
 
-		#fav_remaining 	= oe.get_remaining("fav")
-		#fav_total	= oe.get_total("fav")
+		#print(oe.info_get("53"))
 
-		#print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
+		fav_remaining 	= oe.get_remaining("fav")
+		fav_total	= oe.get_total("fav")
+
+		print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
 
 
 		#print(oe.get_list("plain"))

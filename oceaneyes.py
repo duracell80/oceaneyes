@@ -2,8 +2,10 @@
 import sys, time, socket, requests, urllib.parse, json
 
 
-global headers, url_placeholder
-url_placeholder = "https://streaming.radio.co/s5c5da6a36/listen"
+global headers, url_placeholder, name_placeholder
+url_placeholder 	= "https://streaming.radio.co/s5c5da6a36/listen"
+name_placeholder	= "Bird Song radio"
+
 headers = {
 	"User-Agent": "Mozilla/5.0 (Linux; Android 12; Pixel 6 Build/SD1A.210817.023; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/94.0.4606.71 Mobile Safari/537.36",
 	"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -104,7 +106,7 @@ def info_get(chid = "1"):
 	t = get_total("fav")
 
 	if int(chid) > t:
-		chname = "Bird Song Radio"
+		chname = str(name_placeholder)
 		churl  = str(url_placeholder)
 		chcountry = "United Kingdom"
 		chgenre = "Nature Sounds and Spa Music"
@@ -123,7 +125,44 @@ def info_get(chid = "1"):
 	return chid, chname, churl, chcountry, genre_str
 
 
-def play(ch = 0):
+def edit(chid = "0", newchname = name_placeholder, newchurl = url_placeholder, forcechcountry = "3;17;-1", forcechgenre = "1;45", forceskytune = "0"):
+	if str(chid).isnumeric():
+		t = get_total("fav")
+
+		if int(chid) <= t:
+			data 	  = info_get(str(chid))
+			chid	  = str(int(chid) - 1)
+			chname 	  = data[1]
+			churl 	  = data[2]
+			chcountry = data[3]
+			chgenre   = data[4]
+
+			code, newchgenre	= encode_genre(str(chgenre))
+			newchcountry		= str(chcountry).replace(",", ";")
+			newchskytune		= "0"
+			#newchname		= urllib.parse.quote_plus(str(newchname))
+
+
+			f = {'chName': str(newchname), 'chUrl': str(newchurl), 'chCountry': str(newchcountry), 'chGenre': str(newchgenre), 'chSkytune': str(newchskytune)}
+			r = requests.post(url + "/updateCh.cgi?CI=" + str(int(chid)), data=f)
+
+			code = int(r.status_code)
+
+			return code, str(chid), str(newchname), str(newchurl), str(newchcountry), str(newchgenre), str(newchskytune)
+		else:
+			code = 500
+			skyt = 0
+			print("Error: Preset Out Of Range")
+			return code, str("Null"), str("Null"), str("Null"), str("Null"), str("Null"), str(skyt)
+	else:
+		code = 500
+		skyt = 0
+		print("Error: Preset Out Of Range")
+
+		return code, str("Null"), str("Null"), str("Null"), str("Null"), str("Null"), str(skyt)
+
+
+def play(ch = "0"):
 	r = requests.get(url + "/doApi.cgi", params = {"AI":"16", "CI": str(ch - 1)})
 	return
 
