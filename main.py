@@ -20,7 +20,9 @@ def main():
 		#oe.delete("54")
 		#oe.edit("53", "Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", "0")
 
-		#print(oe.info_get("53"))
+		#print(oe.info_get("1"))
+		#print(oe.info_get("18"))
+		#print(oe.info_get("32"))
 
 		fav_remaining 	= oe.get_remaining("fav")
 		fav_total	= oe.get_total("fav")

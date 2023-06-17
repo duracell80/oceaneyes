@@ -119,10 +119,14 @@ def info_get(chid = "1"):
 		chcountry = station_countries[int(chid)]
 		chgenre   = station_genres[int(chid)]
 
-		genre_bit = chgenre.split(",")
-		genre_str = decode_genre(code_1 = int(genre_bit[0]), code_2 = int(genre_bit[1]))
+		country_bit = chcountry.split(",")
+		print(country_bit[0] + ":" + country_bit[1] + ":" + country_bit[2])
+		country_str = decode_country(int(country_bit[0]), int(country_bit[1]), int(country_bit[2]))
 
-	return chid, chname, churl, chcountry, genre_str
+		genre_bit = chgenre.split(",")
+		genre_str = decode_genre(int(genre_bit[0]), int(genre_bit[1]))
+
+	return chid, chname, churl, country_str, genre_str
 
 
 def edit(chid = "0", newchname = name_placeholder, newchurl = url_placeholder, forcechcountry = "3;17;-1", forcechgenre = "1;45", forceskytune = "0"):
@@ -244,6 +248,7 @@ def add_import(filename = "./import.pls", encode = False):
 			chcountry       = str(i['country'])
 			chgenre         = str(i['genre'])
 
+			# TODO encode country when importing from json eg "Hamburg:Germany"
 			code, chgenre = encode_genre(str(i['genre']))
 			print("[+] " + str(s) + " of " + str(int(t)) + " ...")
 
@@ -488,8 +493,10 @@ def get_list(format = "plain"):
 			elif format == "json":
 				#["Radio SoBro","https://streamer.radio.co/s951fc6edc/listen",0,[[1,1,75],[2,24]]]
 				#["Station name", "Station URL",int,[[Country Code],[Genre Code]]]
+				country_bits  = country[n].split(",")
+				print(country_bits[0] + ":" + country_bits[1] + ":" + country_bits[2]  + " - " + str(name[n]))
 
-				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '","country":"' + str(decode_country(country[n]))  + '","genre":"' + str(genre_str) + '"}'
+				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '","country":"' + str(decode_country(country_bits[0], country_bits[1], country_bits[2]))  + '","genre":"' + str(genre_str) + '"}'
 				if int(int(n)+1) != int(len(name)):
 					jsn += ','
 			else:
@@ -639,7 +646,7 @@ def decode_genre(code_1 = 1, code_2 = 66):
 		"G2" : G2
 	}
 	if code_1 == -1:
-		string = "Genre Not Set"
+		string = "Not Set"
 	else:
 			string = str(genres["G"+str(code_1)]["data"][str(code_1)][str(code_2)])
 
@@ -675,7 +682,7 @@ def encode_genre(gstring = "Various"):
 
 	return int(c), str(g)
 
-def decode_country(codes):
+def decode_country(code_1 = 3, code_2 = 17, code_3 = -1):
 	# /php/get_CG.php
 	# 1  = Americas
 	# 1  = United States
@@ -728,58 +735,61 @@ def decode_country(codes):
 		"data" : {
 			"country": "United States",
 			"1": {
-				"34": "Alabama",
-				"35": "Alaska",
-				"36": "Arizona",
-				"37": "Arkansas",
-				"38": "California",
-				"39": "Colorado",
-				"40": "Connecticut",
-				"41": "Delaware",
-				"42": "Florida",
-				"43": "Georgia",
-				"85": "Public Area",
-				"44": "Hawaii",
-				"45": "Idaho",
-				"46": "Illinois",
-				"47": "Indiana",
-				"48": "Iowa",
-				"49": "Kansas",
-				"50": "Kentucky",
-				"51": "Louisiana",
-				"52": "Maine",
-				"53": "Maryland",
-				"54": "Massachusetts",
-				"55": "Michigan",
-				"56": "Minnesota",
-				"57": "Mississippi",
-				"58": "Missouri",
-				"59": "Montana",
-				"60": "Nebraska",
-				"61": "Nevada",
-				"62": "New Hampshire",
-				"63": "New Jersey",
-				"64": "New Mexico",
-				"65": "New York",
-				"66": "North Carolina",
-				"67": "North Dakota",
-				"68": "Ohio",
-				"69": "Oklahoma",
-				"70": "Oregon",
-				"71": "Pennsylvania",
-				"72": "Rhode Island",
-				"73": "South Carolina",
-				"74": "South Dakota",
-				"75": "Tennessee",
-				"76": "Texas",
-				"77": "Utah",
-				"78": "Vermont",
-				"79": "Virginia",
-				"80": "Washington",
-				"88": "Washington D.C.",
-				"81": "West Virgina",
-				"82": "Wisconsin",
-				"83": "Wyoming"
+				"1": {
+					"-1": "United States",
+					"34": "Alabama",
+					"35": "Alaska",
+					"36": "Arizona",
+					"37": "Arkansas",
+					"38": "California",
+					"39": "Colorado",
+					"40": "Connecticut",
+					"41": "Delaware",
+					"42": "Florida",
+					"43": "Georgia",
+					"85": "Public Area",
+					"44": "Hawaii",
+					"45": "Idaho",
+					"46": "Illinois",
+					"47": "Indiana",
+					"48": "Iowa",
+					"49": "Kansas",
+					"50": "Kentucky",
+					"51": "Louisiana",
+					"52": "Maine",
+					"53": "Maryland",
+					"54": "Massachusetts",
+					"55": "Michigan",
+					"56": "Minnesota",
+					"57": "Mississippi",
+					"58": "Missouri",
+					"59": "Montana",
+					"60": "Nebraska",
+					"61": "Nevada",
+					"62": "New Hampshire",
+					"63": "New Jersey",
+					"64": "New Mexico",
+					"65": "New York",
+					"66": "North Carolina",
+					"67": "North Dakota",
+					"68": "Ohio",
+					"69": "Oklahoma",
+					"70": "Oregon",
+					"71": "Pennsylvania",
+					"72": "Rhode Island",
+					"73": "South Carolina",
+					"74": "South Dakota",
+					"75": "Tennessee",
+					"76": "Texas",
+					"77": "Utah",
+					"78": "Vermont",
+					"79": "Virginia",
+					"80": "Washington",
+					"88": "Washington D.C.",
+					"81": "West Virgina",
+					"82": "Wisconsin",
+					"83": "Wyoming"
+				}
 			},
 			"country": "Canada",
 			"2": {
@@ -812,7 +822,7 @@ def decode_country(codes):
 				"141": "Brunei Darussalam",
 				"177": "Cambodia",
 				"6"  : {
-					"country": "China",
+					"-1": "China",
 					"4"  : "Anhui",
 					"5"  : "Beijing",
 					"90" : "China Internet stations",
@@ -898,7 +908,7 @@ def decode_country(codes):
                                 "16" : "France",
                                 "173": "Georgia",
                                 "15" : {
-					"country" : "Germany",
+					"-1" : "Germany",
 					"93" : "Baden-Wurttemberg",
 					"94" : "Bavaria",
 					"95" : "Berlin",
@@ -996,6 +1006,19 @@ def decode_country(codes):
                 }
         }
 
+	R7 = {
+                "name" : "Not Set",
+                "data" : {
+                        "country": "Not Set",
+                        "-1": {
+				"-1"  : "Skytune"
+			},
+			"7": {
+                                "182" : "Not Set"
+			}
+		}
+	}
+
 
 
 	locations = {
@@ -1004,15 +1027,23 @@ def decode_country(codes):
 		"R3" : R3,
 		"R4" : R4,
 		"R5" : R5,
-		"R6" : R6
+		"R6" : R6,
+		"R7" : R7
 	}
 
 	# locations["R1"]["data"]["2"]["134"]
 
 	#c = str(codes).split(",")
 	#string = str(c[0])
+	if int(code_1) == -1 or int(code_1) == 7:
+ 		string = "Not Set"
+	else:
+		if str(code_3) == "-1":
+			string = str(locations["R"+str(code_1)]["data"][str(code_1)][str(code_2)])
+		else:
+			string = str(locations["R"+str(code_1)]["data"][str(code_1)][str(code_2)][str(code_3)]) + ":" + str(locations["R"+str(code_1)]["data"][str(code_1)][str(code_2)]["-1"])
 
-	return codes
+	return string
 
 
 
