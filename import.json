@@ -2,31 +2,38 @@
   "stations": [
     {
       "channel": "1",
-      "name": "80s on DASH Radio",
-      "url": "http://ice55.securenetsystems.net/DASH7",
-      "country": "United States",
-      "genre": "Top 40 and CHR"
+      "name": "Deutschlandfunk",
+      "url": "http://d131.rndfnk.com/ard/dlf/01/mp3/128/stream.mp3",
+      "country": "Hubei:China",
+      "genre": "New Age Music"
     },
     {
       "channel": "2",
-      "name": "90s on DASH Radio",
-      "url": "http://ice55.securenetsystems.net/DASH1",
-      "country": "United States",
-      "genre": "Top 40 and CHR"
+      "name": "Radio Mirchi",
+      "url": "http://peridot.streamguys.com:7150/Mirchi",
+      "country": "New York:United States",
+      "genre": "Jazz"
     },
     {
       "channel": "3",
-      "name": "LoFi on DASH Radio",
-      "url": "https://ice55.securenetsystems.net/DASH25",
-      "country": "United States",
-      "genre": "Chill-out and Lounge"
+      "name": "FM 90.30 MHz",
+      "url": "fm://9030/FM 90.30 MHz",
+      "country": "Not Set",
+      "genre": "Not Set"
     },
     {
       "channel": "4",
-      "name": "On Sport FM (Egypt)",
-      "url": "https://carina.streamerr.co:2020/stream/OnSportFM",
-      "country": "Egypt",
-      "genre": "Sports"
+      "name": "Fox News Radio - 1 (iHeart)",
+      "url": "https://streaming.radio.co/s5c5da6a36/listen",
+      "country": "Not Set",
+      "genre": "Not Set"
+    },
+    {
+      "channel": "49",
+      "name": "90's Super Hits'",
+      "url": "http://103.16.47.70:7444/;stream?type=http&nocache=10",
+      "country": "United Kingdom",
+      "genre": "Adult Contemporary"
     }
   ]
 }

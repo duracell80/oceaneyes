@@ -231,8 +231,9 @@ def add_import(filename = "./import.pls", encode = False):
 				added += str(str(code) + "," + str(station) + "," + str(churl) + "\n")
 			c+=1
 	elif ".json" in filename:
-		# Get genres into global scope
+		# Get genres and locations into global scope
 		decode_genre(1, 11)
+		decode_country(1,1,75)
 
 		print("[i] Importing station presets from " + str(filename))
 
@@ -249,13 +250,13 @@ def add_import(filename = "./import.pls", encode = False):
 			chgenre         = str(i['genre'])
 
 			# TODO encode country when importing from json eg "Hamburg:Germany"
-			code, chgenre = encode_genre(str(i['genre']))
+			code, chgenre   = encode_genre(str(i['genre']))
+			code, chcountry = encode_country(str(i['country']))
 			print("[+] " + str(s) + " of " + str(int(t)) + " ...")
 
 			#code, station = add(chname, churl, chcountry, chgenre, False)
 			added += str(str(code) + "," + str(chname) + "," + str(churl) + "," + str(chgenre) + "," + str(chcountry) + "\n")
 
-			print(added)
 			c+=1
 	else:
 		#lines = open(filename).readlines()
@@ -653,7 +654,8 @@ def decode_genre(code_1 = 1, code_2 = 66):
 	return string
 
 def encode_genre(gstring = "Various"):
-	code 	 = 0
+	c 	 = 0
+	g	= "1;66"
 	key_list = list(genres["G2"]["data"]["2"].keys())
 	val_list = list(genres["G2"]["data"]["2"].values())
 
@@ -662,9 +664,9 @@ def encode_genre(gstring = "Various"):
 		c = 200
 		g = "2;" + key_list[p]
 	except NameError:
-  		code = 504
+  		c = 504
 	except ValueError:
-		code = 404
+		c = 404
 		key_list = list(genres["G1"]["data"]["1"].keys())
 		val_list = list(genres["G1"]["data"]["1"].values())
 		try:
@@ -672,13 +674,13 @@ def encode_genre(gstring = "Various"):
 			c = 200
 			g = "1;" + key_list[p]
 		except NameError:
-			code = 504
+			c = 504
 		except ValueError:
-			code = 404
+			c = 404
 		except:
-			code = 604
+			c = 604
 	except:
-		code = 604
+		c = 604
 
 	return int(c), str(g)
 
@@ -735,7 +737,8 @@ def decode_country(code_1 = 3, code_2 = 17, code_3 = -1):
 		"data" : {
 			"country": "United States",
 			"1": {
-				"1": {
+				"01": "United States",
+				"1" : {
 					"-1": "United States",
 					"34": "Alabama",
 					"35": "Alaska",
@@ -821,7 +824,8 @@ def decode_country(code_1 = 3, code_2 = 17, code_3 = -1):
 				"34" : "Bangladesh",
 				"141": "Brunei Darussalam",
 				"177": "Cambodia",
-				"6"  : {
+				"06" : "China",
+				"6"  :  {
 					"-1": "China",
 					"4"  : "Anhui",
 					"5"  : "Beijing",
@@ -907,7 +911,8 @@ def decode_country(code_1 = 3, code_2 = 17, code_3 = -1):
 				"299": "For test only",
                                 "16" : "France",
                                 "173": "Georgia",
-                                "15" : {
+				"015": "Germany",
+				"15" : {
 					"-1" : "Germany",
 					"93" : "Baden-Wurttemberg",
 					"94" : "Bavaria",
@@ -1020,7 +1025,7 @@ def decode_country(code_1 = 3, code_2 = 17, code_3 = -1):
 	}
 
 
-
+	global locations
 	locations = {
 		"R1" : R1,
 		"R2" : R2,
@@ -1046,6 +1051,60 @@ def decode_country(code_1 = 3, code_2 = 17, code_3 = -1):
 	return string
 
 
+
+def encode_country(cstring = "Not Set"):
+	string = "3;17;-1"
+	code   = 200
+	i = 1
+	while i < 8:
+		code, string = search_country(str(i), cstring)
+		if code == 200:
+			break
+		i +=1
+
+	return code, string
+
+
+
+def search_country(cdict = "3", cstring = "Not Set"):
+	ccolon = False
+	if ":" in cstring:
+		cstring_bits = cstring.split(":")
+		ccolon = True
+
+	c        = 0
+	l        = "3;17;-1"
+
+	if ccolon:
+		key_list = list(locations[str("R"+cdict)]["data"][str(cdict)].keys())
+		val_list = list(locations[str("R"+cdict)]["data"][str(cdict)].values())
+		try:
+			p = val_list.index(str(cstring_bits[1]))
+			c = 200
+			l = str(cdict) + ";" + str(int(key_list[p]))
+			key_list2 = list(locations[str("R"+cdict)]["data"][str(cdict)][str(int(key_list[p]))].keys())
+			val_list2 = list(locations[str("R"+cdict)]["data"][str(cdict)][str(int(key_list[p]))].values())
+			try:
+				p = val_list2.index(str(cstring_bits[0]))
+				c = 200
+				l = l + ";" + str(int(key_list2[p]))
+			except NameError:
+				c = 502
+			except ValueError:
+				c = 404
+			except:
+				c = 604
+		except NameError:
+			c = 501
+		except ValueError:
+			c = 404
+		except:
+			c = 604
+	else:
+		c = 700
+		l = "3;17;-1"
+
+	return int(c), str(l)
 
 if __name__ == "__main__":
 	main()
