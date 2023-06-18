@@ -63,6 +63,25 @@ def is_online():
 			else:
 				return True
 
+def is_valid(checkurl):
+	args = socket.getaddrinfo(ip, 80, socket.AF_INET, socket.SOCK_STREAM)
+	for family, socktype, proto, canonname, sockaddr in args:
+		s = socket.socket(family, socktype, proto)
+		try:
+			s.connect(sockaddr)
+		except socket.error:
+			return False
+		except NameError:
+			return False
+		except:
+			return False
+		else:
+			s.close()
+			r = requests.get(checkurl, headers=headers)
+			if r.status_code == 404:
+				return False
+			else:
+				return True
 
 def get_total(thing = "fav"):
 	t = 0
@@ -120,7 +139,7 @@ def info_get(chid = "1"):
 		chgenre   = station_genres[int(chid)]
 
 		country_bit = chcountry.split(",")
-		print(country_bit[0] + ":" + country_bit[1] + ":" + country_bit[2])
+		#print(country_bit[0] + ";" + country_bit[1] + ";" + country_bit[2])
 		country_str = decode_country(int(country_bit[0]), int(country_bit[1]), int(country_bit[2]))
 
 		genre_bit = chgenre.split(",")
@@ -197,7 +216,7 @@ def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp
 			code = 200
 			station = str(chname)
 		else:
-			code = 201
+			code = 500
 			station = "None"
 
 		return code, station
@@ -226,9 +245,26 @@ def add_import(filename = "./import.pls", encode = False):
 				chcountry	= "3;17;-1"
 				chgenre		= "2;14"
 
-				print("[+] " + str(s) + " of " + str(int((t/3))) + " ...")
+
+				#if is_valid(churl):
+				#	code, station = add(chname, churl, chcountry, chgenre, False)
+				#else:
+				#	code 		= 404
+				#	station 	= name_placeholder
+				#	chname		= name_placeholder
+				#	churl 		= url_placeholder
+				#	print(str(code) + ":" + str(churl_code))
+
 				code, station = add(chname, churl, chcountry, chgenre, False)
-				added += str(str(code) + "," + str(station) + "," + str(churl) + "\n")
+
+				if code == 200:
+					added += str(str(code) + "," + str(station) + "," + str(churl) + "\n")
+					print("[+] " + str(s) + " of " + str(int((t/3))) + " ... [C-" + str(code) + ":" + str(chname) + ":" + str(churl) + "]")
+				elif code == 404:
+					print("[!] " + str(s) + " of " + str(int((t/3))) + " ... [C-" + str(code) + ":" + str(chname) + " Cannot be contacted, double check the url or your internet connection]")
+				else:
+					print("[!] " + str(s) + " of " + str(int((t/3))) + " ... [C-" + str(code) + ":" + str(chname) + "]")
+					added += str(str(code) + "," + str(station) + "," + str(churl) + "\n")
 			c+=1
 	elif ".json" in filename:
 		# Get genres and locations into global scope
@@ -249,17 +285,15 @@ def add_import(filename = "./import.pls", encode = False):
 			chcountry       = str(i['country'])
 			chgenre         = str(i['genre'])
 
-			# TODO encode country when importing from json eg "Hamburg:Germany"
-			code, chgenre   = encode_genre(str(i['genre']))
-			code, chcountry = encode_country(str(i['country']))
-			print("[+] " + str(s) + " of " + str(int(t)) + " ...")
+			gcode, chgenre   = encode_genre(str(i['genre']))
+			ccode, chcountry = encode_country(str(i['country']))
+			print("[+] " + str(s) + " of " + str(int(t)) + " ... [G-" + str(gcode) + ":C-" + str(ccode) + ":" + str(chname) + "]")
 
-			#code, station = add(chname, churl, chcountry, chgenre, False)
+			code, station = add(chname, churl, chcountry, chgenre, False)
 			added += str(str(code) + "," + str(chname) + "," + str(churl) + "," + str(chgenre) + "," + str(chcountry) + "\n")
 
 			c+=1
 	else:
-		#lines = open(filename).readlines()
 		added = "None"
 
 	return added
@@ -287,7 +321,7 @@ def add_current():
 	if t > c:
 		code 	= 200
 	else:
-		code 	= 201
+		code 	= 500
 
 	return code, station
 
@@ -312,7 +346,7 @@ def del_current():
 	if t < c:
 		code    = 200
 	else:
-		code    = 201
+		code    = 500
 
 	return code, station
 
@@ -1053,9 +1087,10 @@ def decode_country(code_1 = 3, code_2 = 17, code_3 = -1):
 
 
 def encode_country(cstring = "Not Set"):
-	string = "3;17;-1"
+	string = "1;2;-1"
 	code   = 200
 	i = 1
+
 	while i < 8:
 		code, string = search_country(str(i), cstring)
 		if code == 200:
@@ -1073,7 +1108,7 @@ def search_country(cdict = "3", cstring = "Not Set"):
 		ccolon = True
 
 	c        = 0
-	l        = "3;17;-1"
+	l        = "1;2;-1"
 
 	if ccolon:
 		key_list = list(locations[str("R"+cdict)]["data"][str(cdict)].keys())
@@ -1101,8 +1136,18 @@ def search_country(cdict = "3", cstring = "Not Set"):
 		except:
 			c = 604
 	else:
-		c = 700
-		l = "3;17;-1"
+		key_list = list(locations[str("R"+cdict)]["data"][str(cdict)].keys())
+		val_list = list(locations[str("R"+cdict)]["data"][str(cdict)].values())
+		try:
+			p = val_list.index(str(cstring))
+			c = 200
+			l = str(cdict) + ";" + str(int(key_list[p])) + ";-1"
+		except NameError:
+			c = 501
+		except ValueError:
+			c = 404
+		except:
+			c = 604
 
 	return int(c), str(l)
 

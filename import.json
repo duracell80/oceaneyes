@@ -25,12 +25,12 @@
       "channel": "4",
       "name": "Fox News Radio - 1 (iHeart)",
       "url": "https://streaming.radio.co/s5c5da6a36/listen",
-      "country": "Not Set",
+      "country": "United States",
       "genre": "Not Set"
     },
     {
       "channel": "49",
-      "name": "90's Super Hits'",
+      "name": "90's Super Hits",
       "url": "http://103.16.47.70:7444/;stream?type=http&nocache=10",
       "country": "United Kingdom",
       "genre": "Adult Contemporary"

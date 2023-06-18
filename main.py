@@ -22,7 +22,7 @@ def main():
 
 		#print(oe.info_get("1"))
 		#print(oe.info_get("18"))
-		#print(oe.info_get("32"))
+		#print(oe.info_get("47"))
 
 		fav_remaining 	= oe.get_remaining("fav")
 		fav_total	= oe.get_total("fav")
