@@ -33,12 +33,13 @@ def main():
 		#print(oe.get_list("plain"))
 		#print(oe.get_list("json"))
 		#print(oe.get_list("csv"))
+		#print(oe.get_list("ssv"))
 		#print(oe.get_list("m3u"))
 		#print(oe.get_list("pls"))
 
 		#print(oe.move("2", "1"))
 
-		#oe.decode_country("0,3,17,-1")
+		#print(oe.decode_country("3", "17", "-1"))
 		#print(oe.decode_genre("-1", "1", "6"))
 
 
@@ -46,12 +47,15 @@ def main():
 		#print(chid + "," + chname + "," + churl + "," + chcountry + "," + chgenre)
 
 		# Add stations from a pls file
-		#added = oe.add_import("./import.pls", False)
+		# Filepath+name, Encode Title <True|False>, Preview with VLC <True|False>
+		#added = oe.add_import("./import.pls", False, True)
 		#print("\n" + added)
 
 		# Add stations from a json file
-		#added = oe.add_import("./import.json", False)
+		# Filepath+name, Encode Title <True|False>, Preview with VLC <True|False>
+		#added = oe.add_import("./import.json", False, True)
 		#print("\n" + added)
+
 
 
 		# Add a new station not on skytune

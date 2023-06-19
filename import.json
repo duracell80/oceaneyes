@@ -2,17 +2,17 @@
   "stations": [
     {
       "channel": "1",
-      "name": "Deutschlandfunk",
-      "url": "http://d131.rndfnk.com/ard/dlf/01/mp3/128/stream.mp3",
-      "country": "Hubei:China",
-      "genre": "New Age Music"
+      "name": "SomaFM - Groove Salad",
+      "url": "http://ice1.somafm.com/groovesalad-256-mp3",
+      "country": "California:United States",
+      "genre": "EDM, Club, Trance, House & Techno"
     },
     {
       "channel": "2",
-      "name": "Radio Mirchi",
-      "url": "http://peridot.streamguys.com:7150/Mirchi",
-      "country": "New York:United States",
-      "genre": "Jazz"
+      "name": "SomaFM - Groove Salad Classic",
+      "url": "https://ice6.somafm.com/gsclassic-128-mp3",
+      "country": "California:United States",
+      "genre": "Chill-out & Lounge"
     },
     {
       "channel": "3",
@@ -23,17 +23,17 @@
     },
     {
       "channel": "4",
-      "name": "Fox News Radio - 1 (iHeart)",
-      "url": "https://streaming.radio.co/s5c5da6a36/listen",
-      "country": "United States",
-      "genre": "Not Set"
+      "name": "SomaFM - 7 Inch Soul",
+      "url": "http://ice3.somafm.com/7soul-128-mp3",
+      "country": "Michigan:United States",
+      "genre": "70s, 80s, 90s & Classic Hits"
     },
     {
-      "channel": "49",
-      "name": "90's Super Hits",
-      "url": "http://103.16.47.70:7444/;stream?type=http&nocache=10",
+      "channel": "5",
+      "name": "Classic FM - UK",
+      "url": "http://ice-the.musicradio.com/ClassicFMMP3",
       "country": "United Kingdom",
-      "genre": "Adult Contemporary"
+      "genre": "Classical, Opera & Culture"
     }
   ]
 }

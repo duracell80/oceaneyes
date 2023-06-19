@@ -63,26 +63,34 @@ def is_online():
 			else:
 				return True
 
-def is_streamable(churl = "https://streaming.radio.co/s5c5da6a36/listen"):
+def is_streamable(churl = "https://streaming.radio.co/s5c5da6a36/listen", chpreview = False):
 	if "fm://" in churl or "dab://" in churl:
 		return True
 	else:
-		vlc_ins = vlc.Instance('--input-repeat=-1', '-q')
-		vlc_pla = vlc_ins.media_player_new()
-		vlc_med = vlc_ins.media_new(str(churl))
+		try:
+			import vlc
 
-		vlc_pla.set_media(vlc_med); vlc_pla.play()
-		vlc_pla.audio_set_mute(True); time.sleep(10)
+			vlc_ins = vlc.Instance('--input-repeat=-1', '-q')
+			vlc_pla = vlc_ins.media_player_new()
+			vlc_med = vlc_ins.media_new(str(churl))
 
-		did_play = str(vlc_pla.is_playing()); time.sleep(1); vlc_pla.stop()
+			vlc_pla.set_media(vlc_med); vlc_pla.play()
+			if chpreview == False:
+				vlc_pla.audio_set_mute(True); time.sleep(5)
+			time.sleep(10)
+
+			did_play = str(vlc_pla.is_playing()); time.sleep(1); vlc_pla.stop()
 
 
-		result = False
-		if str(vlc_pla.get_state()) == "State.Stopped":
-			if did_play == "1":
-				result = True
-			else:
-			vlc_pla.stop()
+			result = False
+			if str(vlc_pla.get_state()) == "State.Stopped":
+				if did_play == "1":
+					result = True
+				else:
+					vlc_pla.stop()
+
+		except ModuleNotFoundError:
+			return True
 
 	return result
 
@@ -114,9 +122,9 @@ def status():
 		d = json.loads(str(r.text).replace("'", '"'))
 
 		if d["result"] == "success":
-			status = "IP Playing: " + d["name"]
+			status = "IPRadio Playing: " + d["name"]
 		else:
-			status = "IP Stopped"
+			status = "IPRadio Stopped"
 	except Exception as e:
 		status = "Unknown"
 
@@ -132,7 +140,7 @@ def info_get(chid = "1"):
 		chname = str(name_placeholder)
 		churl  = str(url_placeholder)
 		chcountry = "United Kingdom"
-		chgenre = "Nature Sounds and Spa Music"
+		chgenre = "Nature Sounds & Spa Music"
 	else:
 		station_ids, station_names, station_urls, station_countries, station_genres = list_get()
 
@@ -143,11 +151,10 @@ def info_get(chid = "1"):
 		chgenre   = station_genres[int(chid)]
 
 		country_bit = chcountry.split(",")
-		#print(country_bit[0] + ";" + country_bit[1] + ";" + country_bit[2])
 		country_str = decode_country(int(country_bit[0]), int(country_bit[1]), int(country_bit[2]))
 
 		genre_bit = chgenre.split(",")
-		genre_str = decode_genre(int(genre_bit[0]), int(genre_bit[1]))
+		genre_str = decode_genre(int(genre_bit[0]), int(genre_bit[1])).replace("and", "&")
 
 	return chid, chname, churl, country_str, genre_str
 
@@ -227,7 +234,7 @@ def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp
 
 
 
-def add_import(filename = "./import.pls", encode = False):
+def add_import(filename = "./import.pls", encode = False, chpreview = False):
 	c=0
 	s=0
 	added = ""
@@ -248,26 +255,25 @@ def add_import(filename = "./import.pls", encode = False):
 					chname          = str(lines[c+1][1]).replace("\n", "")
 				chcountry	= "3;17;-1"
 				chgenre		= "2;14"
+				chplays		= False
 
-
-				#if is_streamable(churl):
-				#	code, station = add(chname, churl, chcountry, chgenre, False)
-				#else:
-				#	code 		= 404
-				#	station 	= name_placeholder
-				#	chname		= name_placeholder
-				#	churl 		= url_placeholder
-				#	print(str(code) + ":" + str(churl_code))
-
-				code, station = add(chname, churl, chcountry, chgenre, False)
-
-				if code == 200:
-					added += str(str(code) + "," + str(station) + "," + str(churl) + "\n")
-					print("[+] " + str(s) + " of " + str(int((t/3))) + " ... [C-" + str(code) + ":" + str(chname) + ":" + str(churl) + "]")
-				elif code == 404:
-					print("[!] " + str(s) + " of " + str(int((t/3))) + " ... [C-" + str(code) + ":" + str(chname) + " Cannot be contacted, double check the url or your internet connection]")
+				if is_streamable(churl, chpreview):
+					chplays		= True
+					code, station 	= add(chname, churl, chcountry, chgenre, False)
 				else:
-					print("[!] " + str(s) + " of " + str(int((t/3))) + " ... [C-" + str(code) + ":" + str(chname) + "]")
+					code 		= 404
+					station 	= chname
+					churl 		= url_placeholder
+					chplays		= False
+
+
+				if code == 200 and chplays:
+					added += str(str(code) + "," + str(station) + "," + str(churl) + "\n")
+					print("[+] " + str(s) + " of " + str(int((t/3))) + " ... [C-" + str(code) + ":P-" + str(chplays) + ":" + str(chname) + ":" + str(churl) + "]")
+				elif code == 404 or chplays == False:
+					print("[!] " + str(s) + " of " + str(int((t/3))) + " ... [C-" + str(code) + ":P-" + str(chplays) + ":" + str(chname) + " Cannot be contacted, double check the url or your internet connection]")
+				else:
+					print("[!] " + str(s) + " of " + str(int((t/3))) + " ... [C-" + str(code) + ":P-" + str(chplays) + ":" + str(chname) + "]")
 					added += str(str(code) + "," + str(station) + "," + str(churl) + "\n")
 			c+=1
 	elif ".json" in filename:
@@ -291,10 +297,26 @@ def add_import(filename = "./import.pls", encode = False):
 
 			gcode, chgenre   = encode_genre(str(i['genre']))
 			ccode, chcountry = encode_country(str(i['country']))
-			print("[+] " + str(s) + " of " + str(int(t)) + " ... [G-" + str(gcode) + ":C-" + str(ccode) + ":" + str(chname) + "]")
 
-			code, station = add(chname, churl, chcountry, chgenre, False)
-			added += str(str(code) + "," + str(chname) + "," + str(churl) + "," + str(chgenre) + "," + str(chcountry) + "\n")
+			chplays         = False
+
+			if is_streamable(churl, chpreview):
+				chplays         = True
+				code, station   = add(chname, churl, chcountry, chgenre, False)
+			else:
+				code            = 404
+				station         = chname
+				churl           = url_placeholder
+				chplays         = False
+
+			if code == 200 and chplays:
+				added += str(str(code) + "," + str(station) + "," + str(churl) + "\n")
+				print("[+] " + str(s) + " of " + str(int((t))) + " ... [C-" + str(ccode) + ":G-" + str(gcode) + ":L-" + str(ccode) + ":P-" + str(chplays) + ":" + str(chname) + ":" + str(churl) + "]")
+			elif code == 404 or chplays == False:
+				print("[!] " + str(s) + " of " + str(int((t))) + " ... [C-" + str(ccode) + ":G-" + str(gcode) + ":L-" + str(ccode) + ":P-" + str(chplays) + ":" + str(chname) + " Cannot be contacted, double check the url or your internet connection]")
+			else:
+				print("[!] " + str(s) + " of " + str(int((t))) + " ... [C-" + str(ccode) + ":G-" + str(gcode) + ":L-" + str(ccode) + ":P-" + str(chplays) + ":" + str(chname) + "]")
+				added += str(str(code) + "," + str(station) + "," + str(churl) + "," + str(chgenre) + "," + str(chcountry) + "\n")
 
 			c+=1
 	else:
@@ -519,23 +541,21 @@ def get_list(format = "plain"):
 			genre_bit = genre[n].split(",")
 			genre_str = decode_genre(code_1 = int(genre_bit[0]), code_2 = int(genre_bit[1]))
 
+			country_bits  = country[n].split(",")
+			#print(country_bits[0] + ":" + country_bits[1] + ":" + country_bits[2]  + " - " + str(name[n]))
+
 			if format == "plain":
-				list += str(int(n)+1) + ":" + name[n] + " [url=" + url[n] + "] [genre=" + str(genre_str)  + "]\n"
+				list += str(int(n)+1) + ":" + name[n] + " [url=" + url[n] + "] [genre=" + str(genre_str)  + "] [country=" + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + "\n"
 			elif format == "csv":
-				csv += str(int(n)+1) + "," + name[n] + "," + url[n] + "," + str(genre_str) + "\n"
+				csv += str(int(n)+1) + "," + name[n] + "," + url[n] + "," + str(genre_str).replace(",", ";") + "," + str(decode_country(country_bits[0], country_bits[1], country_bits[2])).replace(",", ";") +  "\n"
 			elif format == "ssv":
-                                ssv += str(int(n)+1) + ";" + name[n] + ";" + url[n] + ";" + str(genre_str) + "\n"
+                                ssv += str(int(n)+1) + ";" + name[n] + ";" + url[n] + ";" + str(genre_str) + ";" + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + "\n"
 			elif format == "pls":
                                 pls += '\nFile' + str(int(n)+1)  + '=' + str(url[n]) + '\nTitle' + str(int(n)+1)  + '=' + str(name[n]) + '\nLength' + str(int(n+1)) + '=-1'
 			elif format == "m3u":
                                 m3u += '\n#EXTINF:-1, ' + str(name[n]) + ' \n'+ str(url[n])
 			elif format == "json":
-				#["Radio SoBro","https://streamer.radio.co/s951fc6edc/listen",0,[[1,1,75],[2,24]]]
-				#["Station name", "Station URL",int,[[Country Code],[Genre Code]]]
-				country_bits  = country[n].split(",")
-				print(country_bits[0] + ":" + country_bits[1] + ":" + country_bits[2]  + " - " + str(name[n]))
-
-				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '","country":"' + str(decode_country(country_bits[0], country_bits[1], country_bits[2]))  + '","genre":"' + str(genre_str) + '"}'
+				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '","country":"' + str(decode_country(country_bits[0], country_bits[1], country_bits[2]))  + '","genre":"' + str(genre_str).replace("and", "&") + '"}'
 				if int(int(n)+1) != int(len(name)):
 					jsn += ','
 			else:
@@ -607,9 +627,9 @@ def decode_genre(code_1 = 1, code_2 = 66):
 			"genre" : "Music",
 			"2": {
 				"88" : "00s and 10s",
-				"89" : "20s 30s 40s and Earlier",
-				"1"  : "50s 60s and Oldies",
-				"13" : "70s 80s 90s and Classic Hits",
+				"89" : "20s, 30s, 40s and Earlier",
+				"1"  : "50s, 60s, and Oldies",
+				"13" : "70s, 80s, 90s and Classic Hits",
 				"65" : "AC - Hot",
 				"28" : "AC - Soft AC",
 				"75" : "Acoustic and Instrumental",
@@ -633,10 +653,10 @@ def decode_genre(code_1 = 1, code_2 = 66):
 				"40" : "Drama",
 				"87" : "Drum and Bass",
 				"85" : "Easy Listening and Relaxation",
-				"20" : "EDM, Club, Trance, House & Techno",
+				"20" : "EDM, Club, Trance, House and Techno",
 				"53" : "European Music",
 				"35" : "Folk Music",
-				"33" : "Guitar & Piano",
+				"33" : "Guitar and Piano",
 				"27" : "HipHop, RnB, Rap and Urban",
 				"55" : "Holiday and Seasonal",
 				"60" : "Islamic",
@@ -693,7 +713,8 @@ def decode_genre(code_1 = 1, code_2 = 66):
 
 def encode_genre(gstring = "Various"):
 	c 	 = 0
-	g	= "1;66"
+	g	 = "1;66"
+	gstring  = gstring.replace("&", "and").replace("&amp;", "and")
 	key_list = list(genres["G2"]["data"]["2"].keys())
 	val_list = list(genres["G2"]["data"]["2"].values())
 
