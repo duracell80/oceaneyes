@@ -63,25 +63,29 @@ def is_online():
 			else:
 				return True
 
-def is_valid(checkurl):
-	args = socket.getaddrinfo(ip, 80, socket.AF_INET, socket.SOCK_STREAM)
-	for family, socktype, proto, canonname, sockaddr in args:
-		s = socket.socket(family, socktype, proto)
-		try:
-			s.connect(sockaddr)
-		except socket.error:
-			return False
-		except NameError:
-			return False
-		except:
-			return False
-		else:
-			s.close()
-			r = requests.get(checkurl, headers=headers)
-			if r.status_code == 404:
-				return False
+def is_streamable(churl = "https://streaming.radio.co/s5c5da6a36/listen"):
+	if "fm://" in churl or "dab://" in churl:
+		return True
+	else:
+		vlc_ins = vlc.Instance('--input-repeat=-1', '-q')
+		vlc_pla = vlc_ins.media_player_new()
+		vlc_med = vlc_ins.media_new(str(churl))
+
+		vlc_pla.set_media(vlc_med); vlc_pla.play()
+		vlc_pla.audio_set_mute(True); time.sleep(10)
+
+		did_play = str(vlc_pla.is_playing()); time.sleep(1); vlc_pla.stop()
+
+
+		result = False
+		if str(vlc_pla.get_state()) == "State.Stopped":
+			if did_play == "1":
+				result = True
 			else:
-				return True
+			vlc_pla.stop()
+
+	return result
+
 
 def get_total(thing = "fav"):
 	t = 0
@@ -246,7 +250,7 @@ def add_import(filename = "./import.pls", encode = False):
 				chgenre		= "2;14"
 
 
-				#if is_valid(churl):
+				#if is_streamable(churl):
 				#	code, station = add(chname, churl, chcountry, chgenre, False)
 				#else:
 				#	code 		= 404
