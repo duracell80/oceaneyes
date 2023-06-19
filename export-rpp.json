@@ -1,0 +1,208 @@
+{
+    "layout1": {
+        "type": "layout",
+        "height": 600,
+        "width": 800,
+        "pages": [
+            "search-page",
+            "my-stations-page",
+            "preferences-page"
+        ],
+        "search-page": {
+            "type": "page",
+            "title": "Find Station",
+            "sections": [
+                "find-station-section"
+            ]
+        },
+        "my-stations-page": {
+            "type": "page",
+            "title": "My Stations",
+            "sections": [
+                "station-list-section"
+            ]
+        },
+        "preferences-page": {
+            "type": "page",
+            "title": "Preferences",
+            "sections": [
+                "appearance-section",
+                "volume-section",
+                "youtube-section"
+            ]
+        },
+        "station-list-section": {
+            "type": "section",
+            "title": "List of stations",
+            "keys": [
+                "tree"
+            ]
+        },
+        "find-station-section": {
+            "type": "section",
+            "title": "Search Radio station",
+            "keys": [
+                "radio-search-widget"
+            ]
+        },
+        "appearance-section": {
+            "type": "section",
+            "title": "Appearance",
+            "keys": [
+                "icon-type",
+                "color-on",
+                "color-paused",
+                "channel-on-panel"
+            ]
+        },
+        "volume-section": {
+            "type": "section",
+            "title": "Volume",
+            "keys": [
+                "keep-volume-between-sessions",
+                "initial-volume"
+            ]
+        },
+        "youtube-section": {
+            "type": "section",
+            "title": "YouTube Download",
+            "keys": [
+                "youtube-download-cli",
+                "music-download-dir-select"
+            ]
+        }
+    },
+    "tree": {
+        "type": "list",
+        "height": 400,
+        "columns": [
+            {
+                "id": "inc",
+                "title": "Show in list",
+                "type": "boolean",
+                "default": true
+            },
+            {
+                "id": "name",
+                "title": "Title",
+                "type": "string"
+            },
+            {
+                "id": "url",
+                "title": "URL",
+                "type": "string"
+            }
+        ],
+        "default": [
+            {
+                "name": "Smooth Chill",
+                "url": "https://media-ssl.musicradio.com/ChillMP3",
+                "inc": false
+            },
+            {
+                "name": "Austrian Rock Radio",
+                "url": "http://live.antenne.at/arr",
+                "inc": false
+            },
+            {
+                "name": "R\u00e1dio KIKS Rock",
+                "url": "https://stream.radiokiks.sk/kiks_rock.mp3",
+                "inc": false
+            },
+            {
+                "name": "Radio BOB",
+                "url": "http://live6.infonetmedia.si/Europa05",
+                "inc": false
+            },
+            {
+                "name": "Deep House Radio",
+                "url": "http://62.210.105.16:7000/stream",
+                "inc": false
+            }
+        ],
+        "stations": [{"name":"toreplace"}]
+    },
+    "icon-type": {
+        "type": "combobox",
+        "description": "Icon type",
+        "default": "SYMBOLIC",
+        "options": {
+            "Symbolic": "SYMBOLIC",
+            "Full Color": "FULLCOLOR",
+            "Bicolor": "BICOLOR"
+        },
+        "value": "SYMBOLIC"
+    },
+    "color-on": {
+        "type": "colorchooser",
+        "default": "#27ae60",
+        "dependency": "icon-type=SYMBOLIC",
+        "description": "Color of symbolic icon when playing a radio station",
+        "value": "rgb(61,56,70)"
+    },
+    "color-paused": {
+        "type": "colorchooser",
+        "default": "#9fe1e7",
+        "dependency": "icon-type=SYMBOLIC",
+        "description": "Color of symbolic icon while a radio station is paused",
+        "value": "rgb(36,31,49)"
+    },
+    "channel-on-panel": {
+        "type": "checkbox",
+        "description": "Show current radio station on the panel",
+        "default": false,
+        "value": false
+    },
+    "keep-volume-between-sessions": {
+        "type": "checkbox",
+        "description": "Remember volume after stopping the radio",
+        "default": true,
+        "value": true
+    },
+    "initial-volume": {
+        "type": "spinbutton",
+        "default": 50,
+        "min": 5,
+        "max": 100,
+        "step": 5,
+        "description": "Initial volume",
+        "tooltip": "The initial volume is applied when clicking on a radio stream and no other radio stream is already running",
+        "dependency": "keep-volume-between-sessions!=true",
+        "value": 50
+    },
+    "last-volume": {
+        "type": "generic",
+        "value": 80,
+        "default": 80
+    },
+    "last-url": {
+        "type": "generic",
+        "value": null,
+        "default": null
+    },
+    "youtube-download-cli": {
+        "type": "combobox",
+        "description": "YouTube Download CLI tool",
+        "tooltip": "The CLI tool used to download songs from YouTube",
+        "default": "youtube-dl",
+        "options": {
+            "yt-dlp": "yt-dlp",
+            "youtube-dl": "youtube-dl"
+        },
+        "value": "youtube-dl"
+    },
+    "music-download-dir-select": {
+        "type": "filechooser",
+        "description": "Download directory",
+        "tooltip": "Songs downloaded from YouTube will be saved to this directory.",
+        "default": "~/Music/Radio",
+        "select-dir": true,
+        "value": "~/Music/Radio"
+    },
+    "radio-search-widget": {
+        "type": "custom",
+        "file": "RadioSearchWidget.py",
+        "widget": "RadioSearchWidget"
+    },
+    "__md5__": "94e261f9232aabd625a91e1ce85e02bf"
+}

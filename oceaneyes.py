@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys, time, socket, requests, urllib.parse, json
+import sys, os, time, socket, requests, urllib.parse, json
 
 
 global headers, url_placeholder, name_placeholder
@@ -567,6 +567,8 @@ def get_list(format = "plain"):
 	jsn	= ""
 	jsn_1	= '{"stations":['
 	jsn_2	= ']}'
+	jsn_3   = '"value":['
+	jsn_4   = ']'
 	csv	= "" # comma
 	ssv	= "" # semicolon
 
@@ -589,7 +591,11 @@ def get_list(format = "plain"):
 			elif format == "m3u":
                                 m3u += '\n#EXTINF:-1, ' + str(name[n]) + ' \n'+ str(url[n])
 			elif format == "json":
-				jsn += '{"channel":"' + str(int(n)+1)  + '","name":"' + str(name[n])  + '","url":"' + str(url[n]) + '","country":"' + str(decode_country(country_bits[0], country_bits[1], country_bits[2]))  + '","genre":"' + str(genre_str).replace("and", "&") + '"}'
+				jsn += '{"channel":"' + str(int(n)+1) + '","name":"' + str(name[n]) + '","url":"' + str(url[n]) + '","country":"' + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + '","genre":"' + str(genre_str).replace("and", "&") + '"}'
+				if int(int(n)+1) != int(len(name)):
+					jsn += ','
+			elif format == "json-rpp":
+				jsn += '\n\t{\n\t"inc": true,\n\t"name":"' + str(name[n]) + '",\n\t"url":"' + str(url[n]) + '"\n\t}'
 				if int(int(n)+1) != int(len(name)):
 					jsn += ','
 			else:
@@ -609,6 +615,30 @@ def get_list(format = "plain"):
 		list = m3u
 	elif format == "json":
 		list = str(jsn_1) + str(jsn) + str(jsn_2)
+	elif format == "json-rpp":
+		# Linux Mint - Radio++ Applet
+		list = str(jsn_3) + str(jsn) + str(jsn_4)
+
+		file_rpp  = "./export-rpp.json"
+		file_out1 = str(os.path.expanduser('~') + "/Radio/rpp-conf.json")
+		file_out2 = str(os.path.expanduser('~') + "/.config/cinnamon/spices/radio@driglu4it/radio@driglu4it.json")
+		os.system("mkdir -p " + str(os.path.expanduser('~') + "/Radio"))
+		os.system("cp " + str(os.path.expanduser('~') + "/.config/cinnamon/spices/radio@driglu4it/radio@driglu4it.json " + str(os.path.expanduser('~') + "/Radio/rpp-conf_") + str(int(time.time())) + ".json"))
+
+		with open(file_rpp) as i:
+			nt=i.read().replace('"stations": [{"name":"toreplace"}]', str(list))
+
+		with open(file_out1, "w") as o:
+    			o.write(nt)
+
+		with open(file_out2, "w") as j:
+			j.write(nt)
+
+		i.close()
+		o.close()
+		j.close()
+
+		return "[i] Exported stations from your Ocean Digital radio to your ~/Radio directory and imported these stations into Radio++ for you!"
 	else:
 		list = "Birdsong," + str(url_placeholder)
 

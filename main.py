@@ -10,6 +10,12 @@ def main():
 
 		print(oe.status())
 
+		fav_remaining  = oe.get_remaining("fav")
+		fav_total      = oe.get_total("fav")
+
+		print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
+
+
 		#oe.volume("down")
 		#oe.volume("up")
 		#oe.volume("mute")
@@ -24,14 +30,10 @@ def main():
 		#print(oe.info_get("18"))
 		#print(oe.info_get("47"))
 
-		fav_remaining 	= oe.get_remaining("fav")
-		fav_total	= oe.get_total("fav")
-
-		print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
-
 
 		#print(oe.get_list("plain"))
 		#print(oe.get_list("json"))
+		#print(oe.get_list("json-rpp"))
 		#print(oe.get_list("csv"))
 		#print(oe.get_list("ssv"))
 		#print(oe.get_list("m3u"))
