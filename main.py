@@ -15,8 +15,8 @@ def main():
 		#oe.volume("mute")
 		#oe.volume("unmute")
 
-		#oe.play(<fav id (int)>)
 		#oe.play("1")
+		#oe.listen("45")
 		#oe.delete("54")
 		#oe.edit("53", "Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", "0")
 
@@ -46,15 +46,15 @@ def main():
 		#chid, chname, churl, chcountry, chgenre = oe.info_get("1")
 		#print(chid + "," + chname + "," + churl + "," + chcountry + "," + chgenre)
 
+
+
 		# Add stations from a pls file
 		# Filepath+name, Encode Title <True|False>, Preview with VLC <True|False>
 		#added = oe.add_import("./import.pls", False, True)
-		#print("\n" + added)
 
 		# Add stations from a json file
 		# Filepath+name, Encode Title <True|False>, Preview with VLC <True|False>
 		#added = oe.add_import("./import.json", False, True)
-		#print("\n" + added)
 
 
 

@@ -95,6 +95,40 @@ def is_streamable(churl = "https://streaming.radio.co/s5c5da6a36/listen", chprev
 	return result
 
 
+def listen(chid = "1", chduration = 21600):
+	if int(chid) > 99 or chduration > 21600:
+		return False
+	else:
+		try:
+			import vlc
+			chid, chname, churl, country_str, genre_str = info_get(str(int(chid)))
+
+			print("[i] Playing " + str(chname) + " locally ...")
+
+			vlc_ins = vlc.Instance('--input-repeat=-1', '-q')
+			vlc_pla = vlc_ins.media_player_new()
+			vlc_med = vlc_ins.media_new(str(churl))
+
+			vlc_pla.set_media(vlc_med); vlc_pla.play()
+			vlc_pla.audio_set_mute(False);
+			time.sleep(chduration)
+
+			did_play = str(vlc_pla.is_playing()); time.sleep(1); vlc_pla.stop()
+
+
+			result = False
+			if str(vlc_pla.get_state()) == "State.Stopped":
+				if did_play == "1":
+					result = True
+				else:
+					vlc_pla.stop()
+
+		except ModuleNotFoundError:
+			return False
+
+	return result
+
+
 def get_total(thing = "fav"):
 	t = 0
 	if thing == "fav":
