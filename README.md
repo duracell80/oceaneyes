@@ -44,7 +44,7 @@ $ chmod +x *.py
 $ ./main.py
 ```
 
-### API methods:
+### API methods (documentation update coming soon, still adding features):
 ```
 oe.play("<favourite index id>")
 
@@ -124,7 +124,8 @@ https://hackaday.io/project/183339-saving-a-reciva-box-from-the-landfill
 ### Radios that may use Skytune:
 - Most Ocean Digital's 
 - Ocean's (WR-50CD, WR-26F, WR-336F, WR-336N, WR-210N, WR-880N, WR-23D, WR-230SF)
-- Denver Electronics IR-140 Internet Radio
+- Denver Electronics IR-140
+- Denver Electronics IR-135B
 - Release WiFi Internet Radios
 - Renkforce RF-IR-MONOV2
 - Opticum Ton4 DAB+, Internet, FM Radio
