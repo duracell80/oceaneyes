@@ -15,8 +15,17 @@ def main():
 
 		print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
 
-		#print(oe.search("BBC Radio 2", "RadioBrowser", True))
+		# Exact match search of Community Radio Browser by station name
+		#code, result = oe.search("BBC Radio 4", "RadioBrowser", True)
+		#if code == 200:
+		#	i = 0
 
+		#	while i < len(result):
+		#		print(result[i]["chname"] + ","  + result[i]["churl"])
+		#		i+=1
+
+		# Use Community Radio Browser to replace a masked URL from skytune
+		#print(oe.enrich_url("BBC Radio 4"))
 
 		#oe.volume("down")
 		#oe.volume("up")
@@ -33,13 +42,13 @@ def main():
 		#print(oe.info_get("47"))
 
 
-		#print(oe.get_list("plain"))
-		#print(oe.get_list("json"))
-		#print(oe.get_list("json-rpp"))
-		#print(oe.get_list("csv"))
-		#print(oe.get_list("ssv"))
-		#print(oe.get_list("m3u"))
-		#print(oe.get_list("pls"))
+		#print(oe.get_list("plain", False))
+		#print(oe.get_list("json", True))
+		#print(oe.get_list("json-rpp", True))
+		#print(oe.get_list("csv", False))
+		#print(oe.get_list("ssv", False))
+		#print(oe.get_list("m3u", True))
+		#print(oe.get_list("pls", False))
 
 		#print(oe.move("2", "1"))
 

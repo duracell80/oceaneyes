@@ -1,2 +1,3 @@
 
-__pycache__/oceaneyes.cpython-310.pyc
+*.pyc
+*.swp

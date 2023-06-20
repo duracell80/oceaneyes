@@ -130,12 +130,14 @@ def listen(chid = "1", chduration = 21600):
 					vlc_pla.stop()
 
 		except ModuleNotFoundError:
+			os.system('pip install python-vlc')
 			return False
 
 	return result
 
 def search(keyword = "BBC Radio 1",  source = "radiobrowser", match_exact = True):
 	station_data    = []
+	code = 0
 
 	if str(source.lower()) == "radiobrowser":
 		try:
@@ -181,14 +183,46 @@ def search(keyword = "BBC Radio 1",  source = "radiobrowser", match_exact = True
 				l.append(station_data)
 
 				i+=1
+			if i > 1:
+				code = 200
+			else:
+				code = 404
 
 		except ModuleNotFoundError:
+			os.system('pip install pyradios')
 			station_data = {'chindex': 0, 'chname': 'not found', 'churl': 'not found', 'chcodec': 'MP3', 'chbitrate': '320', 'chhls': 0, 'chgenre': 'notfound', 'chcountry': 'not found', 'chlanguage': 'not found'}
+			l = []
 			l.append(station_data)
+			code = 500
 
-			return l
+			return code, l
 
-	return l
+	return code, l
+
+def enrich_url(chname = "BBC Radio 1"):
+	code, result = search(str(chname).lower(), "RadioBrowser", False)
+	chplays = False
+
+	if code == 200:
+		i = 0
+
+		# Return a list of URL's matching station name, attempt to play with vlc, return the first playable URL
+		while i < len(result):
+			print("[i] Atempting to enrich URL for " + str(chname))
+			if is_streamable(result[i]["churl"], False):
+				chplays = True
+				churl   = result[i]["churl"]
+
+				print("[i] Found a working URL!")
+				break
+				# found a playable url, break
+			else:
+				chplays = False
+			i+=1
+	if chplays:
+		return churl
+	else:
+		return url_placeholder
 
 
 def get_total(thing = "fav"):
@@ -616,7 +650,7 @@ def list_get():
 	return station_ids, station_names, station_urls, station_countries, station_genres
 
 
-def get_list(format = "plain"):
+def get_list(format = "plain", enrich = False):
 	id, name, url, country, genre = list_get()
 
 	n = 0
@@ -642,26 +676,34 @@ def get_list(format = "plain"):
 			country_bits  = country[n].split(",")
 			#print(country_bits[0] + ":" + country_bits[1] + ":" + country_bits[2]  + " - " + str(name[n]))
 
+			# Attempt to export unmasked Skytune stations using Community Radio Browser without querying Skytune
+			if str(url[n]).lower() == str(url_placeholder).lower() and enrich:
+				name_bits       = str(name[n]).split(" ")
+				search          = str(name_bits[0] + " " + name_bits[1] + " " + name_bits[2])
+				churl           = enrich_url(str(search.upper()))
+			else:
+				churl = str(url[n])
+
 			if format == "plain":
-				list += str(int(n)+1) + ":" + name[n] + " [url=" + url[n] + "] [genre=" + str(genre_str)  + "] [country=" + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + "\n"
+				list += str(int(n)+1) + ":" + name[n] + " [url=" + churl + "] [genre=" + str(genre_str)  + "] [country=" + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + "\n"
 			elif format == "csv":
-				csv += str(int(n)+1) + "," + name[n] + "," + url[n] + "," + str(genre_str).replace(",", ";") + "," + str(decode_country(country_bits[0], country_bits[1], country_bits[2])).replace(",", ";") +  "\n"
+				csv += str(int(n)+1) + "," + name[n] + "," + churl + "," + str(genre_str).replace(",", ";") + "," + str(decode_country(country_bits[0], country_bits[1], country_bits[2])).replace(",", ";") +  "\n"
 			elif format == "ssv":
-                                ssv += str(int(n)+1) + ";" + name[n] + ";" + url[n] + ";" + str(genre_str) + ";" + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + "\n"
+                                ssv += str(int(n)+1) + ";" + name[n] + ";" + churl + ";" + str(genre_str) + ";" + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + "\n"
 			elif format == "pls":
-                                pls += '\nFile' + str(int(n)+1)  + '=' + str(url[n]) + '\nTitle' + str(int(n)+1)  + '=' + str(name[n]) + '\nLength' + str(int(n+1)) + '=-1'
+                                pls += '\nFile' + str(int(n)+1)  + '=' + str(churl) + '\nTitle' + str(int(n)+1)  + '=' + str(name[n]) + '\nLength' + str(int(n+1)) + '=-1'
 			elif format == "m3u":
-                                m3u += '\n#EXTINF:-1, ' + str(name[n]) + ' \n'+ str(url[n])
+                                m3u += '\n#EXTINF:-1, ' + str(name[n]) + ' \n'+ str(churl)
 			elif format == "json":
-				jsn += '{"channel":"' + str(int(n)+1) + '","name":"' + str(name[n]) + '","url":"' + str(url[n]) + '","country":"' + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + '","genre":"' + str(genre_str).replace("and", "&") + '"}'
+				jsn += '{"channel":"' + str(int(n)+1) + '","name":"' + str(name[n]) + '","url":"' + str(churl) + '","country":"' + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + '","genre":"' + str(genre_str).replace("and", "&") + '"}'
 				if int(int(n)+1) != int(len(name)):
 					jsn += ','
 			elif format == "json-rpp":
-				jsn += '\n\t{\n\t"inc": true,\n\t"name":"' + str(name[n]) + '",\n\t"url":"' + str(url[n]) + '"\n\t}'
+				jsn += '\n\t{\n\t"inc": true,\n\t"name":"' + str(name[n]) + '",\n\t"url":"' + str(churl) + '"\n\t}'
 				if int(int(n)+1) != int(len(name)):
 					jsn += ','
 			else:
-				print("Error: Format not supplied (plain, pls, m3u, csv, ssv)")
+				print("Error: Format not supplied (plain, json, json-rpp, pls, m3u, csv, ssv)")
 			n+=1
 
 	if format == "plain":
