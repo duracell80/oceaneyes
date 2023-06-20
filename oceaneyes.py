@@ -46,6 +46,12 @@ def init(ipaddr = "192.168.1.100"):
 	}
 	return settings, stations
 
+def convert_l2d(lst):
+	# Converts a list to a dictionary
+	res_dct = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
+
+	return res_dct
+
 
 def is_online():
 	args = socket.getaddrinfo(ip, 80, socket.AF_INET, socket.SOCK_STREAM)
@@ -127,6 +133,62 @@ def listen(chid = "1", chduration = 21600):
 			return False
 
 	return result
+
+def search(keyword = "BBC Radio 1",  source = "radiobrowser", match_exact = True):
+	station_data    = []
+
+	if str(source.lower()) == "radiobrowser":
+		try:
+			from pyradios import RadioBrowser
+			source = RadioBrowser()
+			result = source.search(name=str(keyword), name_exact=match_exact)
+
+			i = 0; l = []
+			station_name	= "not set"
+			station_url	= "not set"
+			station_codec	= "not set"
+			station_bitrate = "not set"
+			station_genre	= "not set"
+			station_country = "not set"
+			station_language= "not set"
+
+			for item in result:
+				for key, value in item.items():
+					#print(key, '->', value)
+					if str(key).lower() == "hls":
+						station_hls = str(value)
+					if str(key).lower() == "codec":
+						station_codec = str(value)
+					if str(key).lower() == "bitrate":
+						station_bitrate = str(value)
+					if str(key).lower() == "name":
+						station_name = str(value)
+					if str(key).lower() == "url":
+						station_url  = str(value)
+					if str(key).lower() == "countrycode":
+						station_country = str(value)
+						if str(key).lower() == "state":
+	                                               	station_country = station_country + ";" + str(value)
+					if str(key).lower() == "language":
+						station_language = str(value)
+
+					if str(key).lower() == "tags":
+                                                station_genre = str(value)
+
+
+
+				station_data = {'chindex': int(i), 'chname': str(station_name), 'churl': str(station_url), 'chcodec': str(station_codec), 'chbitrate': str(station_bitrate), 'chhls': int(str(station_hls)), 'chgenre': str(station_genre), 'chcountry': str(station_country), 'chlanguage': str(station_language)}
+				l.append(station_data)
+
+				i+=1
+
+		except ModuleNotFoundError:
+			station_data = {'chindex': 0, 'chname': 'not found', 'churl': 'not found', 'chcodec': 'MP3', 'chbitrate': '320', 'chhls': 0, 'chgenre': 'notfound', 'chcountry': 'not found', 'chlanguage': 'not found'}
+			l.append(station_data)
+
+			return l
+
+	return l
 
 
 def get_total(thing = "fav"):

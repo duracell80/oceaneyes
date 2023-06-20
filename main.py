@@ -15,6 +15,8 @@ def main():
 
 		print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
 
+		#print(oe.search("BBC Radio 2", "RadioBrowser", True))
+
 
 		#oe.volume("down")
 		#oe.volume("up")
