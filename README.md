@@ -75,6 +75,7 @@ if code == 200:
 -- You would not believe your eyes if ten million fireflies lit up the world as I fell asleep
 
 ### Useful Resources
+- https://heyrick.eu/blog/index.php?diary=20230110
 - https://github.com/pfbrowning/od-radio-sync
 - https://www.radio-browser.info
 - https://www.skytune.net
