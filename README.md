@@ -40,39 +40,110 @@ oe.add_import("./import.pls", False)
 ### Run in terminal
 
 ```
+$ chmod +x *.sh
 $ chmod +x *.py
+$ ./install.sh
 $ ./main.py
 ```
 
-### API methods (documentation update coming soon, still adding features):
-```
-oe.play("<favourite index id>")
+### REST API (Work currently in progress)
+Running api.sh in the root directory of the repo will run a FastAPI server that uses the oe module to interact with the device via OceanEyes. 
 
-oe.status() - Returns the currently playing station name.
+- Run ./api.sh
+- Open a web browser
+- Type http://127.0.0.1:1929/docs for all the methods so far.
+
+```
+# Search for a station in the Community Radio Browser
+http://127.0.0.1:1929/v1/search/radiobrowser/bbc radio 4
+```
+
+
+
+
+### Python API methods (documentation update coming soon, still adding features):
+```
+import sys, time
+import oceaneyes as oe
+
+# Declare global data
+settings, stations = oe.init("192.168.2.20")
+ip = settings["ipaddress"]
+
+
+
+# Find out if the radio is online
+if oe.is_online():
+	print("Radio is online")
+
+# Show name of currently playing channel
+print(oe.status()) - Returns the currently playing station name.
+
+# Change volume of your radio
 oe.volume("up|down|mute|unmute")
 
-# Decode a country or genre code
-oe.decode_country("0,3,17,-1")
+# Get stats on favourite storage
+fav_remaining  = oe.get_remaining("fav")
+fav_total      = oe.get_total("fav")
+print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
 
-# Delete a preset by index
-oe.delete("47")
 
-# Add a new station not on skytune
-code, station = oe.add("Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", False)
+# Play a channel on your radio
+oe.play("1")
+
+# Play a channel on your computer instead (install vlc)
+oe.listen("1")
+
+# Delete a channel
+oe.delete("1")
+
+# Edit a channel
+oe.edit("1", "Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", "0")
+
+# Move a channel from one favourite placement to another
+print(oe.move("2", "1"))
+
+
+# Decode country and genre codes
+print(oe.decode_country("3", "17", "-1"))
+print(oe.decode_genre("-1", "1", "6"))
+
+# Encode plain text to a country or genre code
+print(encode_country("United Kingdom"))
+print(encode_genre("Pop"))
+
+# Get info on a channel
+print(oe.info_get("1"))
+
+
+
+# Exact match search of Community Radio Browser by station name
+code, result = oe.search("BBC Radio 4", "RadioBrowser", True)
 if code == 200:
-    print("Added  : " + station)
+       i = 0
 
-# Add stations from a text file
-added = oe.add_import("./import.pls", False)
-print("\n" + added)
+       while i < len(result):
+       print(result[i]["chname"] + ","  + result[i]["churl"])
+           i+=1
 
-# Add current playing to favourites
-code, station = oe.add_current()
-if code == 200:
-    print("Added  : " + station)
+# Use Community Radio Browser to replace a masked URL from skytune
+print(oe.enrich_url("BBC Radio 4"))
+
+
+
+# Export favourties in these formats 
+# (json-rpp exports to Linux Mint's Radio++ Applet directly)
+print(oe.get_list("plain", False))
+print(oe.get_list("json", True))
+print(oe.get_list("json-rpp", True))
+print(oe.get_list("csv", False))
+print(oe.get_list("ssv", False))
+print(oe.get_list("m3u", True))
+print(oe.get_list("pls", False))
+
 ```
 
--- You would not believe your eyes if ten million fireflies lit up the world as I fell asleep
+-- You would not believe your eyes if ten million fireflies lit up the world as I fell asleep - Adam Young
 
 ### Useful Resources
 - https://heyrick.eu/blog/index.php?diary=20230110
@@ -93,7 +164,7 @@ if code == 200:
 
 -- I've never fallen from quite this high, 
 Fallin' into your ocean eyes, 
-Those ocean eyes
+Those ocean eyes - Billie Eilish
 
 ### Own your URL's!
 Open Source our radio preset systems! Sick and tired of Internet Radio portals shutting down? Help send a message to the industry that the potential of service shutdowns is leading to the dimise of a whole product category and it need not be this way. Internet Radio as a standalone category of hardware can continue to grow if we invest in the right ways to allow people to manage their own databases.

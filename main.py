@@ -2,6 +2,16 @@
 import sys, time
 import oceaneyes as oe
 
+def radioapi():
+	from fastapi import FastAPI
+	app = FastAPI()
+
+	@app.get("/")
+	async def root():
+		return {"message": "Hello World"}
+
+	return True
+
 def main():
 	settings, stations = oe.init("192.168.2.20")
 	ip = settings["ipaddress"]
