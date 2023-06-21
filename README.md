@@ -154,6 +154,7 @@ print(oe.get_list("pls", False))
 - https://www.skytune.net
 
 ### Ideas and features
+- Cache Community Radio Browser locally and direct REST API to look up that instead
 - Evolve the onboard web server to allow more playback controls and device configuration
 - Automate station selection on a schedule
 - Automate emergency alerts by changing the station to an emergency broadcast and back again
