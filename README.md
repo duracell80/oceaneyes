@@ -135,6 +135,7 @@ print(oe.enrich_url("BBC Radio 4"))
 
 # Export favourties in these formats 
 # (json-rpp exports to Linux Mint's Radio++ Applet directly)
+
 print(oe.get_list("plain", False))
 print(oe.get_list("json", True))
 print(oe.get_list("json-rpp", True))
@@ -164,6 +165,9 @@ print(oe.get_list("pls", False))
 - Display now playing data in a Home Automation Dashboard
 - Analyse listening habits and own this data yourself
 - Control volume upon system events such as phone or video calls or when playing videos
+- Export favourites from radio to Rhythmbox, Moode or Volumio
+- Import favourites from Radio++, Rhythmbox, Moode or Volumio to radio
+- Store favourite profiles locally (themed presets, like UK Radio, US Radio) to send to radio
 
 -- I've never fallen from quite this high, 
 Fallin' into your ocean eyes, 
