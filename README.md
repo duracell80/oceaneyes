@@ -7,7 +7,9 @@ Future proof your investment with hardware that contains station management onbo
 It's just you, me and an MP3 player. OceanEyes hopes to provide easier and consistent programming access to the onboard preset server.
 
 ### Usage:
-To import as a module:
+To import as a module.
+
+Be on the same network as your radio device, in the init declare your radio's location on your WiFi network:
 
 ```
 #!/usr/bin/python3
