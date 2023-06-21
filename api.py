@@ -5,6 +5,23 @@ import oceaneyes as oe
 from fastapi import FastAPI
 app = FastAPI()
 
+
+@app.post("/v1/status/network/{ipaddr}", status_code=200)
+async def online(ipaddr):
+	global ip
+	settings, stations = oe.init(ipaddr)
+	ip = settings["ipaddress"]
+
+	if oe.is_online():
+		return '{"status": "online"}'
+	else:
+		return '{"status": "offline"}'
+
+@app.get("/v1/status/network/info", status_code=200)
+async def network():
+        return '{"ip": ' + str(ip) + '}'
+
+
 @app.get("/v1/search/radiobrowser/{keywords}", status_code=200)
 async def search(keywords):
 	code, result = oe.search(str(keywords), "RadioBrowser", False)
@@ -12,8 +29,6 @@ async def search(keywords):
 		return result
 	else:
 		return '{"chname": "Station Not Found", "churl": "https://streaming.radio.co/s5c5da6a36/listen"}'
-
-
 
 
 

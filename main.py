@@ -45,7 +45,7 @@ def main():
 
 		#print(oe.get_list("plain", False))
 		#print(oe.get_list("json", True))
-		print(oe.get_list("json-rpp", True))
+		#print(oe.get_list("json-rpp", True))
 		#print(oe.get_list("csv", False))
 		#print(oe.get_list("ssv", False))
 		#print(oe.get_list("m3u", True))
