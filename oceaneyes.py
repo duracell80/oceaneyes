@@ -245,7 +245,7 @@ def get_remaining(thing = "fav"):
 	return int(t)
 
 
-def status():
+def status(url):
 	status = "Unknown"
 	try:
 		r = requests.get(url + "/php/playing.php")

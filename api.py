@@ -6,6 +6,11 @@ from fastapi import FastAPI
 app = FastAPI()
 
 
+global ip, url
+settings, stations = oe.init("192.168.2.20")
+ip = settings["ipaddress"]
+url = "http://" + str(ip)
+
 @app.post("/v1/status/network/{ipaddr}", status_code=200)
 async def online(ipaddr):
 	global ip
@@ -22,6 +27,18 @@ async def network():
         return '{"ip": ' + str(ip) + '}'
 
 
+@app.get("/v1/status", status_code=200)
+async def status():
+	return str(oe.status(url))
+
+@app.get("/v1/favourites/vacant", status_code=200)
+async def fav_remaining():
+	return '{"value": "' + str(oe.get_remaining("fav")) + '"}'
+
+@app.get("/v1/favourites/engaged", status_code=200)
+async def fav_total():
+	return '{"value": "' + str(oe.get_total("fav")) + '"}'
+
 @app.get("/v1/search/radiobrowser/{keywords}", status_code=200)
 async def search(keywords):
 	code, result = oe.search(str(keywords), "RadioBrowser", False)
@@ -29,6 +46,21 @@ async def search(keywords):
 		return result
 	else:
 		return '{"chname": "Station Not Found", "churl": "https://streaming.radio.co/s5c5da6a36/listen"}'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
