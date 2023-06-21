@@ -668,6 +668,13 @@ def get_list(format = "plain", enrich = False):
 	csv	= "" # comma
 	ssv	= "" # semicolon
 
+	if format == "json-rpp":
+		code = os.system("cinnamon --version")
+		if code == 32512:
+			return jsn_1 + '{"code": 404}' + jsn_2
+		else:
+			print("[i] Exporting to Radio++ ...")
+
 	while n < int(len(name)):
 		if name is not None:
 			genre_bit = genre[n].split(",")
@@ -726,8 +733,15 @@ def get_list(format = "plain", enrich = False):
 		file_rpp  = "./export-rpp.json"
 		file_out1 = str(os.path.expanduser('~') + "/Radio/rpp-conf.json")
 		file_out2 = str(os.path.expanduser('~') + "/.config/cinnamon/spices/radio@driglu4it/radio@driglu4it.json")
+		file_out3 = str(os.path.expanduser('~') + "/.cinnamon/configs/radio@driglu4it/radio@driglu4it.json")
+
+
 		os.system("mkdir -p " + str(os.path.expanduser('~') + "/Radio"))
-		os.system("cp " + str(os.path.expanduser('~') + "/.config/cinnamon/spices/radio@driglu4it/radio@driglu4it.json " + str(os.path.expanduser('~') + "/Radio/rpp-conf_") + str(int(time.time())) + ".json"))
+		os.system("cp -f " + str(os.path.expanduser('~') + "/.config/cinnamon/spices/radio@driglu4it/radio@driglu4it.json " + str(os.path.expanduser('~') + "/Radio/rpp-conf_") + str(int(time.time())) + ".json"))
+		os.system("cp -f " + str(os.path.expanduser('~') + "/.cinnamon/configs/radio@driglu4it/radio@driglu4it.json " + str(os.path.expanduser('~') + "/Radio/rpp-conf_") + str(int(time.time())) + ".json"))
+
+		# https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html
+		os.system('notify-send --urgency=normal --category=transfer.complete --icon=audio-x-generic-symbolic "Radio++ Stations Updated" "Favourite presets have been synced with your physical internet radio device!"')
 
 		with open(file_rpp) as i:
 			nt=i.read().replace('"stations": [{"name":"toreplace"}]', str(list))
@@ -738,11 +752,15 @@ def get_list(format = "plain", enrich = False):
 		with open(file_out2, "w") as j:
 			j.write(nt)
 
+		with open(file_out3, "w") as s:
+                        s.write(nt)
+
 		i.close()
 		o.close()
 		j.close()
+		s.close()
 
-		return "[i] Exported stations from your Ocean Digital radio to your ~/Radio directory and imported these stations into Radio++ for you!"
+		return "[i] Exported stations from your Ocean Digital radio to your ~/Radio directory and imported these stations for you!"
 	else:
 		list = "Birdsong," + str(url_placeholder)
 

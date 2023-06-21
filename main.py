@@ -2,15 +2,6 @@
 import sys, time
 import oceaneyes as oe
 
-def radioapi():
-	from fastapi import FastAPI
-	app = FastAPI()
-
-	@app.get("/")
-	async def root():
-		return {"message": "Hello World"}
-
-	return True
 
 def main():
 	settings, stations = oe.init("192.168.2.20")
@@ -54,7 +45,7 @@ def main():
 
 		#print(oe.get_list("plain", False))
 		#print(oe.get_list("json", True))
-		#print(oe.get_list("json-rpp", True))
+		print(oe.get_list("json-rpp", True))
 		#print(oe.get_list("csv", False))
 		#print(oe.get_list("ssv", False))
 		#print(oe.get_list("m3u", True))

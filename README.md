@@ -1,5 +1,5 @@
 # OceanEyes Radio API
-Python API for Ocean Digital Internet Radios
+Python API for Ocean Digital Internet Radios or radios with the Skytune (ALD) chipset
 https://www.oceandigitalshop.com/internet-radio
 
 Future proof your investment with hardware that contains station management onboard. Ocean Digital's products provide a better way to ensure our hardware keeps on working even if they discontinue their skytune service. Tested on the Ocean Digital WR-26F, and likely compatible with other radios that contain a similar server to manage favourites.
