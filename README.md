@@ -214,3 +214,6 @@ To protect your investment and lengthen the life of your device ask community me
 Avoid Pure and Pure Evoke's and Inscabin's, Lemega's, NakiRadio, Sungale's, most Sangean's, AUNA's.
 
 Non-Skytune Radios that have long life potenital: Tivoli, Logitech, Brennan, Raspbery Pi / DIY devices and Single Board based retro handhelds, as well as set-top boxes or streaming devices like Roku, Amazon Fire, Apple TV or iOS devices, Now TV, Android or Android TV devices, Chromecast and AirPlay devices.
+
+## Hybrid Digital Radio
+Ocean Digital chips decode DAB and DAB + and are sold in the US but we use the HDRadio system instead. It would be nice to buy a radio with a HD tuner. However there is the potenital to feed an RTL SDR into nrsc5, if that output from nrsc5 could be sent to icecast or ezstream to icecast then a local URL could be added to listen to HDRadio on the Ocean Digitals.
