@@ -39,6 +39,31 @@ async def fav_remaining():
 async def fav_total():
 	return '{"value": "' + str(oe.get_total("fav")) + '"}'
 
+@app.get("/v1/favourites/play/{c}", status_code=200)
+async def fav_move(c):
+	if c.isnumeric():
+		result = oe.play(str(c))
+		if result:
+			status = str(oe.status(url))
+			return '{"result": "' + str(result) + '", "message": "' + str(status) + '"}'
+		else:
+			return '{"result": "failed", "message": "Channel may be out of range, for example if you are trying to play channel 5 and only have 4 channels in memory"}'
+
+	else:
+		return '{"result": "failed", "message": "Channel index not a number, try requesting with an integer value"}'
+
+
+
+
+@app.get("/v1/favourites/move/{r}", status_code=200)
+async def fav_move(r):
+	if ":" in r:
+		r_bits = r.split(":")
+		result = oe.move(str(r_bits[0]), str(r_bits[1]))
+		return '{"result": "' + str(result) + '"}'
+	else:
+		return '{"result": "failed"}'
+
 @app.get("/v1/search/radiobrowser/{keywords}", status_code=200)
 async def search(keywords):
 	code, result = oe.search(str(keywords), "RadioBrowser", False)
@@ -47,6 +72,13 @@ async def search(keywords):
 	else:
 		return '{"chname": "Station Not Found", "churl": "https://streaming.radio.co/s5c5da6a36/listen"}'
 
+@app.get("/v1/search/tunein/{keywords}", status_code=200)
+async def search(keywords):
+	code, result = oe.search(str(keywords), "TuneIn", False)
+	if code == 200:
+		return result
+	else:
+		return '{"chname": "Station Not Found", "churl": "https://streaming.radio.co/s5c5da6a36/listen"}'
 
 
 

@@ -8,9 +8,6 @@ def main():
 	ip = settings["ipaddress"]
 	url= "http://" + str(ip)
 
-	# Search TuneIn (VPN to non UK country)
-	code, result = oe.search("BBC", "TuneIn", False)
-
 	if oe.is_online():
 
 		print(oe.status(url))
@@ -32,6 +29,10 @@ def main():
 		# Use Community Radio Browser to replace a masked URL from skytune
 		#print(oe.enrich_url("BBC Radio 4"))
 
+		# Search TuneIn
+		#code, result = oe.search("Dash Radio", "TuneIn", False)
+        	#print(result)
+
 		#oe.volume("down")
 		#oe.volume("up")
 		#oe.volume("mute")
@@ -42,11 +43,8 @@ def main():
 		#oe.delete("54")
 		#oe.edit("53", "Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", "0")
 
-		#print(oe.info_get("1"))
-		#print(oe.info_get("18"))
-		#print(oe.info_get("47"))
 
-
+		# Export favourites and attempt to unmask / replace URL's hidden by skytune
 		#print(oe.get_list("plain", False))
 		#print(oe.get_list("json", True))
 		#print(oe.get_list("json-rpp", True))
@@ -61,6 +59,7 @@ def main():
 		#print(oe.decode_genre("-1", "1", "6"))
 
 
+		#Get info from a favourite
 		#chid, chname, churl, chcountry, chgenre = oe.info_get("1")
 		#print(chid + "," + chname + "," + churl + "," + chcountry + "," + chgenre)
 

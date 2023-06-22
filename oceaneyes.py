@@ -205,33 +205,54 @@ def search(keyword = "BBC Radio 1",  source = "radiobrowser", match_exact = True
 		try:
 			import opml
 
-			data = opml.parse("http://opml.radiotime.com/Search.ashx?query=" + str(keyword))
+			data = opml.parse("http://opml.radiotime.com/Search.ashx?event=lit&query=" + str(keyword))
 			i = 0
-			for d in data:
-				if "stations" in str(data[i].text).lower():
-					#print(data[i][0].type)
-					c = 0
-					for r in data[i]:
-						if str(data[i][c].type).lower() == "audio":
-							station_name    = str(data[i][c].text)
-							station_url     = str(data[i][c].URL)
-							station_codec   = str(data[i][c].formats)
-							station_bitrate = str(data[i][c].bitrate)
-							station_genre   = str(data[i][c].genre_id)
-							station_country = str(data[i][c].guide_id)
-							station_language= str(data[i][c].subtext)
+			c = 0
 
-							link = "http://www.somesite.com/details.pl?urn=2344"
+			for d in data:
+				try:
+					if str(data[i].type).lower() == "audio" and str(data[i].item).lower() == "station" and i <= int(len(data)):
+						c+=1
+						try:
+							station_name    = str(data[i].text)
+							station_url     = str(data[i].URL)
+
 							f = urllib.request.urlopen(str(station_url))
 							station_url = str(f.read())
 							station_url = station_url.replace("b'http", "http").replace("\\n'", "")
 							f.close()
 
-							station_data = {'chindex': int(c), 'chname': str(station_name), 'churl': str(station_url), 'chcodec': str(station_codec), 'chbitrate': str(station_bitrate), 'chhls': 0, 'chgenre': str(station_genre), 'chcountry': str(station_country), 'chlanguage': str(station_language)}
-							l.append(station_data)
+						except:
+							station_name	= str(url_placeholder)
+							station_url	= str(name_placeholder)
+						try:
+							station_codec   = str(data[i].formats)
+							station_bitrate = str(data[i].bitrate)
+						except:
+							station_code	= "not"
+							station_bitrate	= "0"
+						try:
+							data[i].genre_id
+							station_genre   = str(data[i].genre_id)
+						except:
+							station_genre	= "g0"
+						try:
+							station_country = str(data[i].guide_id)
+						except:
+							station_country = str(data[i].guide_id)
+						try:
+							station_language = str(data[i].subtext)
+						except:
+							station_language = "s0"
 
-						c+=1
-				i+=1
+
+						station_data = {'chindex': int(c), 'chname': str(station_name), 'churl': str(station_url), 'chcodec': str(station_codec), 'chbitrate': str(station_bitrate), 'chhls': 0, 'chgenre': str(station_genre), 'chcountry': str(station_country), 'chlanguage': str(station_language)}
+						l.append(station_data)
+					i+=1
+				except:
+					station_data = {'chindex': 0, 'chname': 'not found', 'source': 'none', 'churl': 'not found', 'chcodec': 'MP3', 'chbitrate': '320', 'chhls': 0, 'chgenre': 'notfound', 'chcountry': 'not found', 'chlanguage': 'not found'}
+
+
 			if len(data) > 2:
 				code = 200
 			else:
@@ -379,8 +400,12 @@ def edit(chid = "0", newchname = name_placeholder, newchurl = url_placeholder, f
 
 
 def play(ch = "0"):
-	r = requests.get(url + "/doApi.cgi", params = {"AI":"16", "CI": str(ch - 1)})
-	return
+	t = get_total("fav")
+	if int(ch) <= t:
+		r = requests.get(url + "/doApi.cgi", params = {"AI":"16", "CI": str(int(ch) - 1)})
+		return True
+	else:
+		return False
 
 
 def delete(chid = "100"):
