@@ -7,6 +7,8 @@ def main():
 	settings, stations = oe.init("192.168.2.20")
 	ip = settings["ipaddress"]
 
+	#code, result = oe.search("BBC Radio 4", "TuneIn", True)
+
 	if oe.is_online():
 
 		print(oe.status())

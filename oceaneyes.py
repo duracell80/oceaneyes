@@ -137,8 +137,10 @@ def listen(chid = "1", chduration = 21600):
 
 def search(keyword = "BBC Radio 1",  source = "radiobrowser", match_exact = True):
 	station_data    = []
+	l = []
 	code = 0
 
+	# SEARCH RadioBrowser
 	if str(source.lower()) == "radiobrowser":
 		try:
 			from pyradios import RadioBrowser
@@ -156,7 +158,7 @@ def search(keyword = "BBC Radio 1",  source = "radiobrowser", match_exact = True
 
 			for item in result:
 				for key, value in item.items():
-					#print(key, '->', value)
+
 					if str(key).lower() == "hls":
 						station_hls = str(value)
 					if str(key).lower() == "codec":
@@ -190,12 +192,33 @@ def search(keyword = "BBC Radio 1",  source = "radiobrowser", match_exact = True
 
 		except ModuleNotFoundError:
 			os.system('pip install pyradios')
-			station_data = {'chindex': 0, 'chname': 'not found', 'churl': 'not found', 'chcodec': 'MP3', 'chbitrate': '320', 'chhls': 0, 'chgenre': 'notfound', 'chcountry': 'not found', 'chlanguage': 'not found'}
+			station_data = {'chindex': 0, 'source': 'radiobrowser', 'chname': 'not found', 'churl': 'not found', 'chcodec': 'MP3', 'chbitrate': '320', 'chhls': 0, 'chgenre': 'notfound', 'chcountry': 'not found', 'chlanguage': 'not found'}
 			l = []
 			l.append(station_data)
-			code = 500
+			code = 404
 
 			return code, l
+
+	# SEARCH : TuneIn
+	elif str(source.lower()) == "tunein":
+		try:
+			from tunein import TuneIn, TuneInStation
+
+			featured =  json.dumps([z.__dict__ for z in TuneIn.featured()])
+			#print(featured)
+
+
+		except ModuleNotFoundError:
+			os.system('pip install tunein')
+			station_data = {'chindex': 0, 'source': 'tunein', 'chname': 'not found', 'churl': 'not found', 'chcodec': 'MP3', 'chbitrate': '320', 'chhls': 0, 'chgenre': 'notfound', 'chcountry': 'not found', 'chlanguage': 'not found'}
+			l = []
+			l.append(station_data)
+			code = 404
+	else:
+		station_data = {'chindex': 0, 'chname': 'not found', 'source': 'none', 'churl': 'not found', 'chcodec': 'MP3', 'chbitrate': '320', 'chhls': 0, 'chgenre': 'notfound', 'chcountry': 'not found', 'chlanguage': 'not found'}
+		l = []
+		l.append(station_data)
+		code = 404
 
 	return code, l
 
