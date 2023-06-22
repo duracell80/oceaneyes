@@ -6,12 +6,14 @@ import oceaneyes as oe
 def main():
 	settings, stations = oe.init("192.168.2.20")
 	ip = settings["ipaddress"]
+	url= "http://" + str(ip)
 
-	#code, result = oe.search("BBC Radio 4", "TuneIn", True)
+	# Search TuneIn (VPN to non UK country)
+	code, result = oe.search("BBC", "TuneIn", False)
 
 	if oe.is_online():
 
-		print(oe.status())
+		print(oe.status(url))
 
 		fav_remaining  = oe.get_remaining("fav")
 		fav_total      = oe.get_total("fav")

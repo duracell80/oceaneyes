@@ -5,6 +5,6 @@
 pip install fastapi uvicorn[standard]
 pip install python-vlc
 pip install pyradios
-pip install tunein
+pip install opml
 
 sudo apt install vlc

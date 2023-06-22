@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys, os, time, socket, requests, urllib.parse, json
+import sys, os, time, socket, requests, urllib, urllib.parse, json
 
 
 global headers, url_placeholder, name_placeholder
@@ -137,6 +137,14 @@ def listen(chid = "1", chduration = 21600):
 
 def search(keyword = "BBC Radio 1",  source = "radiobrowser", match_exact = True):
 	station_data    = []
+	station_name    = "not set"
+	station_url     = "not set"
+	station_codec   = "not set"
+	station_bitrate = "not set"
+	station_genre   = "not set"
+	station_country = "not set"
+	station_language= "not set"
+
 	l = []
 	code = 0
 
@@ -148,13 +156,6 @@ def search(keyword = "BBC Radio 1",  source = "radiobrowser", match_exact = True
 			result = source.search(name=str(keyword), name_exact=match_exact)
 
 			i = 0; l = []
-			station_name	= "not set"
-			station_url	= "not set"
-			station_codec	= "not set"
-			station_bitrate = "not set"
-			station_genre	= "not set"
-			station_country = "not set"
-			station_language= "not set"
 
 			for item in result:
 				for key, value in item.items():
@@ -202,14 +203,42 @@ def search(keyword = "BBC Radio 1",  source = "radiobrowser", match_exact = True
 	# SEARCH : TuneIn
 	elif str(source.lower()) == "tunein":
 		try:
-			from tunein import TuneIn, TuneInStation
+			import opml
 
-			featured =  json.dumps([z.__dict__ for z in TuneIn.featured()])
-			#print(featured)
+			data = opml.parse("http://opml.radiotime.com/Search.ashx?query=" + str(keyword))
+			i = 0
+			for d in data:
+				if "stations" in str(data[i].text).lower():
+					#print(data[i][0].type)
+					c = 0
+					for r in data[i]:
+						if str(data[i][c].type).lower() == "audio":
+							station_name    = str(data[i][c].text)
+							station_url     = str(data[i][c].URL)
+							station_codec   = str(data[i][c].formats)
+							station_bitrate = str(data[i][c].bitrate)
+							station_genre   = str(data[i][c].genre_id)
+							station_country = str(data[i][c].guide_id)
+							station_language= str(data[i][c].subtext)
 
+							link = "http://www.somesite.com/details.pl?urn=2344"
+							f = urllib.request.urlopen(str(station_url))
+							station_url = str(f.read())
+							station_url = station_url.replace("b'http", "http").replace("\\n'", "")
+							f.close()
+
+							station_data = {'chindex': int(c), 'chname': str(station_name), 'churl': str(station_url), 'chcodec': str(station_codec), 'chbitrate': str(station_bitrate), 'chhls': 0, 'chgenre': str(station_genre), 'chcountry': str(station_country), 'chlanguage': str(station_language)}
+							l.append(station_data)
+
+						c+=1
+				i+=1
+			if len(data) > 2:
+				code = 200
+			else:
+				code = 404
 
 		except ModuleNotFoundError:
-			os.system('pip install tunein')
+			os.system('pip install opml')
 			station_data = {'chindex': 0, 'source': 'tunein', 'chname': 'not found', 'churl': 'not found', 'chcodec': 'MP3', 'chbitrate': '320', 'chhls': 0, 'chgenre': 'notfound', 'chcountry': 'not found', 'chlanguage': 'not found'}
 			l = []
 			l.append(station_data)
