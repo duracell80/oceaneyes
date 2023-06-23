@@ -3,6 +3,7 @@ import sys, time
 import oceaneyes as oe
 
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 app = FastAPI()
 
 
@@ -31,15 +32,39 @@ async def network():
 async def status():
 	return str(oe.status(url))
 
-@app.get("/v1/favourites/vacant", status_code=200)
+@app.get("/v1/volume/up", status_code=200)
+async def status():
+	return str(oe.volume("up"))
+
+@app.get("/v1/volume/down", status_code=200)
+async def status():
+	return str(oe.volume("down"))
+
+@app.get("/v1/volume/mute", status_code=200)
+async def status():
+	return str(oe.volume("mute"))
+
+@app.get("/v1/volume/unmute", status_code=200)
+async def status():
+	return str(oe.volume("unmute"))
+
+@app.get("/v1/channel/vacant", status_code=200)
 async def fav_remaining():
 	return '{"value": "' + str(oe.get_remaining("fav")) + '"}'
 
-@app.get("/v1/favourites/engaged", status_code=200)
+@app.get("/v1/channel/engaged", status_code=200)
 async def fav_total():
 	return '{"value": "' + str(oe.get_total("fav")) + '"}'
 
-@app.get("/v1/favourites/play/{c}", status_code=200)
+@app.get("/v1/channel/save", status_code=200)
+async def fav_save():
+	code, station = oe.add_current()
+	if code == 200:
+		return '{"result": 200", "message": "' + str(station)  + ' added to favourites"}'
+	else:
+		return '{"result": 400, "message": "Currently playing station not saved to favourites"}'
+
+@app.get("/v1/channel/play/{c}", status_code=200)
 async def fav_play(c):
 	if c.isnumeric():
 		code, message = oe.play(str(c))
@@ -52,10 +77,10 @@ async def fav_play(c):
 		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
 
 
-@app.get("/v1/favourites/listen/{c}", status_code=200)
-async def fav_listen(c):
+@app.get("/v1/channel/listen/vlc/{chid}", status_code=200)
+async def fav_listen(chid):
 	if c.isnumeric():
-		code, message = oe.listen(str(c))
+		code, message = oe.listen(str(chid))
 		if code == 200:
 			return '{"result": ' + str(code) + ', "message": "' + str(message) + '"}'
 		else:
@@ -65,9 +90,26 @@ async def fav_listen(c):
 		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
 
 
+@app.get("/v1/channel/listen/browser/{ichid}", status_code=200)
+async def fav_listen(ichid):
+	if ichid.isnumeric():
+		chid 		= None
+		chname 		= "not set"
+		churl		= "not set"
+		country_str	= "not set"
+		genre_str	= "not set"
+		chid, chname, churl, country_str, genre_str = oe.info_get(str(int(ichid)))
+		if str(ichid).isnumeric():
+			response = RedirectResponse(url=str(churl))
+			return response
+		else:
+			return '{"result": 400, "message": "Channel may be out of range"}'
+
+	else:
+		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
 
 
-@app.get("/v1/favourites/move/{r}", status_code=200)
+@app.get("/v1/channel/move/{r}", status_code=200)
 async def fav_move(r):
 	if ":" in r:
 		r_bits = r.split(":")
@@ -75,6 +117,21 @@ async def fav_move(r):
 		return '{"result": ' + str(code) + ', "message": ' + str(message) + '}'
 	else:
 		return '{"result": ' + str(code) + ', "message": ""}'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @app.get("/v1/search/radiobrowser/{keywords}", status_code=200)
 async def search(keywords):

@@ -349,6 +349,8 @@ def info_get(chid = "1"):
 		churl  = str(url_placeholder)
 		chcountry = "United Kingdom"
 		chgenre = "Nature Sounds & Spa Music"
+
+		return chid, chname, churl, chcountry, chgenre
 	else:
 		station_ids, station_names, station_urls, station_countries, station_genres = list_get()
 
@@ -364,7 +366,7 @@ def info_get(chid = "1"):
 		genre_bit = chgenre.split(",")
 		genre_str = decode_genre(int(genre_bit[0]), int(genre_bit[1])).replace("and", "&")
 
-	return chid, chname, churl, country_str, genre_str
+		return chid, chname, churl, country_str, genre_str
 
 
 def edit(chid = "0", newchname = name_placeholder, newchurl = url_placeholder, forcechcountry = "3;17;-1", forcechgenre = "1;45", forceskytune = "0"):
@@ -546,7 +548,7 @@ def add_current():
 	t = 0
 	c = get_total("fav")
 
-	current = status()
+	current = status(url)
 	if "stopped" in current.lower():
 		station = "none"
 	else:
@@ -555,7 +557,7 @@ def add_current():
 		t = get_total("fav")
 
 		# Read currently playing
-		current = status()
+		current = status(url)
 		currspl = current.split(": ")
 		station = currspl[1]
 
@@ -571,7 +573,7 @@ def del_current():
 	t = 0
 	c = get_total("fav")
 
-	current = status()
+	current = status(url)
 	if "stopped" in current.lower():
 		station = "none"
 	else:
@@ -580,7 +582,7 @@ def del_current():
 		t = get_total("fav")
 
 		# Read currently playing
-		current = status()
+		current = status(url)
 		currspl = current.split(": ")
 		station = currspl[1]
 
