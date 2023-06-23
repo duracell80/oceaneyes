@@ -38,8 +38,14 @@ def main():
 		#oe.volume("mute")
 		#oe.volume("unmute")
 
-		#oe.play("1")
-		#oe.listen("45")
+		# Play a station on the remote device
+		#code, message = oe.play("1")
+		#print(str(code) + ":" + str(message))
+
+		# Listen to station on local device
+		#code, message = oe.listen("45")
+		#print(str(code) + ":" + str(message))
+
 		#oe.delete("54")
 		#oe.edit("53", "Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", "0")
 
@@ -53,7 +59,9 @@ def main():
 		#print(oe.get_list("m3u", True))
 		#print(oe.get_list("pls", False))
 
-		#print(oe.move("2", "1"))
+		# Move a favourite from one index to another
+		#code, message = oe.move("2", "1")
+		#print(message)
 
 		#print(oe.decode_country("3", "17", "-1"))
 		#print(oe.decode_genre("-1", "1", "6"))

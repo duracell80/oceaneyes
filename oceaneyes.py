@@ -103,7 +103,8 @@ def is_streamable(churl = "https://streaming.radio.co/s5c5da6a36/listen", chprev
 
 def listen(chid = "1", chduration = 21600):
 	if int(chid) > 99 or chduration > 21600:
-		return False
+		code = 500
+		message = "Duration or channel preset out of range, must be below 100 and less than 1 hour playback"
 	else:
 		try:
 			import vlc
@@ -122,18 +123,22 @@ def listen(chid = "1", chduration = 21600):
 			did_play = str(vlc_pla.is_playing()); time.sleep(1); vlc_pla.stop()
 
 
-			result = False
+			code = 400
+			message = ""
 			if str(vlc_pla.get_state()) == "State.Stopped":
 				if did_play == "1":
-					result = True
+					code = 200
+					message = "Now listening to " + str(chname) + " on local device"
 				else:
 					vlc_pla.stop()
 
 		except ModuleNotFoundError:
 			os.system('pip install python-vlc')
-			return False
+			code = 500
+			message = "Module python-vlc was installed with pip, pleaase try the request again"
+			return code, message
 
-	return result
+	return code, message
 
 def search(keyword = "BBC Radio 1",  source = "radiobrowser", match_exact = True):
 	station_data    = []
@@ -403,13 +408,16 @@ def play(ch = "0"):
 	t = get_total("fav")
 	if int(ch) <= t:
 		r = requests.get(url + "/doApi.cgi", params = {"AI":"16", "CI": str(int(ch) - 1)})
-		return True
+		code = 200
+		message = status(url)
+		return code, message
 	else:
-		return False
+		code = 400
+		message = "Failed to change channel"
+		return code, message
 
 
 def delete(chid = "100"):
-	#/delCh.cgi?CI=46
 	chid = str(int(chid)-1)
 	r = requests.get(url + "/delCh.cgi", params = {"CI":chid})
 	return
@@ -587,18 +595,20 @@ def move(f = "2", t = "1"):
 	#/moveCh.cgi?CI=49&DI=48&EX=0
 	# offset by 1 so -1 off values supplied in method
 	f = int(int(f)-1)
-	t = int(int(f)-1)
+	t = int(int(t)-1)
 
 	c = get_total("fav")
 
 	if f > 99 or t > 99 or t > c or f > c or f < 0 or t < 0:
-		string = "500, Cannot move - presets out of range"
-		return string
+		code   = 400
+		string = "Cannot move - presets out of range"
+		return code, string
 	else:
 		r = requests.post(url + "/moveCh.cgi?EX=0&CI="+ str(int(f)) +"&DI="+ str(int(t)))
 
-		string = "200, Moved preset " + str(int(f)+1) + " to " + str(int(t)+1)
-		return string
+		code   = 200
+		string = "Moved preset " + str(int(f)+1) + " to " + str(int(t)+1)
+		return code, string
 
 
 def volume(dir = "down"):

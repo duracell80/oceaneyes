@@ -40,17 +40,29 @@ async def fav_total():
 	return '{"value": "' + str(oe.get_total("fav")) + '"}'
 
 @app.get("/v1/favourites/play/{c}", status_code=200)
-async def fav_move(c):
+async def fav_play(c):
 	if c.isnumeric():
-		result = oe.play(str(c))
-		if result:
-			status = str(oe.status(url))
-			return '{"result": "' + str(result) + '", "message": "' + str(status) + '"}'
+		code, message = oe.play(str(c))
+		if code == 200:
+			return '{"result": ' + str(code) + ', "message": "' + str(message) + '"}'
 		else:
-			return '{"result": "failed", "message": "Channel may be out of range, for example if you are trying to play channel 5 and only have 4 channels in memory"}'
+			return '{"result": ' + str(code) + ', "message": "Channel may be out of range"}'
 
 	else:
-		return '{"result": "failed", "message": "Channel index not a number, try requesting with an integer value"}'
+		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
+
+
+@app.get("/v1/favourites/listen/{c}", status_code=200)
+async def fav_listen(c):
+	if c.isnumeric():
+		code, message = oe.listen(str(c))
+		if code == 200:
+			return '{"result": ' + str(code) + ', "message": "' + str(message) + '"}'
+		else:
+			return '{"result": ' + str(code) + ', "message": "Channel may be out of range"}'
+
+	else:
+		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
 
 
 
@@ -59,10 +71,10 @@ async def fav_move(c):
 async def fav_move(r):
 	if ":" in r:
 		r_bits = r.split(":")
-		result = oe.move(str(r_bits[0]), str(r_bits[1]))
-		return '{"result": "' + str(result) + '"}'
+		code, message = oe.move(str(r_bits[0]), str(r_bits[1]))
+		return '{"result": ' + str(code) + ', "message": ' + str(message) + '}'
 	else:
-		return '{"result": "failed"}'
+		return '{"result": ' + str(code) + ', "message": ""}'
 
 @app.get("/v1/search/radiobrowser/{keywords}", status_code=200)
 async def search(keywords):
