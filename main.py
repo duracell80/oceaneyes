@@ -4,7 +4,7 @@ import oceaneyes as oe
 
 
 def main():
-	settings, stations = oe.init("192.168.2.20")
+	settings, stations = oe.init()
 	ip = settings["ipaddress"]
 	url= "http://" + str(ip)
 

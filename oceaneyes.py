@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import sys, os, time, socket, requests, urllib, urllib.parse, json
-
+from tinydb import TinyDB, Query
 
 global headers, url_placeholder, name_placeholder
 url_placeholder 	= "https://streaming.radio.co/s5c5da6a36/listen"
@@ -20,11 +20,24 @@ def main():
 	return
 
 
-def init(ipaddr = "192.168.1.100"):
+def init(ipaddr = None):
 	global url, ip
-	ip  = str(ipaddr)
-	url = "http://" + ipaddr
 
+	db 	= TinyDB("settings.json")
+	conf 	= dict((db.get(doc_id=1)))
+
+	if ipaddr is None:
+		ip = str(conf['ipaddress'])
+	else:
+		if str(ipaddr) != str(conf['ipaddress']):
+			db.update({'ipaddress': str(ipaddr)}, doc_ids=[1])
+			print("New IP Address Set")
+			ip  = str(ipaddr)
+		else:
+			ip  = str(conf['ipaddress'])
+
+
+	url = "http://" + ip
 	settings = {
 		"ipaddress" : ip,
 		"language"  : "English"
@@ -44,6 +57,8 @@ def init(ipaddr = "192.168.1.100"):
 			"genre"   : "Public Radio"
                 }
 	}
+
+	#db.insert(settings)
 	return settings, stations
 
 def convert_l2d(lst):

@@ -8,9 +8,16 @@ app = FastAPI()
 
 
 global ip, url
-settings, stations = oe.init("192.168.2.20")
+
+settings, stations = oe.init()
 ip = settings["ipaddress"]
-url = "http://" + str(ip)
+url= "http://" + str(ip)
+
+
+
+
+
+
 
 @app.post("/v1/status/network/{ipaddr}", status_code=200)
 async def online(ipaddr):

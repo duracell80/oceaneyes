@@ -6,5 +6,6 @@ pip install fastapi uvicorn[standard]
 pip install python-vlc
 pip install pyradios
 pip install opml
+pip install tinydb
 
 sudo apt install vlc
