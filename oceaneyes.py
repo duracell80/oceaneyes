@@ -23,15 +23,16 @@ def main():
 def init(ipaddr = None):
 	global url, ip
 
-	db 	= TinyDB("settings.json")
-	conf 	= dict((db.get(doc_id=1)))
+	dbc 	= TinyDB("settings.db")
+	dbs     = TinyDB("stations.db")
+	conf 	= dict((dbc.get(doc_id=1)))
 
+	# Attempt to store and read Radio's IP Address
 	if ipaddr is None:
 		ip = str(conf['ipaddress'])
 	else:
 		if str(ipaddr) != str(conf['ipaddress']):
-			db.update({'ipaddress': str(ipaddr)}, doc_ids=[1])
-			print("New IP Address Set")
+			dbc.update({'ipaddress': str(ipaddr)}, doc_ids=[1])
 			ip  = str(ipaddr)
 		else:
 			ip  = str(conf['ipaddress'])
@@ -44,21 +45,17 @@ def init(ipaddr = None):
         }
 
 	stations = {
-		"ch0":  {
+		"100":  {
 			"name"    : "BBC World Service",
 			"url"     : "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
 			"country" : "United Kingdom",
 			"genre"   : "Public Radio"
-		},
-		"ch1":  {
-			"name"    : "WPLN - Nashville (NPR)",
-			"url"     : "https://wpln.streamguys1.com/wplnfm.mp3",
-			"country" : "United States, Tennessee",
-			"genre"   : "Public Radio"
-                }
+		}
 	}
 
-	#db.insert(settings)
+	dbc.close()
+	dbs.close()
+
 	return settings, stations
 
 def convert_l2d(lst):
@@ -753,11 +750,20 @@ def list_get():
 
 	return station_ids, station_names, station_urls, station_countries, station_genres
 
+def set_list(chid = 0, chname = "not set", churl = "not set", chcountry = "not set", chgenre = "not set"):
+	dbs = TinyDB("stations.db")
+	dbs.insert({'channel': int(chid), 'name': str(chname), 'url': str(churl), 'country': str(chcountry), 'genre': str(chgenre)})
+	dbs.close()
+	return None
+
 
 def get_list(format = "plain", enrich = False):
 	id, name, url, country, genre = list_get()
 
-	n = 0
+	dbs     = TinyDB("stations.db")
+	dbs.truncate()
+
+	n 	= 0
 
 	list	= ""
 	pls_1 	= "[playlist]"
@@ -779,6 +785,7 @@ def get_list(format = "plain", enrich = False):
 		else:
 			print("[i] Exporting to Radio++ ...")
 
+
 	while n < int(len(name)):
 		if name is not None:
 			genre_bit = genre[n].split(",")
@@ -790,10 +797,19 @@ def get_list(format = "plain", enrich = False):
 			# Attempt to export unmasked Skytune stations using Community Radio Browser without querying Skytune
 			if str(url[n]).lower() == str(url_placeholder).lower() and enrich:
 				name_bits       = str(name[n]).split(" ")
-				search          = str(name_bits[0] + " " + name_bits[1] + " " + name_bits[2])
+				try:
+					if len(name_bits) > 2:
+						search	= str(name_bits[0] + " " + name_bits[1] + " " + name_bits[2])
+					else:
+						search  = str(name_bits[0] + " " + name_bits[1] + " " + name_bits[2])
+				except:
+					search  = "Birdsong Radio"
 				churl           = enrich_url(str(search.upper()))
 			else:
 				churl = str(url[n])
+
+			# Update offline storage of favourites
+			set_list(str(int(n)+1), str(name[n]), str(churl), str(decode_country(country_bits[0], country_bits[1], country_bits[2])), str(genre_str).replace("and", "&"))
 
 			if format == "plain":
 				list += str(int(n)+1) + ":" + name[n] + " [url=" + churl + "] [genre=" + str(genre_str)  + "] [country=" + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + "\n"

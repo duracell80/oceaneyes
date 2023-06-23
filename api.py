@@ -71,6 +71,11 @@ async def fav_save():
 	else:
 		return '{"result": 400, "message": "Currently playing station not saved to favourites"}'
 
+@app.get("/v1/channel/export", status_code=200)
+async def fav_save():
+	oe.get_list("plain", False)
+	return '{"result": 200, "message": "Exported from IPRadio to local database stations.db"}'
+
 @app.get("/v1/channel/play/{c}", status_code=200)
 async def fav_play(c):
 	if c.isnumeric():
