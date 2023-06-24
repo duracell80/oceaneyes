@@ -91,13 +91,18 @@ def scan():
 	hosts   = []
 	devices = []
 	d	= 0
-	print("[i] Auto detecting Skytune radios on the LAN ... takes about 5 minutes")
+	print("[i] Auto detecting Skytune radios on the LAN ... Press Ctrl + Z when all known devices are found")
 	print("--- Tip: Take note of these numbers and then set")
-	print("--- static routes on the router for your radios\n\n")
+	print("--- static routes on the router for these devices\n\n")
 	for i in range(1,255):
 		host    = h + "." + str(i)
-		result  = str(os.popen("ping " + str(host) + " -w 1").read())
-		if "1 received" in result:
+		#print(str(i))
+		try:
+			result  = str(os.popen("ping " + str(host) + " -w 10").read())
+		except:
+			result  = "0 received"
+
+		if "10 received" in result:
 			try:
 				r = requests.get("http://" + str(host) + "/php/favList.php?PG=0")
 				if r.status_code == 200:
