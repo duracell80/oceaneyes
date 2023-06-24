@@ -1,6 +1,11 @@
 #!/usr/bin/python3
 import sys, os, time, socket, requests, urllib, urllib.parse, json
-from tinydb import TinyDB, Query
+try:
+	from tinydb import TinyDB, Query
+except ModuleNotFoundError:
+	os.system('pip install tinydb')
+	from tinydb import TinyDB, Query
+
 
 global headers, url_placeholder, name_placeholder
 url_placeholder 	= "https://streaming.radio.co/s5c5da6a36/listen"
@@ -288,6 +293,24 @@ def search(keyword = "BBC Radio 1",  source = "radiobrowser", match_exact = True
 		code = 404
 
 	return code, l
+
+def cache(source = "RadioBrowser"):
+	code = 400
+	if str(source).lower() == "radiobrowser":
+		dest_file	= "cache_radiobrowser.sql.gz"
+		source_url 	= "https://backups.radio-browser.info"
+		source_file	= str(source_url) + "/latest.sql.gz"
+		r 		= requests.get(source_url)
+		code 		= r.status_code
+
+		if int(code) == 200 and os.path.isfile(dest_file) == False:
+			print("[i] Downloading entire Radio Browser database, please wait (this may take around 20 minutes) ...")
+			d               = requests.get(source_file, allow_redirects=True)
+			code            = d.status_code
+			open(dest_file, 'wb').write(d.content)
+		else:
+			print("[i] Radio Browser already cached, delete latest.sql.gz to force a download")
+	return code
 
 def enrich_url(chname = "BBC Radio 1"):
 	code, result = search(str(chname).lower(), "RadioBrowser", False)

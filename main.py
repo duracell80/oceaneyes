@@ -8,6 +8,9 @@ def main():
 	ip = settings["ipaddress"]
 	url= "http://" + str(ip)
 
+	#code = oe.cache("RadioBrowser")
+	#print(code)
+
 	if oe.is_online():
 
 		print(oe.status(url))
@@ -97,6 +100,10 @@ def main():
 		#code, station = oe.del_current()
 		#if code == 200:
 		#	print("Deleted: " + station)
+
+		# This may take around 20 minutes due to remote bandwidth constraints, it's a free service and we can wait
+		#oe.cache("RadioBrowser")
+
 	else:
 		print("Radio offline")
 
