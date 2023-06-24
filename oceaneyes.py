@@ -91,12 +91,13 @@ def scan():
 	hosts   = []
 	devices = []
 	d	= 0
-	print("[i] Auto detecting Skytune radios on the LAN ... Press Ctrl + Z when all known devices are found")
+	print("[i] Auto detecting Skytune radios on the LAN ... \n\nPress Ctrl + Z when all known devices are found")
+	print("Press Ctrl + C if scanning seems to be stuck\n\n")
 	print("--- Tip: Take note of these numbers and then set")
 	print("--- static routes on the router for these devices\n\n")
 	for i in range(1,255):
 		host    = h + "." + str(i)
-		#print(str(i))
+		print(str(i))
 		try:
 			result  = str(os.popen("ping " + str(host) + " -w 10").read())
 		except:
