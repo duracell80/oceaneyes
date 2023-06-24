@@ -1,3 +1,5 @@
 __pycache__
 *.pyc
 *.swp
+*.sql.gz
+*.sql
