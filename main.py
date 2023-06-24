@@ -4,12 +4,12 @@ import oceaneyes as oe
 
 
 def main():
-	settings, stations = oe.init()
+	settings = oe.init()
 	ip = settings["ipaddress"]
 	url= "http://" + str(ip)
 
-	#code = oe.cache("RadioBrowser")
-	#print(code)
+	if str(ip) == "0.0.0.0":
+		oe.scan()
 
 
 	if oe.is_online():
@@ -105,8 +105,8 @@ def main():
 		# This may take around 20 minutes due to remote bandwidth constraints, it's a free service and we can wait
 		#oe.cache("RadioBrowser")
 
-	else:
-		print("Radio offline")
+	#else:
+		#print("Radio offline")
 		# Get favourite info by channel id when radio is offline
         	#chid, chname, churl, chcountry, chgenre = oe.info_cached("1")
 

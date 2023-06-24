@@ -30,20 +30,29 @@ def main():
 def init(ipaddr = None):
 	global url, ip
 
-	dbc 	= TinyDB("settings.db")
-	dbs     = TinyDB("stations.db")
-	conf 	= dict((dbc.get(doc_id=1)))
+	# Attempt to find or set an ipaddress
+	if os.path.isfile("settings.db"):
+		dbc     = TinyDB("settings.db")
 
-	# Attempt to store and read Radio's IP Address
-	if ipaddr is None:
-		ip = str(conf['ipaddress'])
-	else:
-		if str(ipaddr) != str(conf['ipaddress']):
-			dbc.update({'ipaddress': str(ipaddr)}, doc_ids=[1])
-			ip  = str(ipaddr)
+		if os.path.getsize('settings.db') == 0:
+			for i in range(0,10):
+				dbc.insert({'ipaddress': '0.0.0.0', 'language': 'English'})
+			hosts, devices = scan()
+			code = oe.cache("RadioBrowser")
+
 		else:
-			ip  = str(conf['ipaddress'])
+			conf    = dict((dbc.get(doc_id=1)))
+		conf    = dict((dbc.get(doc_id=1)))
+	else:
+		dbc     = TinyDB("settings.db")
+		for i in range(0,10):
+			dbc.insert({'ipaddress': '0.0.0.0', 'language': 'English'})
 
+	# Fallback on init to detect radio devices on network
+	try:
+		ip = str(conf['ipaddress'])
+	except:
+		init()
 
 	url = "http://" + ip
 	settings = {
@@ -61,9 +70,56 @@ def init(ipaddr = None):
 	}
 
 	dbc.close()
-	dbs.close()
 
-	return settings, stations
+	return settings
+
+def scan():
+	if os.path.isfile("settings.db"):
+		dbc     = TinyDB("settings.db")
+	else:
+		dbc     = TinyDB("settings.db")
+		dbc.insert({'ipaddress': '0.0.0.0', 'language': 'English'})
+
+
+
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	s.connect(("1.1.1.1", 80))
+	h = s.getsockname()[0].split(".")
+	h = str(h[0] + "." + h[1] + "." + h[2])
+	s.close()
+
+	hosts   = []
+	devices = []
+	d	= 0
+	print("[i] Auto detecting Skytune radios on the LAN ... takes about 5 minutes")
+	print("--- Tip: Take note of these numbers and then set")
+	print("--- static routes on the router for your radios\n\n")
+	for i in range(1,255):
+		host    = h + "." + str(i)
+		result  = str(os.popen("ping " + str(host) + " -w 1").read())
+		if "1 received" in result:
+			try:
+				r = requests.get("http://" + str(host) + "/php/favList.php?PG=0")
+				if r.status_code == 200:
+					d+=1
+					devices.append(host)
+					dbc.update({'ipaddress': str(host)}, doc_ids=[int(d)])
+					print("[i] Found a radio @" + str(host))
+			except:
+				x=1
+
+			hosts.append(host)
+
+	radios = len(devices)
+	if radios > 0:
+        	if radios > 1:
+                	print("\n[i] Found " + str(radios) + " Skytune radio1 on the network")
+        	else:
+                	print("\n[i] Found " + str(radios) + " Skytune radios on the network")
+        	for i in range(0,int(radios)):
+                	print("--- Radio " + str(i+1) + " @" + str(devices[i]))
+
+	return hosts, devices
 
 def convert_l2d(lst):
 	# Converts a list to a dictionary
@@ -309,7 +365,7 @@ def cache(source = "RadioBrowser"):
 		code 		= r.status_code
 
 		if int(code) == 200 and os.path.isfile(dest_file) == False:
-			print("[i] Downloading entire Radio Browser database, please wait (this may take around 20 minutes) ...")
+			print("[i] Downloading entire Radio Browser database, please wait (this may take up 20 minutes) ...")
 			d               = requests.get(source_file, allow_redirects=True)
 			code            = d.status_code
 			open(dest_file, 'wb').write(d.content)
