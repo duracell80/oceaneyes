@@ -91,7 +91,7 @@ async def fav_play(c):
 
 @app.get("/v1/channel/listen/vlc/{chid}", status_code=200)
 async def fav_listen(chid):
-	if c.isnumeric():
+	if chid.isnumeric():
 		code, message = oe.listen(str(chid))
 		if code == 200:
 			return '{"result": ' + str(code) + ', "message": "' + str(message) + '"}'
@@ -110,12 +110,17 @@ async def fav_listen(ichid):
 		churl		= "not set"
 		country_str	= "not set"
 		genre_str	= "not set"
-		chid, chname, churl, country_str, genre_str = oe.info_get(str(int(ichid)))
-		if str(ichid).isnumeric():
+
+		if oe.is_online():
+			chid, chname, churl, country_str, genre_str = oe.info_get(str(int(ichid)))
+		else:
+			chid, chname, churl, chcountry, chgenre = oe.info_cached(str(int(ichid)))
+
+		if "http" in str(churl):
 			response = RedirectResponse(url=str(churl))
 			return response
 		else:
-			return '{"result": 400, "message": "Channel may be out of range"}'
+			return '{"result": 400, "message": "Channel may not be playable"}'
 
 	else:
 		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'

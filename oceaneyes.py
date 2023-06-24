@@ -7,9 +7,11 @@ except ModuleNotFoundError:
 	from tinydb import TinyDB, Query
 
 
-global headers, url_placeholder, name_placeholder
+global headers, url_placeholder, name_placeholder, country_placeholder, genre_placeholder
 url_placeholder 	= "https://streaming.radio.co/s5c5da6a36/listen"
 name_placeholder	= "Bird Song radio"
+country_placeholder	= "United Kingdom"
+genre_placeholder	= "Nature Sounds & Spa Music"
 
 headers = {
 	"User-Agent": "Mozilla/5.0 (Linux; Android 12; Pixel 6 Build/SD1A.210817.023; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/94.0.4606.71 Mobile Safari/537.36",
@@ -125,7 +127,10 @@ def listen(chid = "1", chduration = 21600):
 	else:
 		try:
 			import vlc
-			chid, chname, churl, country_str, genre_str = info_get(str(int(chid)))
+			if is_online():
+				chid, chname, churl, country_str, genre_str = info_get(str(int(chid)))
+			else:
+				chid, chname, churl, country_str, genre_str = info_cached(str(int(chid)))
 
 			print("[i] Playing " + str(chname) + " locally ...")
 
@@ -402,6 +407,32 @@ def info_get(chid = "1"):
 		genre_str = decode_genre(int(genre_bit[0]), int(genre_bit[1])).replace("and", "&")
 
 		return chid, chname, churl, country_str, genre_str
+
+
+def info_cached(chid = "1"):
+	t = 99
+
+	if int(chid) > t:
+		chid		= "100"
+		chname		= str(name_placeholder)
+		churl		= str(url_placeholder)
+		chcountry	= str(country_placeholder)
+		chgenre		= str(genre_placeholder)
+
+		return chid, chname, churl, chcountry, chgenre
+	else:
+		dbs	= TinyDB("stations.db")
+		chl	= dict((dbs.get(doc_id=int(chid))))
+		dbs.close()
+
+		chid	= str(chl['channel'])
+		chname	= str(chl['name'])
+		churl	= str(chl['url'])
+		chcountry = str(chl['country'])
+		chgenre	= str(chl['genre'])
+
+		return chid, chname, churl, chcountry, chgenre
+
 
 
 def edit(chid = "0", newchname = name_placeholder, newchurl = url_placeholder, forcechcountry = "3;17;-1", forcechgenre = "1;45", forceskytune = "0"):

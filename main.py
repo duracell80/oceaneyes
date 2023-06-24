@@ -11,6 +11,7 @@ def main():
 	#code = oe.cache("RadioBrowser")
 	#print(code)
 
+
 	if oe.is_online():
 
 		print(oe.status(url))
@@ -106,6 +107,8 @@ def main():
 
 	else:
 		print("Radio offline")
+		# Get favourite info by channel id when radio is offline
+        	#chid, chname, churl, chcountry, chgenre = oe.info_cached("1")
 
 
 if __name__ == "__main__":
