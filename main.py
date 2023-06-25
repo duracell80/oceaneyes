@@ -8,8 +8,8 @@ def main():
 	ip = settings["ipaddress"]
 	url= "http://" + str(ip)
 
-	if str(ip) == "0.0.0.0":
-		oe.scan()
+	#if str(ip) == "0.0.0.0":
+	#	oe.scan()
 
 
 	if oe.is_online():
@@ -20,6 +20,9 @@ def main():
 		fav_total      = oe.get_total("fav")
 
 		print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
+
+		# Back up favourites to tinydb file (stations.db), set True to atempt to unmask Skytune managed URL's
+		oe.backup(False)
 
 		# Exact match search of Community Radio Browser by station name
 		#code, result = oe.search("BBC Radio 4", "RadioBrowser", True)
@@ -87,10 +90,13 @@ def main():
 
 
 
-		# Add a new station not on skytune
+		# Add a new station not on skytune, set True to see if URL is playable before adding it
 		#code, station = oe.add("Vivaldi", "https://stream.0nlineradio.com/vivaldi", "3;17;-1", "2;15", False)
+		#code, station = oe.add("Jazz FM", "http://edge-bauerall-01-gos2.sharp-stream.com/jazz.mp3", "3;17;-1", "2;21", True)
 		#if code == 200:
 		#	print("Added  : " + station)
+		#else:
+		#	print("Failed to add: " + station)
 
 		# Add current to favourites
 		#code, station = oe.add_current()

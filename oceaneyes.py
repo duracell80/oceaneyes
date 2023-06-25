@@ -150,7 +150,7 @@ def is_online():
 			else:
 				return True
 
-def is_streamable(churl = "https://streaming.radio.co/s5c5da6a36/listen", chpreview = False):
+def is_streamable(churl = url_placeholder, chpreview = False):
 	if "fm://" in churl or "dab://" in churl:
 		return True
 	else:
@@ -563,7 +563,11 @@ def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp
 		return code, station
 	else:
 		f = {'EX': '0', 'chName': str(chname), 'chUrl': str(churl), 'chCountry': str(chcountry), 'chGenre': str(chgenre)}
-		r = requests.post(url + "/addCh.cgi", data=f)
+		if chplay:
+			if is_streamable(churl, False):
+				r = requests.post(url + "/addCh.cgi", data=f)
+		else:
+			r = requests.post(url + "/addCh.cgi", data=f)
 
 		time.sleep(8)
 		t = get_total("fav")
@@ -573,7 +577,7 @@ def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp
 			station = str(chname)
 		else:
 			code = 500
-			station = "None"
+			station = str(chname)
 
 		return code, station
 
@@ -878,6 +882,7 @@ def get_list(format = "plain", enrich = False):
 
 	dbs     = TinyDB("stations.db")
 	dbs.truncate()
+	dbs.close()
 
 	n 	= 0
 
@@ -904,11 +909,14 @@ def get_list(format = "plain", enrich = False):
 
 	while n < int(len(name)):
 		if name is not None:
+			# Keep encoded country and genre entries
+			chcountry = country[n]
+			chgenre   = genre[n]
+
+			# Decode country and genre codes into words
 			genre_bit = genre[n].split(",")
 			genre_str = decode_genre(code_1 = int(genre_bit[0]), code_2 = int(genre_bit[1]))
-
 			country_bits  = country[n].split(",")
-			#print(country_bits[0] + ":" + country_bits[1] + ":" + country_bits[2]  + " - " + str(name[n]))
 
 			# Attempt to export unmasked Skytune stations using Community Radio Browser without querying Skytune
 			if str(url[n]).lower() == str(url_placeholder).lower() and enrich:
@@ -919,15 +927,16 @@ def get_list(format = "plain", enrich = False):
 					else:
 						search  = str(name_bits[0] + " " + name_bits[1] + " " + name_bits[2])
 				except:
-					search  = "Birdsong Radio"
+					search  = name_placeholder
 				churl           = enrich_url(str(search.upper()))
 			else:
 				churl = str(url[n])
 
 			# Update offline storage of favourites
-			set_list(str(int(n)+1), str(name[n]), str(churl), str(decode_country(country_bits[0], country_bits[1], country_bits[2])), str(genre_str).replace("and", "&"))
-
-			if format == "plain":
+			if format == "backup":
+				set_list(str(int(n)+1), str(name[n]), str(churl), str(chcountry), str(chgenre))
+				list += str(int(n)+1) + ":" + name[n] + " [url=" + churl + "] [genre=" + str(genre_str)  + "] [country=" + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + "\n"
+			elif format == "plain":
 				list += str(int(n)+1) + ":" + name[n] + " [url=" + churl + "] [genre=" + str(genre_str)  + "] [country=" + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + "\n"
 			elif format == "csv":
 				csv += str(int(n)+1) + "," + name[n] + "," + churl + "," + str(genre_str).replace(",", ";") + "," + str(decode_country(country_bits[0], country_bits[1], country_bits[2])).replace(",", ";") +  "\n"
@@ -949,7 +958,12 @@ def get_list(format = "plain", enrich = False):
 				print("Error: Format not supplied (plain, json, json-rpp, pls, m3u, csv, ssv)")
 			n+=1
 
-	if format == "plain":
+	if format == "backup":
+		with open('stations.db', 'r') as file:
+			data = file.read()
+		return data
+
+	elif format == "plain":
 		list = list
 	elif format == "csv":
 		list = csv
@@ -996,14 +1010,17 @@ def get_list(format = "plain", enrich = False):
 		j.close()
 		s.close()
 
-		return "[i] Exported stations from your Ocean Digital radio to your ~/Radio directory and imported these stations for you!"
+
+		return "Exported stations from your Ocean Digital radio to your ~/Radio directory and imported these stations for you!"
 	else:
-		list = "Birdsong," + str(url_placeholder)
+		list = str(name_placeholder) + "," + str(url_placeholder)
 
 	return list
 
 
-
+def backup(enrich = False):
+	list = get_list("backup", enrich)
+	return list
 
 
 def html_decode(s):

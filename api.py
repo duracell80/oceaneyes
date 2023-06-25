@@ -9,7 +9,7 @@ app = FastAPI()
 
 global ip, url
 
-settings, stations = oe.init()
+settings = oe.init()
 ip = settings["ipaddress"]
 url= "http://" + str(ip)
 
@@ -55,15 +55,15 @@ async def status():
 async def status():
 	return str(oe.volume("unmute"))
 
-@app.get("/v1/channel/vacant", status_code=200)
+@app.get("/v1/fav/vacant", status_code=200)
 async def fav_remaining():
 	return '{"value": "' + str(oe.get_remaining("fav")) + '"}'
 
-@app.get("/v1/channel/engaged", status_code=200)
+@app.get("/v1/fav/engaged", status_code=200)
 async def fav_total():
 	return '{"value": "' + str(oe.get_total("fav")) + '"}'
 
-@app.get("/v1/channel/save", status_code=200)
+@app.get("/v1/fav/save", status_code=200)
 async def fav_save():
 	code, station = oe.add_current()
 	if code == 200:
@@ -71,12 +71,12 @@ async def fav_save():
 	else:
 		return '{"result": 400, "message": "Currently playing station not saved to favourites"}'
 
-@app.get("/v1/channel/backup", status_code=200)
-async def fav_save():
-	oe.get_list("plain", False)
+@app.get("/v1/fav/backup", status_code=200)
+async def fav_backup():
+	oe.get_list("backup", False)
 	return '{"result": 200, "message": "Exported from IPRadio to local database stations.db"}'
 
-@app.get("/v1/channel/play/{c}", status_code=200)
+@app.get("/v1/fav/play/{c}", status_code=200)
 async def fav_play(c):
 	if c.isnumeric():
 		code, message = oe.play(str(c))
@@ -89,7 +89,7 @@ async def fav_play(c):
 		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
 
 
-@app.get("/v1/channel/listen/vlc/{chid}", status_code=200)
+@app.get("/v1/fav/listen/vlc/{chid}", status_code=200)
 async def fav_listen(chid):
 	if chid.isnumeric():
 		code, message = oe.listen(str(chid))
@@ -102,7 +102,7 @@ async def fav_listen(chid):
 		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
 
 
-@app.get("/v1/channel/listen/browser/{ichid}", status_code=200)
+@app.get("/v1/fav/listen/browser/{ichid}", status_code=200)
 async def fav_listen(ichid):
 	if ichid.isnumeric():
 		chid 		= None
@@ -126,7 +126,7 @@ async def fav_listen(ichid):
 		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
 
 
-@app.get("/v1/channel/move/{r}", status_code=200)
+@app.get("/v1/fav/move/{r}", status_code=200)
 async def fav_move(r):
 	if ":" in r:
 		r_bits = r.split(":")
