@@ -97,20 +97,35 @@ def scan():
 	print("--- static routes on the router for these devices\n\n")
 	for i in range(1,255):
 		host    = h + "." + str(i)
-		print(str(i))
 		try:
-			result  = str(os.popen("ping " + str(host) + " -w 10").read())
-		except:
-			result  = "0 received"
+			try:
+				r = requests.get("http://" + str(host) + ":80", timeout=1)
+				if r.status_code == 200:
+					p = 80
+			except:
+				p = 0
+				print("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ")")
+			if p == 80:
+				print("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ") [P:80]")
 
-		if "10 received" in result:
+				# test that the radio can be pinged
+				result  = str(os.popen("ping " + str(host) + " -w 5 -W 5").read())
+			else:
+				p = 0
+				result = "0 received"
+		except:
+			p = 0
+			result  = "0 received"
+			print("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ")")
+
+		if "5 received" in result:
 			try:
 				r = requests.get("http://" + str(host) + "/php/favList.php?PG=0")
 				if r.status_code == 200:
 					d+=1
 					devices.append(host)
 					dbc.update({'ipaddress': str(host)}, doc_ids=[int(d)])
-					print("[i] Found a radio @" + str(host))
+					print("\n[+] Found a radio @" + str(host) + ":80\n\n")
 			except:
 				x=1
 
@@ -119,7 +134,7 @@ def scan():
 	radios = len(devices)
 	if radios > 0:
         	if radios > 1:
-                	print("\n[i] Found " + str(radios) + " Skytune radio1 on the network")
+                	print("\n[i] Found " + str(radios) + " Skytune radio on the network")
         	else:
                 	print("\n[i] Found " + str(radios) + " Skytune radios on the network")
         	for i in range(0,int(radios)):

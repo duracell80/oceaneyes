@@ -8,8 +8,9 @@ def main():
 	ip = settings["ipaddress"]
 	url= "http://" + str(ip)
 
-	#if str(ip) == "0.0.0.0":
-	#	oe.scan()
+	if str(ip) == "0.0.0.0":
+		oe.scan()
+
 
 
 	if oe.is_online():
@@ -22,7 +23,7 @@ def main():
 		print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
 
 		# Back up favourites to tinydb file (stations.db), set True to atempt to unmask Skytune managed URL's
-		oe.backup(False)
+		#oe.backup(False)
 
 		# Exact match search of Community Radio Browser by station name
 		#code, result = oe.search("BBC Radio 4", "RadioBrowser", True)
