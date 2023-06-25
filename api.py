@@ -17,7 +17,7 @@ settings, url, ip = oe.init()
 
 
 
-@app.post("/v1/device/status/{device}", status_code=200)
+@app.get("/v1/device/status/{device}", status_code=200)
 async def online(device):
 	#global settings, url, ip
 	ssettings, surl, sip = oe.init(device)
@@ -27,7 +27,7 @@ async def online(device):
 	else:
 		return '{"result": 400, "status": "offline, "ipaddr": ' + str(sip)  + '}'
 
-@app.post("/v1/device/switch/{device}", status_code=200)
+@app.get("/v1/device/switch/{device}", status_code=200)
 async def switch(device):
 	global settings, url, ip
 	settings, url, ip = oe.init(device)
@@ -35,9 +35,13 @@ async def switch(device):
 	return '{"result": 200, "status": "active", "message": "Active device switched to radio "' + str(device)  + ', "ipaddr": ' + str(ip)  + '}'
 
 
-@app.get("/v1/status", status_code=200)
+@app.get("/v1/playing", status_code=200)
 async def status():
-	return str(oe.status(url))
+	code, status, playing = oe.status()
+	if code == 200:
+		return '{"result": 200, "status": "playing", "message": "' + str(playing)  + '", "ipaddr": ' + str(ip)  + '}'
+	else:
+		return '{"result": 200, "status": "stopped", "message": "None", "ipaddr": ' + str(ip)  + '}'
 
 @app.get("/v1/volume/up", status_code=200)
 async def status():

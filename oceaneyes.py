@@ -28,6 +28,7 @@ def main():
 
 
 def switch(device = 1):
+	global url, ip, settings
 	try:
 		dbc	= TinyDB("settings.db")
 		dip	= dict((dbc.get(doc_id=int(device))))
@@ -468,20 +469,27 @@ def get_remaining(thing = "fav"):
 	return int(t)
 
 
-def status(url):
+def status():
 	status = "Unknown"
 	try:
-		r = requests.get(url + "/php/playing.php")
+		print(ip)
+		r = requests.get("http://" + str(ip) + "/php/playing.php")
 		d = json.loads(str(r.text).replace("'", '"'))
-
+		print(d)
 		if d["result"] == "success":
-			status = "IPRadio Playing: " + d["name"]
+			status = "playing"
+			playing = str(d["name"])
+			code = 200
 		else:
-			status = "IPRadio Stopped"
+			status = "stopped"
+			playing = "None"
+			code = 400
 	except Exception as e:
-		status = "Unknown"
+		status = "unknown"
+		playing= "None"
+		code = 404
 
-	return  status
+	return  code, status, playing
 
 
 def info_get(chid = "1"):
@@ -581,13 +589,18 @@ def play(ch = "0"):
 	t = get_total("fav")
 	if int(ch) <= t:
 		r = requests.get(url + "/doApi.cgi", params = {"AI":"16", "CI": str(int(ch) - 1)})
-		code = 200
-		message = status(url)
-		return code, message
+		if r.status_code == 200:
+			code, status, playing = status()
+			return code, message, playing
+		else:
+			code = 400
+			message = "Failed to change channel"
+			playing = "None"
 	else:
 		code = 400
 		message = "Failed to change channel"
-		return code, message
+		playing = "None"
+		return code, message, playing
 
 
 def delete(chid = "100"):
@@ -723,18 +736,17 @@ def add_current():
 	t = 0
 	c = get_total("fav")
 
-	current = status(url)
-	if "stopped" in current.lower():
-		station = "none"
+	code, status, playing = status()
+	if "stopped" in status.lower():
+		station = "None"
 	else:
 		# Set new fav
 		r = requests.get(url + "/doApi.cgi", params = {"AI":"8"})
 		t = get_total("fav")
 
 		# Read currently playing
-		current = status(url)
-		currspl = current.split(": ")
-		station = currspl[1]
+		code, status, playing = status()
+		station = playing
 
 	if t > c:
 		code 	= 200
@@ -748,18 +760,17 @@ def del_current():
 	t = 0
 	c = get_total("fav")
 
-	current = status(url)
-	if "stopped" in current.lower():
-		station = "none"
+	code, status, playing = status()
+	if "stopped" in status.lower():
+		station = "None"
 	else:
 		# Del currently playing
 		r = requests.get(url + "/doApi.cgi", params = {"AI":"4"})
 		t = get_total("fav")
 
 		# Read currently playing
-		current = status(url)
-		currspl = current.split(": ")
-		station = currspl[1]
+		code, status, playing = status()
+		station = playing
 
 	if t < c:
 		code    = 200

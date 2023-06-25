@@ -5,20 +5,29 @@ import oceaneyes as oe
 
 def main():
 	# Get the settings from tinydb to know the ip address and language of device
+	global settings, url, ip
+
 	settings, url, ip = oe.init()
-	ip = settings["ipaddress"]
-	url= "http://" + str(ip)
 
 	# Switch to another radio other than the primary one
-	#settings, url, ip = oe.switch(2)
+	settings, url, ip = oe.switch(2)
 
+	ip = settings["ipaddress"]
+	url= "http://" + str(ip)
 	if str(ip) == "0.0.0.0":
 		oe.scan()
 	# Keep these the lines above the online check
 
 	if oe.is_online():
 
-		print(oe.status(url))
+		code, status, playing = oe.status()
+		print(code)
+		if code == 200:
+			print("[i] Radio @" + str(ip) + " status: " + str(status) + " (" + str(playing)  + ")")
+		elif code == 400:
+			print("[i] Radio @" + str(ip) + " status: " + str(status) + " (" + str(playing)  + ")")
+		else:
+			print("[i] Radio @" + str(ip) + " status: Offline")
 
 		fav_remaining  = oe.get_remaining("fav")
 		fav_total      = oe.get_total("fav")
@@ -50,8 +59,8 @@ def main():
 		#oe.volume("unmute")
 
 		# Play a station on the remote device
-		#code, message = oe.play("1")
-		#print(str(code) + ":" + str(message))
+		#code, message, playing = oe.play("1")
+		#print(str(code) + ":" + str(message) + ":" + str(playing))
 
 		# Listen to station on local device
 		#code, message = oe.listen("45")
