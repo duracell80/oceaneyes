@@ -17,19 +17,22 @@ settings, url, ip = oe.init()
 
 
 
-@app.post("/v1/status/network/{device}", status_code=200)
+@app.post("/v1/device/status/{device}", status_code=200)
 async def online(device):
+	#global settings, url, ip
+	ssettings, surl, sip = oe.init(device)
+
+	if oe.is_online():
+		return '{"result": 200, "status": "online", "ipaddr": ' + str(sip)  + '}'
+	else:
+		return '{"result": 400, "status": "offline, "ipaddr": ' + str(sip)  + '}'
+
+@app.post("/v1/device/switch/{device}", status_code=200)
+async def switch(device):
 	global settings, url, ip
 	settings, url, ip = oe.init(device)
 
-	if oe.is_online():
-		return '{"result": 200, "status": "online", "ipaddr": ' + str(ip)  + '}'
-	else:
-		return '{"result": 400, "status": "offline, "ipaddr": ' + str(ip)  + '}'
-
-@app.get("/v1/status/network/info", status_code=200)
-async def network():
-        return '{"ip": ' + str(ip) + '}'
+	return '{"result": 200, "status": "active", "message": "Active device switched to radio "' + str(device)  + ', "ipaddr": ' + str(ip)  + '}'
 
 
 @app.get("/v1/status", status_code=200)
