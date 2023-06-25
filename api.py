@@ -9,9 +9,7 @@ app = FastAPI()
 
 global ip, url
 
-settings = oe.init()
-ip = settings["ipaddress"]
-url= "http://" + str(ip)
+settings, url, ip = oe.init()
 
 
 
@@ -19,16 +17,15 @@ url= "http://" + str(ip)
 
 
 
-@app.post("/v1/status/network/{ipaddr}", status_code=200)
-async def online(ipaddr):
-	global ip
-	settings, stations = oe.init(ipaddr)
-	ip = settings["ipaddress"]
+@app.post("/v1/status/network/{device}", status_code=200)
+async def online(device):
+	global settings, url, ip
+	settings, url, ip = oe.init(device)
 
 	if oe.is_online():
-		return '{"status": "online"}'
+		return '{"result": 200, "status": "online", "ipaddr": ' + str(ip)  + '}'
 	else:
-		return '{"status": "offline"}'
+		return '{"result": 400, "status": "offline, "ipaddr": ' + str(ip)  + '}'
 
 @app.get("/v1/status/network/info", status_code=200)
 async def network():

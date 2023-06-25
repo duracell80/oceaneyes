@@ -4,14 +4,17 @@ import oceaneyes as oe
 
 
 def main():
-	settings = oe.init()
+	# Get the settings from tinydb to know the ip address and language of device
+	settings, url, ip = oe.init()
 	ip = settings["ipaddress"]
 	url= "http://" + str(ip)
 
+	# Switch to another radio other than the primary one
+	#settings, url, ip = oe.switch(2)
+
 	if str(ip) == "0.0.0.0":
 		oe.scan()
-
-
+	# Keep these the lines above the online check
 
 	if oe.is_online():
 

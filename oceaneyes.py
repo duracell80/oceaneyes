@@ -27,8 +27,33 @@ def main():
 	return
 
 
-def init(ipaddr = None):
-	global url, ip
+def switch(device = 1):
+	try:
+		dbc	= TinyDB("settings.db")
+		dip	= dict((dbc.get(doc_id=int(device))))
+
+		ip	= str(dip["ipaddress"])
+		url	= str("http://" + ip)
+		dbc.close()
+
+		settings = {
+                	"ipaddress" : ip,
+                	"url"       : url,
+                	"language"  : "English"
+		}
+
+		return settings, url, ip
+	except:
+		settings = {
+			"ipaddress" : "0.0.0.0",
+			"url"       : "http://0.0.0.0",
+			"language"  : "English"
+		}
+		return settings, settings["url"], settings["ip"]
+
+def init(device = 1):
+	global url, ip, settings
+
 
 	# Attempt to find or set an ipaddress
 	if os.path.isfile("settings.db"):
@@ -41,11 +66,12 @@ def init(ipaddr = None):
 			code = oe.cache("RadioBrowser")
 
 		else:
-			conf    = dict((dbc.get(doc_id=1)))
-		conf    = dict((dbc.get(doc_id=1)))
+			conf    = dict((dbc.get(doc_id=int(device))))
+		conf    = dict((dbc.get(doc_id=int(device))))
 	else:
 		dbc     = TinyDB("settings.db")
-		for i in range(0,10):
+		# Create 20 radio devices in setting storage
+		for i in range(0,20):
 			dbc.insert({'ipaddress': '0.0.0.0', 'language': 'English'})
 
 	# Fallback on init to detect radio devices on network
@@ -54,11 +80,12 @@ def init(ipaddr = None):
 	except:
 		init()
 
-	url = "http://" + ip
+	settings, url, ip  = switch(int(device))
 	settings = {
 		"ipaddress" : ip,
+		"url"       : url,
 		"language"  : "English"
-        }
+	}
 
 	stations = {
 		"100":  {
@@ -71,7 +98,7 @@ def init(ipaddr = None):
 
 	dbc.close()
 
-	return settings
+	return settings, url, ip
 
 def scan():
 	if os.path.isfile("settings.db"):
@@ -134,13 +161,14 @@ def scan():
 	radios = len(devices)
 	if radios > 0:
         	if radios > 1:
-                	print("\n[i] Found " + str(radios) + " Skytune radio on the network")
-        	else:
                 	print("\n[i] Found " + str(radios) + " Skytune radios on the network")
+        	else:
+                	print("\n[i] Found " + str(radios) + " Skytune radio on the network")
         	for i in range(0,int(radios)):
                 	print("--- Radio " + str(i+1) + " @" + str(devices[i]))
 
 	return hosts, devices
+
 
 def convert_l2d(lst):
 	# Converts a list to a dictionary
