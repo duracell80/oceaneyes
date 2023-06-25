@@ -472,10 +472,9 @@ def get_remaining(thing = "fav"):
 def status():
 	status = "Unknown"
 	try:
-		print(ip)
 		r = requests.get("http://" + str(ip) + "/php/playing.php")
 		d = json.loads(str(r.text).replace("'", '"'))
-		print(d)
+
 		if d["result"] == "success":
 			status = "playing"
 			playing = str(d["name"])
@@ -603,10 +602,6 @@ def play(ch = "0"):
 		return code, message, playing
 
 
-def delete(chid = "100"):
-	chid = str(int(chid)-1)
-	r = requests.get(url + "/delCh.cgi", params = {"CI":chid})
-	return
 
 
 def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp3", chcountry = "-1", chgenre = "-1", chplay = False):
@@ -622,8 +617,12 @@ def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp
 		if chplay:
 			if is_streamable(churl, False):
 				r = requests.post(url + "/addCh.cgi", data=f)
+				if r.status_code == 200:
+					print("[i] Added station " + str(chname) + " to radio @" + str(ip))
 		else:
 			r = requests.post(url + "/addCh.cgi", data=f)
+			if r.status_code == 200:
+				print("[i] Added station " + str(chname) + " to radio @" + str(ip))
 
 		time.sleep(8)
 		t = get_total("fav")
@@ -1072,10 +1071,59 @@ def get_list(format = "plain", enrich = False):
 	return list
 
 
+
+
 def backup(enrich = False):
 	list = get_list("backup", enrich)
 	return list
 
+def delete(chid = "100"):
+	chid = str(int(chid)-1)
+	r = requests.get(url + "/delCh.cgi?CI="+str(chid))
+	if r.status_code == 200:
+		print("[i] Deleted channel " + str(int(chid)+1) + " from radio @" + str(ip))
+		return True
+	else:
+		return False
+
+
+def cleaner():
+	t = get_total()
+	i = 0
+	s = 0
+	d = False
+	while i < t:
+		d = delete(str(int(i)+1))
+		if d:
+			time.sleep(3)
+			s+=1
+		i+=1
+
+	return int(s)
+
+def restore(enrich = False):
+	list 	= []
+	dbs	= TinyDB("stations.db")
+
+	deleted = cleaner()
+
+	if int(deleted) > 0:
+		i=1
+		while i <= int(len(dbs)):
+			if i < 100:
+				record = dict((dbs.get(doc_id=int(i))))
+				chname		= record["name"]
+				churl		= record["url"]
+				chcountry	= record["country"].replace(",", ";")
+				chgenre		= record["genre"].replace(",", ";")
+
+				add(chname, churl, chcountry, chgenre, False)
+				time.sleep(2)
+
+			i+=1
+
+	dbs.close()
+	return True
 
 def html_decode(s):
 	htmlCodes = (

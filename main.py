@@ -8,9 +8,11 @@ def main():
 	global settings, url, ip
 
 	settings, url, ip = oe.init()
+	# Backup favourites from primary radio
+	#oe.backup(False)
 
 	# Switch to another radio other than the primary one
-	settings, url, ip = oe.switch(2)
+	#settings, url, ip = oe.switch(2)
 
 	ip = settings["ipaddress"]
 	url= "http://" + str(ip)
@@ -21,7 +23,6 @@ def main():
 	if oe.is_online():
 
 		code, status, playing = oe.status()
-		print(code)
 		if code == 200:
 			print("[i] Radio @" + str(ip) + " status: " + str(status) + " (" + str(playing)  + ")")
 		elif code == 400:
@@ -35,7 +36,10 @@ def main():
 		print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
 
 		# Back up favourites to tinydb file (stations.db), set True to atempt to unmask Skytune managed URL's
-		oe.backup(False)
+		#oe.backup(False)
+
+		# Restore favourites from server to currently selected radio
+		#oe.restore(False)
 
 		# Exact match search of Community Radio Browser by station name
 		#code, result = oe.search("BBC Radio 4", "RadioBrowser", True)
