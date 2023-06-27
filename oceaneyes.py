@@ -1025,10 +1025,19 @@ def get_list(format = "plain", enrich = False):
 	elif format == "pls":
 		pls += "\n" + str(pls_2).replace("0", str(int(len(name))))
 		list = pls
+		file_out = "export.pls"
+		with open(file_out, "w") as o:
+			o.write(list)
 	elif format == "m3u":
 		list = m3u
+		file_out = "export.m3u"
+		with open(file_out, "w") as o:
+			o.write(list)
 	elif format == "json":
 		list = str(jsn_1) + str(jsn) + str(jsn_2)
+		file_out = "export.json"
+		with open(file_out, "w") as o:
+			o.write(list)
 	elif format == "json-rpp":
 		# Linux Mint - Radio++ Applet
 		list = str(jsn_3) + str(jsn) + str(jsn_4)

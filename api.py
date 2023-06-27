@@ -4,6 +4,7 @@ import oceaneyes as oe
 
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
+from fastapi.responses import PlainTextResponse
 app = FastAPI()
 
 
@@ -128,6 +129,26 @@ async def fav_listen(ichid):
 
 	else:
 		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
+
+@app.get("/v1/fav/playlist/{format}", status_code=200)
+async def fav_playlist(format = "m3u"):
+	if format == "pls":
+		list = oe.get_list("pls")
+	elif format == "m3u":
+		list = oe.get_list("m3u")
+	elif format == "json":
+		list = oe.get_list("json")
+	elif format == "csv":
+		list = oe.get_list("csv")
+	elif format == "ssv":
+		list = oe.get_list("ssv")
+	elif format == "plain":
+		list = oe.get_list("plain")
+	else:
+		list = oe.get_list("m3u")
+
+	response = PlainTextResponse(content=str(list), status_code=200)
+	return response
 
 
 @app.get("/v1/fav/move/{r}", status_code=200)
