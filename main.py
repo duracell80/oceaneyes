@@ -20,7 +20,7 @@ def main():
 		oe.scan()
 	# Keep these the lines above the online check
 
-	if oe.is_online():
+	if oe.is_online(ip):
 
 		code, status, playing = oe.status()
 		if code == 200:
@@ -129,7 +129,7 @@ def main():
 		# This may take around 20 minutes due to remote bandwidth constraints, it's a free service and we can wait
 		#oe.cache("RadioBrowser")
 
-	#else:
+	else:
 		print("Radio offline")
 		# Get favourite info by channel id when radio is offline
         	#chid, chname, churl, chcountry, chgenre = oe.info_cached("1")

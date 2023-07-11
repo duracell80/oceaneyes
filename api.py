@@ -17,6 +17,23 @@ settings, url, ip = oe.init()
 
 
 
+@app.post("/v1/fav/add", status_code=200)
+async def fav_add(n, u):
+	if "http" in u:
+		c = "1;1;-1"
+		g = "2;68"
+
+		code, station = oe.add(str(n), str(u), str(c), str(g), False)
+		if code == 200:
+			return '{"result": ' + str(code) + ', "message": "Added: ' + str(station) + '"}'
+		elif code == 404:
+			return '{"result": ' + str(code) + ', "message": "Not Found: ' + str(station) + '"}'
+		else:
+			return '{"result": ' + str(code) + ', "message": "Failed to add: ' + str(station) + '"}'
+	else:
+		return '{"result": 500, "message": "Failed to add: ' + str(station) + '"}'
+
+
 
 @app.get("/v1/device/status/{device}", status_code=200)
 async def online(device):
@@ -159,10 +176,6 @@ async def fav_move(r):
 		return '{"result": ' + str(code) + ', "message": ' + str(message) + '}'
 	else:
 		return '{"result": ' + str(code) + ', "message": ""}'
-
-
-
-
 
 
 

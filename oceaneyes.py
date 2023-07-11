@@ -178,7 +178,7 @@ def convert_l2d(lst):
 	return res_dct
 
 
-def is_online():
+def is_online(ip = "0.0.0.0"):
 	args = socket.getaddrinfo(ip, 80, socket.AF_INET, socket.SOCK_STREAM)
 	for family, socktype, proto, canonname, sockaddr in args:
 		s = socket.socket(family, socktype, proto)
