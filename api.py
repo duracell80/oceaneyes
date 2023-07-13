@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys, time
+import os, sys, time
 import oceaneyes as oe
 
 from fastapi import FastAPI
@@ -166,6 +166,17 @@ async def fav_playlist(format = "m3u"):
 
 	response = PlainTextResponse(content=str(list), status_code=200)
 	return response
+
+@app.get("/v1/fav/sync/linux-mint", status_code=200)
+async def fav_rpp(format = "json-rpp"):
+	code = os.system("cinnamon --version")
+	if code == 32512:
+		return '{"result": 500, "message": "Linux Mint or Cinnamon Desktop Environment not detected on server"}'
+	else:
+		message = oe.get_list("json-rpp")
+		code = 200
+
+		return '{"result": ' + str(code) + ', "message": ' + str(message) + '}'
 
 
 @app.get("/v1/fav/move/{r}", status_code=200)
