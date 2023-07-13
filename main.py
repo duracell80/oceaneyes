@@ -1,9 +1,45 @@
 #!/usr/bin/python3
-import sys, time
+import sys, os, logging, time
 import oceaneyes as oe
 
 
-def main():
+
+def import_safe(m, v = "0.0.0"):
+	if m.isnumeric():
+		logging.error("Module parameters incorrect")
+		sys.exit()
+	try:
+		__import__(m)
+		result = True
+	except ModuleNotFoundError:
+		logging.error(f"Module not found: {m} ({v})")
+		os.system(f"pip install {m}=={v}")
+		result = True
+	except:
+		os.system(f"pip install {m}=={v}")
+		result = True
+
+
+	if result:
+		return True
+	else:
+		sys.exit()
+
+if import_safe("asyncio", "3.4.3"):
+	logging.info("[i] Importing asyncronization module")
+	import asyncio
+
+
+
+
+
+
+
+
+
+def init():
+	logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+
 	# Get the settings from tinydb to know the ip address and language of device
 	global settings, url, ip
 
@@ -19,6 +55,27 @@ def main():
 	if str(ip) == "0.0.0.0":
 		oe.scan()
 	# Keep these the lines above the online check
+
+
+def background(f):
+	def wrapped(*args, **kwargs):
+		return asyncio.new_event_loop().run_in_executor(None, f, *args, **kwargs)
+
+	return wrapped
+
+
+@background
+def api():
+	if import_safe("fastapi", "0.97.0"):
+		logging.info("[i] FastAPI available")
+	if import_safe("uvicorn", "0.22.0"):
+		logging.info("[i] Starting FastAPI as background task")
+		os.system("uvicorn api:app --host 127.0.0.1 --port 1929")
+
+
+
+
+def main():
 
 	if oe.is_online(ip):
 
@@ -136,4 +193,6 @@ def main():
 
 
 if __name__ == "__main__":
+	init()
+	api()
 	main()
