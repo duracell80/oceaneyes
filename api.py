@@ -95,8 +95,8 @@ async def fav_save():
 
 @app.get("/v1/fav/backup", status_code=200)
 async def fav_backup():
-	oe.get_list("backup", False)
-	return '{"result": 200, "message": "Exported from IPRadio to local database stations.db"}'
+	list = oe.get_list("backup", False)
+	return '{"result": 200, "message": "Exported from IPRadio to local database stations.db", "stations:", "' + str(list) + '"}'
 
 @app.get("/v1/fav/play/{c}", status_code=200)
 async def fav_play(c):

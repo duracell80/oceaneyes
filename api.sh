@@ -3,5 +3,5 @@ if ! [ -x "$(uvicorn api:app --host 127.0.0.1 --port 1929)" ]; then
 	pip install fastapi uvicorn[standard]
 	exit 1
 else
-	uvicorn api:app --host 127.0.0.1 --port 1929
+	uvicorn api:app --host 127.0.0.1 --port 1929 --reload
 fi
