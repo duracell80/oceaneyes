@@ -34,6 +34,19 @@ async def fav_add(n, u):
 		return '{"result": 500, "message": "Failed to add: ' + str(station) + '"}'
 
 
+@app.get("/v1/device/scan", status_code=200)
+async def scan():
+	hosts, devices = oe.scan()
+	radios = len(devices)
+	radiol = ""
+	if radios > 0:
+		for i in range(0,int(radios)):
+			radiol += "Radio " + str(i+1) + "@" + str(devices[i]) + ","
+
+		return '{"result": 200, "message": "' + str(radios) + ' radio(s) found on this network ", "devices": "' + str(radiol) + '", "webhosts": "' + str(hosts) + '"}'
+	else:
+		return '{"result": 404, "message": "No radios found on this network", "webhosts": "' + str(hosts) + '"}'
+
 
 @app.get("/v1/device/status/{device}", status_code=200)
 async def online(device):

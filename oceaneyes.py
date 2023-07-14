@@ -1,10 +1,12 @@
 #!/usr/bin/python3
-import sys, os, time, socket, requests, urllib, urllib.parse, json
+import sys, os, time, logging, socket, requests, urllib, urllib.parse, json
 try:
 	from tinydb import TinyDB, Query
 except ModuleNotFoundError:
 	os.system('pip install tinydb')
 	from tinydb import TinyDB, Query
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 
 global headers, url_placeholder, name_placeholder, country_placeholder, genre_placeholder
@@ -119,6 +121,7 @@ def scan():
 	hosts   = []
 	devices = []
 	d	= 0
+	logging.info("[i] Auto detecting Skytune radios on the LAN, this may take some time ...")
 	print("[i] Auto detecting Skytune radios on the LAN ... \n\nPress Ctrl + Z when all known devices are found")
 	print("Press Ctrl + C if scanning seems to be stuck\n\n")
 	print("--- Tip: Take note of these numbers and then set")
@@ -133,8 +136,11 @@ def scan():
 			except:
 				p = 0
 				print("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ")")
+				logging.info("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ")")
 			if p == 80:
 				print("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ") [P:80]")
+				logging.info("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ") [P:80]")
+
 
 				# test that the radio can be pinged
 				result  = str(os.popen("ping " + str(host) + " -w 5 -W 5").read())
@@ -154,6 +160,7 @@ def scan():
 					devices.append(host)
 					dbc.update({'ipaddress': str(host)}, doc_ids=[int(d)])
 					print("\n[+] Found a radio @" + str(host) + ":80\n\n")
+					logging.info("\n[+] Found a radio @" + str(host) + ":80\n\n")
 			except:
 				x=1
 
@@ -161,12 +168,15 @@ def scan():
 
 	radios = len(devices)
 	if radios > 0:
-        	if radios > 1:
-                	print("\n[i] Found " + str(radios) + " Skytune radios on the network")
-        	else:
-                	print("\n[i] Found " + str(radios) + " Skytune radio on the network")
-        	for i in range(0,int(radios)):
-                	print("--- Radio " + str(i+1) + " @" + str(devices[i]))
+		if radios > 1:
+			print("\n[i] Found " + str(radios) + " Skytune radios on the network")
+			logging.info("\n[i] Found " + str(radios) + " Skytune radios on the network")
+		else:
+			print("\n[i] Found " + str(radios) + " Skytune radio on the network")
+			logging.info("\n[i] Found " + str(radios) + " Skytune radio on the network")
+		for i in range(0,int(radios)):
+			print("--- Radio " + str(i+1) + " @" + str(devices[i]))
+			logging.info("--- Radio " + str(i+1) + " @" + str(devices[i]))
 
 	return hosts, devices
 
