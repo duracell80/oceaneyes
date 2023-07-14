@@ -1,6 +1,8 @@
 #!/usr/bin/python3
-import os, sys, time
+import os, sys, time, logging
 import oceaneyes as oe
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
@@ -54,8 +56,10 @@ async def online(device):
 	ssettings, surl, sip = oe.init(device)
 
 	if oe.is_online():
+		logging.info(f"[i] Status of radio@{ip}: online")
 		return '{"result": 200, "status": "online", "ipaddr": ' + str(sip)  + '}'
 	else:
+		logging.info(f"[i] Status of radio@{ip}: offline")
 		return '{"result": 400, "status": "offline, "ipaddr": ' + str(sip)  + '}'
 
 @app.get("/v1/device/switch/{device}", status_code=200)
@@ -66,12 +70,24 @@ async def switch(device):
 	return '{"result": 200, "status": "active", "message": "Active device switched to radio "' + str(device)  + ', "ipaddr": ' + str(ip)  + '}'
 
 
+
+@app.get("/v1/device/app", status_code=200)
+async def loadapp():
+	if oe.is_online():
+		logging.info(f"[i] Loading the native webapp of radio@{ip}")
+		response = RedirectResponse(url=str(url))
+		return response
+	else:
+		return '{"result": 200, "status": "offline", "message": "Please turn on the radio", "ipaddr": ' + str(ip)  + '}'
+
 @app.get("/v1/playing", status_code=200)
 async def status():
 	code, status, playing = oe.status()
 	if code == 200:
+		logging.info(f"[i] Status of radio@{ip}: playing - {playing} [{code}]")
 		return '{"result": 200, "status": "playing", "message": "' + str(playing)  + '", "ipaddr": ' + str(ip)  + '}'
 	else:
+		logging.info(f"[i] Status of radio@{ip}: stopped (or FM/DAB playing)")
 		return '{"result": 200, "status": "stopped", "message": "None", "ipaddr": ' + str(ip)  + '}'
 
 @app.get("/v1/volume/up", status_code=200)
@@ -109,7 +125,9 @@ async def fav_save():
 @app.get("/v1/fav/backup", status_code=200)
 async def fav_backup():
 	list = oe.get_list("backup", False)
-	return '{"result": 200, "message": "Exported from IPRadio to local database stations.db", "stations:", "' + str(list) + '"}'
+	message = "Exported from radio@" + str(ip) + " to local database stations.db"
+	logging.info(f"[i] : {message}")
+	return '{"result": 200, "message": "' + str(message) + '", "stations:", "' + str(list) + '"}'
 
 @app.get("/v1/fav/play/{c}", status_code=200)
 async def fav_play(c):
@@ -152,12 +170,16 @@ async def fav_listen(ichid):
 			chid, chname, churl, chcountry, chgenre = oe.info_cached(str(int(ichid)))
 
 		if "http" in str(churl):
+			logging.info(f"[i] Listening to channel {chid} from radio@{ip} on a local device")
+			logging.info(f"--- proxyto={churl}")
 			response = RedirectResponse(url=str(churl))
 			return response
 		else:
+			logging.info(f"[i] Listening to channel {chid} from radio@{ip} not possible or is masked by skytune")
 			return '{"result": 400, "message": "Channel may not be playable"}'
 
 	else:
+		logging.info(f"[i] Attempting to listen to channel {ichid} and input is not a number, try an integer")
 		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
 
 @app.get("/v1/fav/playlist/{format}", status_code=200)
@@ -196,10 +218,20 @@ async def fav_rpp(format = "json-rpp"):
 async def fav_move(r):
 	if ":" in r:
 		r_bits = r.split(":")
-		code, message = oe.move(str(r_bits[0]), str(r_bits[1]))
-		return '{"result": ' + str(code) + ', "message": ' + str(message) + '}'
+		if r_bits[0].isnumeric() and r_bits[1].isnumeric() and r_bits[0].isdigit() and r_bits[1].isdigit():
+			code, message = oe.move(str(r_bits[0]), str(r_bits[1]))
+			if code == 200:
+				logging.info(f"[i] Moved preset from {r_bits[0]} to {r_bits[1]}")
+				return '{"result": ' + str(code) + ', "message": ' + str(message) + '}'
+			else:
+				logging.info(f"[!] Preset move failed")
+				return '{"result": ' + str(code) + ', "message": ' + str(message) + '}'
+		else:
+			logging.info(f"[!] Preset move failed, input given needed to be integers")
+			return '{"result": 500, "message": "To move a preset to another position supply in this format 2:20 to move from 2 to 20"}'
 	else:
-		return '{"result": ' + str(code) + ', "message": ""}'
+		logging.info(f"[!] To move a preset to another position supply in this format 2:20 to move from 2 to 20")
+		return '{"result": ' + str(code) + ', "message": "To move a preset to another position supply in this format 2:20 to move from 2 to 20"}'
 
 
 

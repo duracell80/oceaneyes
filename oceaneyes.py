@@ -498,6 +498,7 @@ def status():
 		playing= "None"
 		code = 404
 
+	#logging.info(f"[i] Status of radio@{ip}: {playing} [{code}]")
 	return  code, status, playing
 
 
