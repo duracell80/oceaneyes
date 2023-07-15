@@ -191,6 +191,10 @@ async def fav_listen(chid):
 		logging.info(f"[i] Attempting to listen to preset {ichid} and input is not a number, try an integer")
 		return '{"result": 500, "message": "Preset index not a number, try requesting with an integer value"}'
 
+
+
+
+
 @app.get("/v1/fav/playlist/{format}", status_code=200)
 async def fav_playlist(format = "m3u"):
 	if format == "pls":
@@ -249,8 +253,18 @@ async def fav_move(r):
 
 
 
+@app.get("/v1/local/tv/{chid}", status_code=200)
+async def tune_tv(c):
+	url_iptv = "http://192.168.2.221:5004/auto/v"
+	if c:
+		chid = c
+	else:
+		chid = 2.1
 
-
+	os.system(f"ffmpeg -re -i {url_iptv}{chid} -vn -codec:a libmp3lame -b:a 128k -f mp3 -content_type audio/mpeg icecast://source:rdo@127.0.0.1:3345/hdhomerun &")
+	#response = RedirectResponse(url="http://192.168.2.10:3345")
+	#return response
+	return '{"result": 200, "message": "Tuned HDHomeRun to ' + str(chid) + ', tune into http://192.168.2.10:3345/hdhomerun"}'
 
 
 @app.get("/v1/search/radiobrowser/{keywords}", status_code=200)
