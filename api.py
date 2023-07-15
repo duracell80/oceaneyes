@@ -82,7 +82,7 @@ async def loadapp():
 
 @app.get("/v1/playing", status_code=200)
 async def status():
-	code, status, playing = oe.status()
+	code, status, playing = oe.get_status()
 	if code == 200:
 		logging.info(f"[i] Status of radio@{ip}: playing - {playing} [{code}]")
 		return '{"result": 200, "status": "playing", "message": "' + str(playing)  + '", "ipaddr": ' + str(ip)  + '}'
@@ -91,19 +91,19 @@ async def status():
 		return '{"result": 200, "status": "stopped", "message": "None", "ipaddr": ' + str(ip)  + '}'
 
 @app.get("/v1/volume/up", status_code=200)
-async def status():
+async def volume_up():
 	return str(oe.volume("up"))
 
 @app.get("/v1/volume/down", status_code=200)
-async def status():
+async def volume_dn():
 	return str(oe.volume("down"))
 
 @app.get("/v1/volume/mute", status_code=200)
-async def status():
+async def volume_mu():
 	return str(oe.volume("mute"))
 
 @app.get("/v1/volume/unmute", status_code=200)
-async def status():
+async def volume_um():
 	return str(oe.volume("unmute"))
 
 @app.get("/v1/fav/vacant", status_code=200)
@@ -132,14 +132,23 @@ async def fav_backup():
 @app.get("/v1/fav/play/{c}", status_code=200)
 async def fav_play(c):
 	if c.isnumeric():
-		code, message = oe.play(str(c))
-		if code == 200:
-			return '{"result": ' + str(code) + ', "message": "' + str(message) + '"}'
+		logging.info(f"[i] Request to play preset {str(c)} on radio@{ip} ... checking stream")
+		chid, chname, churl, country_str, genre_str = oe.info_get(str(c))
+		if oe.is_streamable(str(churl), False):
+			code, message, playing = oe.play(str(c))
+			if code == 200:
+				logging.info(f"[i] Playing preset {str(int(chid) + 1)} on radio@{ip}")
+				logging.info(f"--- {churl}")
+				return '{"result": ' + str(code) + ', "message": "' + str(message) + '"}'
+			else:
+				logging.info(f"[i] Cannot play preset {str(int(chid) + 1)} on radio@{ip} ... Preset out of range")
+				return '{"result": ' + str(code) + ', "message": "Preset may be out of range"}'
 		else:
-			return '{"result": ' + str(code) + ', "message": "Channel may be out of range"}'
-
+			logging.info(f"[i] Cannot play preset {str(int(chid) + 1)} on radio@{ip}")
+			logging.info(f"--- {churl}")
+			return '{"result": 404, "message": "Station not streamable"}'
 	else:
-		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
+		return '{"result": 500, "message": "Preset not a number, try requesting with an integer value"}'
 
 
 @app.get("/v1/fav/listen/vlc/{chid}", status_code=200)
@@ -149,38 +158,38 @@ async def fav_listen(chid):
 		if code == 200:
 			return '{"result": ' + str(code) + ', "message": "' + str(message) + '"}'
 		else:
-			return '{"result": ' + str(code) + ', "message": "Channel may be out of range"}'
+			return '{"result": ' + str(code) + ', "message": "Preset may be out of range"}'
 
 	else:
-		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
+		return '{"result": 500, "message": "Preset index not a number, try requesting with an integer value"}'
 
 
-@app.get("/v1/fav/listen/browser/{ichid}", status_code=200)
-async def fav_listen(ichid):
-	if ichid.isnumeric():
-		chid 		= None
+@app.get("/v1/fav/listen/browser/{chid}", status_code=200)
+async def fav_listen(chid):
+	if chid.isnumeric():
+		ichid 		= chid
 		chname 		= "not set"
 		churl		= "not set"
 		country_str	= "not set"
 		genre_str	= "not set"
 
 		if oe.is_online():
-			chid, chname, churl, country_str, genre_str = oe.info_get(str(int(ichid)))
+			chid, chname, churl, country_str, genre_str = oe.info_get(str(int(chid)))
 		else:
-			chid, chname, churl, chcountry, chgenre = oe.info_cached(str(int(ichid)))
+			chid, chname, churl, chcountry, chgenre = oe.info_cached(str(int(chid)))
 
 		if "http" in str(churl):
-			logging.info(f"[i] Listening to channel {chid} from radio@{ip} on a local device")
+			logging.info(f"[i] Listening to preset {str(int(chid) + 1)} from radio@{ip} on a local device")
 			logging.info(f"--- proxyto={churl}")
 			response = RedirectResponse(url=str(churl))
 			return response
 		else:
-			logging.info(f"[i] Listening to channel {chid} from radio@{ip} not possible or is masked by skytune")
-			return '{"result": 400, "message": "Channel may not be playable"}'
+			logging.info(f"[i] Listening to preset {chid} from radio@{ip} not possible or is masked by skytune")
+			return '{"result": 400, "message": "Prest may not be playable"}'
 
 	else:
-		logging.info(f"[i] Attempting to listen to channel {ichid} and input is not a number, try an integer")
-		return '{"result": 500, "message": "Channel index not a number, try requesting with an integer value"}'
+		logging.info(f"[i] Attempting to listen to preset {ichid} and input is not a number, try an integer")
+		return '{"result": 500, "message": "Preset index not a number, try requesting with an integer value"}'
 
 @app.get("/v1/fav/playlist/{format}", status_code=200)
 async def fav_playlist(format = "m3u"):

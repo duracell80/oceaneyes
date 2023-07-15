@@ -479,7 +479,7 @@ def get_remaining(thing = "fav"):
 	return int(t)
 
 
-def status():
+def get_status():
 	status = "Unknown"
 	try:
 		r = requests.get("http://" + str(ip) + "/php/playing.php")
@@ -600,17 +600,19 @@ def play(ch = "0"):
 	if int(ch) <= t:
 		r = requests.get(url + "/doApi.cgi", params = {"AI":"16", "CI": str(int(ch) - 1)})
 		if r.status_code == 200:
-			code, status, playing = status()
+			code, status, playing = get_status()
+			message = "Changing channel"
 			return code, message, playing
 		else:
-			code = 400
+			code = 500
 			message = "Failed to change channel"
 			playing = "None"
 	else:
-		code = 400
+		code = 404
 		message = "Failed to change channel"
 		playing = "None"
-		return code, message, playing
+
+	return code, message, playing
 
 
 
@@ -746,7 +748,7 @@ def add_current():
 	t = 0
 	c = get_total("fav")
 
-	code, status, playing = status()
+	code, status, playing = get_status()
 	if "stopped" in status.lower():
 		station = "None"
 	else:
@@ -755,7 +757,7 @@ def add_current():
 		t = get_total("fav")
 
 		# Read currently playing
-		code, status, playing = status()
+		code, status, playing = get_status()
 		station = playing
 
 	if t > c:
@@ -770,7 +772,7 @@ def del_current():
 	t = 0
 	c = get_total("fav")
 
-	code, status, playing = status()
+	code, status, playing = get_status()
 	if "stopped" in status.lower():
 		station = "None"
 	else:
@@ -779,7 +781,7 @@ def del_current():
 		t = get_total("fav")
 
 		# Read currently playing
-		code, status, playing = status()
+		code, status, playing = get_status()
 		station = playing
 
 	if t < c:
