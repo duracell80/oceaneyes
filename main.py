@@ -72,10 +72,16 @@ def api():
 		logging.info("[i] Starting FastAPI as background task")
 		os.system(f"uvicorn api:app --host {sip} --port 1929")
 
-
+# Bring NRSC5 to Ocean Digital Radios (Requires, NRSC5, Icecast2 (configured), ffmpeg and an RTL-SDR USB dongle)
+@background
+def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
+	oe.hdradio(c, p, port, pswd)
 
 
 def main():
+
+	# Uncomment to start HDRadio Stream (http://yourip:3345/hdradio)
+	# hdradio("90.3", "0", "3345", "rdo")
 
 	if oe.is_online(ip):
 

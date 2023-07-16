@@ -258,7 +258,7 @@ async def listen_fmradio(f = "90.3"):
 	if isfloat(str(f)):
 		url_rdio = "http://"+ str(sip) +":3345/fmradio"
 		url_rm3u = "http://"+ str(sip) +":3345/fmradio.m3u"
-		os.system(f"rtl_fm -f {f}M -M wfm -s 180k -E deemp | sox -traw -r180k -es -b16 -c1 -V1 - -t flac - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:rdo@{sip}:3345/fmradio &")
+		os.system(f"rtl_fm -f {f}M -M wfm -s 180k -E deemp | sox -traw -r180k -es -b16 -c1 -V1 - -t flac - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:rdo@{sip}:3345/fmradio")
 		time.sleep(3)
 
 		response = RedirectResponse(url=str(url_rm3u))
@@ -275,7 +275,7 @@ async def listen_hdradio(c = "90.3", p = "0" ):
 	if isfloat(str(c)) and p.isnumeric():
 		url_rdio = "http://"+ str(sip) +":3345/hdradio"
 		url_rm3u = "http://"+ str(sip) +":3345/hdradio.m3u"
-		os.system(f"nrsc5 -d 0 {c} {p} -o - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:rdo@{sip}:3345/hdradio &")
+		os.system(f"nrsc5 -q -d 0 {c} {p} -o - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:rdo@{sip}:3345/hdradio")
 		time.sleep(10)
 
 		response = RedirectResponse(url=str(url_rm3u))

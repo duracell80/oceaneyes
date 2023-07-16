@@ -201,6 +201,12 @@ def convert_l2d(lst):
 
 	return res_dct
 
+def isfloat(sin):
+	if sin.replace(".", "").isnumeric():
+		return True
+	else:
+		return False
+
 
 def is_online(ip = "0.0.0.0"):
 	args = socket.getaddrinfo(ip, 80, socket.AF_INET, socket.SOCK_STREAM)
@@ -1752,6 +1758,21 @@ def search_country(cdict = "3", cstring = "Not Set"):
 			c = 604
 
 	return int(c), str(l)
+
+
+# Bring HDRadio capability to an Internet Radio with ICECAST2, NRSC5 CLI and an RTL-SDR USB dongle
+def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
+	if isfloat(str(c)) and p.isnumeric():
+		url_rdio = "http://"+ str(sip) +":" + str(port) + "/hdradio"
+		url_rm3u = "http://"+ str(sip) +":" + str(port) + "/hdradio.m3u"
+		os.system(f"nrsc5 -q -d 0 {c} {p} -o - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/hdradio")
+		time.sleep(10)
+
+		return 200
+	else:
+		return 400
+
+
 
 if __name__ == "__main__":
 	main()
