@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import os, sys, time, logging
+import os, sys, requests, time, logging
 import oceaneyes as oe
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -10,8 +10,8 @@ from fastapi.responses import PlainTextResponse
 app = FastAPI()
 
 
-global ip, url
-
+global sip, ip, url
+sip = oe.get_serverip()
 settings, url, ip = oe.init()
 
 
@@ -253,18 +253,25 @@ async def fav_move(r):
 
 
 
-@app.get("/v1/local/tv/{chid}", status_code=200)
-async def tune_tv(c):
+@app.get("/v1/listen/tv/{c}", status_code=200)
+async def listen_hdhomerun(c):
 	url_iptv = "http://192.168.2.221:5004/auto/v"
+	url_rdio = "http://"+ str(sip) +":3345/hdhomerun"
+	url_rm3u = "http://"+ str(sip) +":3345/hdhomerun.m3u"
 	if c:
 		chid = c
 	else:
 		chid = 2.1
 
-	os.system(f"ffmpeg -re -i {url_iptv}{chid} -vn -codec:a libmp3lame -b:a 128k -f mp3 -content_type audio/mpeg icecast://source:rdo@127.0.0.1:3345/hdhomerun &")
-	#response = RedirectResponse(url="http://192.168.2.10:3345")
-	#return response
-	return '{"result": 200, "message": "Tuned HDHomeRun to ' + str(chid) + ', tune into http://192.168.2.10:3345/hdhomerun"}'
+	os.system(f"ffmpeg -re -i {url_iptv}{chid} -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:rdo@{sip}:3345/hdhomerun &")
+	time.sleep(10)
+	#playlist = requests.get(url_rm3u)
+	#response = PlainTextResponse(content=str(playlist), status_code=200)
+
+	#response = RedirectResponse(url=str(url_rdio))
+	response = RedirectResponse(url=str(url_rm3u))
+
+	return response
 
 
 @app.get("/v1/search/radiobrowser/{keywords}", status_code=200)

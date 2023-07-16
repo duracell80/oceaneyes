@@ -31,6 +31,7 @@ def main():
 
 def switch(device = 1):
 	global url, ip, settings
+
 	try:
 		dbc	= TinyDB("settings.db")
 		dip	= dict((dbc.get(doc_id=int(device))))
@@ -54,9 +55,22 @@ def switch(device = 1):
 		}
 		return settings, settings["url"], settings["ip"]
 
-def init(device = 1):
-	global url, ip, settings
+def get_serverip():
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	s.settimeout(0)
+	try:
+		s.connect(('1.1.1.1', 1))
+		sip = s.getsockname()[0]
+	except Exception:
+		sip = '127.0.0.1'
+	finally:
+		s.close()
+	return sip
 
+
+def init(device = 1):
+	global url, ip, sip, settings
+	sip = get_serverip()
 
 	# Attempt to find or set an ipaddress
 	if os.path.isfile("settings.db"):
