@@ -1,5 +1,7 @@
 #!/usr/bin/python3
-import os, socket, requests
+import os, socket, sys, subprocess, requests
+
+sys.exit()
 
 # Perform LAN scan
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

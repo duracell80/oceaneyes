@@ -1,8 +1,9 @@
 #!/usr/bin/python3
-import os, sys, requests, time, logging
+import os, sys, subprocess, requests, urllib.parse, time, logging
 import oceaneyes as oe
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+
 
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
@@ -219,12 +220,10 @@ async def fav_playlist(format = "m3u"):
 	response = PlainTextResponse(content=str(list), status_code=200)
 	return response
 
-@app.get("/v1/fav/sync/linux-mint", status_code=200)
-async def fav_rpp(format = "json-rpp"):
-	code = os.system("cinnamon --version")
-	if code == 32512:
-		return '{"result": 500, "message": "Linux Mint or Cinnamon Desktop Environment not detected on server"}'
-	else:
+installed_cinnamon = subprocess.getoutput('cinnamon --version')
+if "cinnamon" in installed_cinnamon.lower():
+	@app.get("/v1/fav/sync/linux-mint", status_code=200)
+	async def fav_rpp(format = "json-rpp"):
 		message = oe.get_list("json-rpp")
 		code = 200
 
@@ -282,6 +281,22 @@ async def listen_hdradio(c = "90.3", p = "0" ):
 		return response
 	else:
 		return '{"result": 500, "message": "Supply the FM frequency and then the hybrid program index for example listen/hdradio/90.3/0"}'
+
+
+# For listening to newer stream technology such as HLS or FLAC on older equipment (transcoding to Vorbis to help retain quality)
+@app.post("/v1/listen/cdradio", status_code=200)
+async def listen_cdradio(s = "https://hls.somafm.com/hls/groovesalad/FLAC/program.m3u8"):
+	if "http" in str(s).lower():
+		url_prox = "http://"+ str(sip) +":3372/cdradio.ogg"
+		os.system("cvlc " + str(s) +" --prefetch-buffer-size=8000 --sout-mux-caching=8000 --sout '#transcode{acodec=vorb,ab=320}:standard{access=http,mux=ogg,dst=" + str(sip) + ":3372/cdradio.ogg}'")
+		time.sleep(3)
+
+		return '{"result": 200, "message": "Add this url to your radio device: "' + str(url_prox) + '}'
+	else:
+		return '{"result": 500, "message": "Supply the url with protocol for example https://hls.somafm.com/hls/groovesalad/FLAC/program.m3u8"}'
+
+
+
 
 @app.get("/v1/listen/tv/{c}", status_code=200)
 async def listen_hdhomerun(c):
