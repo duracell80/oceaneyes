@@ -284,7 +284,7 @@ async def listen_hdradio(c = "90.3", p = "0" ):
 
 
 # For listening to newer stream technology such as HLS or FLAC on older equipment (transcoding to Vorbis to help retain quality)
-@app.post("/v1/listen/cdradio", status_code=200)
+@app.get("/v1/listen/cdradio", status_code=200)
 async def listen_cdradio(s = "https://hls.somafm.com/hls/groovesalad/FLAC/program.m3u8"):
 	if "http" in str(s).lower():
 		url_prox = "http://"+ str(sip) +":3372/cdradio.ogg"
