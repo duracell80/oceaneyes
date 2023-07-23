@@ -1778,6 +1778,23 @@ def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
 		return pid
 
 
+# Bring YouTube Live streams to an Internet Radio with ICECAST2, FFMPEG and YT-DLP
+def ytradio(c = "jfKfPfyJRdk", p = "91", port = "3345", pswd = "rdo"):
+	pid = 0
+	#pid_ytdlp = subprocess.getoutput('ps aux | grep -i "ffmpeg" | head -n1 | cut -d " " -f10')
+	#os.system('kill -9 ' + pid_ytdlp)
+
+	if p.isnumeric():
+		url_rdio = "http://"+ str(sip) +":" + str(port) + "/ytradio-" + str(c)
+		url_rm3u = "http://"+ str(sip) +":" + str(port) + "/ytradio-" + str(c) + ".m3u"
+		os.system(f"yt-dlp -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:rdo@{sip}:3345/ytradio-" + str(c) + "&")
+		time.sleep(10)
+		pid = subprocess.getoutput('ps aux | grep -i "ffmpeg" | head -n1 | cut -d " " -f10')
+
+		return pid
+	else:
+		return pid
+
 
 if __name__ == "__main__":
 	main()

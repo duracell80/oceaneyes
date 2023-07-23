@@ -81,6 +81,11 @@ def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
 	pid_nrsc5 = oe.hdradio(c, p, port, pswd)
 
 
+# Bring NRSC5 to Ocean Digital Radios (Requires, NRSC5, Icecast2 (configured), ffmpeg and an RTL-SDR USB dongle)
+@background
+def ytradio(c = "jfKfPfyJRdk", p = "91", port = "3345", pswd = "rdo"):
+	pid_ytdlp = oe.ytradio(c, p, port, pswd)
+
 def main():
 
 	if oe.is_online(ip):
@@ -194,7 +199,12 @@ def main():
 
 		# Listen to HDRadio (nrsc5) over icecast
 		# Uncomment to start HDRadio Stream (http://yourip:3345/hdradio)
-		hdradio("90.3", "0", "3345", "rdo")
+		# hdradio("90.3", "0", "3345", "rdo")
+
+		# Listen to YouTube Live over icecast
+		# Uncomment to start Youtube Stream (http://yourip:3345/ytradio)
+		#ytradio("jfKfPfyJRdk", "91", "3345", "rdo")
+
 
 
 	else:

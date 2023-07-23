@@ -296,6 +296,16 @@ async def listen_cdradio(s = "https://hls.somafm.com/hls/groovesalad/FLAC/progra
 		return '{"result": 500, "message": "Supply the url with protocol for example https://hls.somafm.com/hls/groovesalad/FLAC/program.m3u8"}'
 
 
+@app.get("/v1/listen/ytradio/{c}/{p}", status_code=200)
+async def listen_ytradio(c = "jfKfPfyJRdk", p = "91" ):
+	if p.isnumeric():
+		pid = oe.ytradio(str(c), str(p), "3345", "rdo")
+		url_prox = "http://" + str(sip) + ":3345/ytradio-" + str(c) + ".m3u"
+		return '{"result": 200, "message": "Add this url to your radio device: "' + str(url_prox) + '"}'
+	else:
+		return '{"result": 500, "message": "Supply the youtube stream ID as an integer number for example 91"}'
+
+
 
 
 @app.get("/v1/listen/tv/{c}", status_code=200)
