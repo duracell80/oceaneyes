@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys, os, time, logging, socket, requests, urllib, urllib.parse, json
+import sys, os, subprocess, time, logging, socket, requests, urllib, urllib.parse, json
 try:
 	from tinydb import TinyDB, Query
 except ModuleNotFoundError:
@@ -1762,15 +1762,20 @@ def search_country(cdict = "3", cstring = "Not Set"):
 
 # Bring HDRadio capability to an Internet Radio with ICECAST2, NRSC5 CLI and an RTL-SDR USB dongle
 def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
+	pid = 0
+	pid_nrsc5 = subprocess.getoutput('ps aux | grep -i "nrsc5" | head -n1 | cut -d " " -f10')
+	os.system('kill -9 ' + pid_nrsc5)
+
 	if isfloat(str(c)) and p.isnumeric():
 		url_rdio = "http://"+ str(sip) +":" + str(port) + "/hdradio"
 		url_rm3u = "http://"+ str(sip) +":" + str(port) + "/hdradio.m3u"
-		os.system(f"nrsc5 -q -d 0 {c} {p} -o - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/hdradio")
+		os.system(f"nrsc5 -q -d 0 {c} {p} -o - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/hdradio &")
 		time.sleep(10)
+		pid = subprocess.getoutput('ps aux | grep -i "nrsc5" | head -n1 | cut -d " " -f10')
 
-		return 200
+		return pid
 	else:
-		return 400
+		return pid
 
 
 

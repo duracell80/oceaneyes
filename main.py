@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys, os, logging, time
+import sys, os, subprocess, signal, logging, time
 import oceaneyes as oe
 
 
@@ -32,16 +32,19 @@ if import_safe("asyncio", "3.4.3"):
 
 
 
-
-
+def signal_handler(signal, frame):
+	os.system('kill -9 ' + pid_nrsc5)
+	print("Exiting gracefully...")
+	sys.exit(0)
 
 
 
 def init():
+	signal.signal(signal.SIGINT, signal_handler)
 	logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 	# Get the settings from tinydb to know the ip address and language of device
-	global settings, url, sip, ip
+	global settings, url, sip, ip, pid_nrsc5
 
 	settings, url, ip = oe.init()
 	# Backup favourites from primary radio
@@ -75,13 +78,10 @@ def api():
 # Bring NRSC5 to Ocean Digital Radios (Requires, NRSC5, Icecast2 (configured), ffmpeg and an RTL-SDR USB dongle)
 @background
 def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
-	oe.hdradio(c, p, port, pswd)
+	pid_nrsc5 = oe.hdradio(c, p, port, pswd)
 
 
 def main():
-
-	# Uncomment to start HDRadio Stream (http://yourip:3345/hdradio)
-	# hdradio("90.3", "0", "3345", "rdo")
 
 	if oe.is_online(ip):
 
@@ -191,6 +191,11 @@ def main():
 
 		# This may take around 20 minutes due to remote bandwidth constraints, it's a free service and we can wait
 		#oe.cache("RadioBrowser")
+
+		# Listen to HDRadio (nrsc5) over icecast
+		# Uncomment to start HDRadio Stream (http://yourip:3345/hdradio)
+		hdradio("90.3", "0", "3345", "rdo")
+
 
 	else:
 		print("Radio offline")
