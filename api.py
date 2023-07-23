@@ -300,8 +300,14 @@ async def listen_cdradio(s = "https://hls.somafm.com/hls/groovesalad/FLAC/progra
 async def listen_ytradio(c = "jfKfPfyJRdk", p = "91" ):
 	if p.isnumeric():
 		pid = oe.ytradio(str(c), str(p), "3345", "rdo")
-		url_prox = "http://" + str(sip) + ":3345/ytradio-" + str(c) + ".m3u"
-		return '{"result": 200, "message": "Add this url to your radio device: "' + str(url_prox) + '"}'
+		time.sleep(10)
+		url_rdio = "http://" + str(sip) + ":3345/ytradio-" + str(c)
+		url_rm3u = "http://" + str(sip) + ":3345/ytradio-" + str(c) + ".m3u"
+
+		response = RedirectResponse(url=str(url_rdio))
+		return response
+
+		#return '{"result": 200, "message": "Add this url to your radio device: "' + str(url_prox) + '"}'
 	else:
 		return '{"result": 500, "message": "Supply the youtube stream ID as an integer number for example 91"}'
 

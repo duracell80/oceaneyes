@@ -26,7 +26,6 @@ def import_safe(m, v = "0.0.0"):
 		sys.exit()
 
 if import_safe("asyncio", "3.4.3"):
-	logging.info("[i] Importing asyncronization module")
 	import asyncio
 
 
@@ -81,7 +80,7 @@ def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
 	pid_nrsc5 = oe.hdradio(c, p, port, pswd)
 
 
-# Bring NRSC5 to Ocean Digital Radios (Requires, NRSC5, Icecast2 (configured), ffmpeg and an RTL-SDR USB dongle)
+# Bring YouTube Live to Ocean Digital Radios (Requires, YTDLP, Icecast2 (configured) and ffmpeg)
 @background
 def ytradio(c = "jfKfPfyJRdk", p = "91", port = "3345", pswd = "rdo"):
 	pid_ytdlp = oe.ytradio(c, p, port, pswd)

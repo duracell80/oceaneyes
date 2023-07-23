@@ -1,0 +1,1 @@
+yt-dlp -f $2 https://www.youtube.com/watch?v=$1 -o - | ffmpeg -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:$5@$3:$4/ytradio-$1 &

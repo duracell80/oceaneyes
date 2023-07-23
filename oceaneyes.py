@@ -24,6 +24,34 @@ headers = {
 }
 
 
+def import_safe(m, v = "0.0.0"):
+	if m.isnumeric():
+		logging.error("Module parameters incorrect")
+		sys.exit()
+	try:
+		__import__(m)
+		result = True
+	except ModuleNotFoundError:
+		logging.error(f"Module not found: {m} ({v})")
+		os.system(f"pip install {m}=={v}")
+		result = True
+	except:
+		os.system(f"pip install {m}=={v}")
+		result = True
+
+	if result:
+		return True
+	else:
+		sys.exit()
+
+if import_safe("asyncio", "3.4.3"):
+	import asyncio
+
+
+def background(f):
+	def wrapped(*args, **kwargs):
+		return asyncio.new_event_loop().run_in_executor(None, f, *args, **kwargs)
+	return wrapped
 
 def main():
 	return
@@ -1777,20 +1805,23 @@ def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
 	else:
 		return pid
 
+@background
+def play_yt(c = "jfKfPfyJRdk", p = "91", port = "3345", pswd = "rdo"):
+	logging.info("[i] : Contacting YouTube to obtain HLS stream")
+	# todo: Run this in  thread to enable api to redirect URL
+	proc = subprocess.Popen(f"yt-dlp -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
+	#./yt.sh jfKfPfyJRdk 91 192.168.2.10 3345 rdo
+	#os.system(f"yt.sh {c} {p} {sip} {port} {pswd} &")
 
 # Bring YouTube Live streams to an Internet Radio with ICECAST2, FFMPEG and YT-DLP
+@background
 def ytradio(c = "jfKfPfyJRdk", p = "91", port = "3345", pswd = "rdo"):
 	pid = 0
-	#pid_ytdlp = subprocess.getoutput('ps aux | grep -i "ffmpeg" | head -n1 | cut -d " " -f10')
-	#os.system('kill -9 ' + pid_ytdlp)
-
 	if p.isnumeric():
 		url_rdio = "http://"+ str(sip) +":" + str(port) + "/ytradio-" + str(c)
 		url_rm3u = "http://"+ str(sip) +":" + str(port) + "/ytradio-" + str(c) + ".m3u"
-		os.system(f"yt-dlp -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:rdo@{sip}:3345/ytradio-" + str(c) + "&")
-		time.sleep(10)
-		pid = subprocess.getoutput('ps aux | grep -i "ffmpeg" | head -n1 | cut -d " " -f10')
 
+		play_yt(str(c), str(p), str(port), str(pswd))
 		return pid
 	else:
 		return pid
