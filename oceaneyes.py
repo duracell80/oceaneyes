@@ -1,5 +1,7 @@
 #!/usr/bin/python3
-import sys, os, subprocess, time, logging, socket, requests, urllib, urllib.parse, json
+import sys, os, subprocess, time, logging, socket, requests, urllib, urllib.parse, json, uuid
+from threading import Thread
+
 try:
 	from tinydb import TinyDB, Query
 except ModuleNotFoundError:
@@ -1808,23 +1810,24 @@ def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
 @background
 def play_yt(c = "jfKfPfyJRdk", p = "91", port = "3345", pswd = "rdo"):
 	logging.info("[i] : Contacting YouTube to obtain HLS stream")
-	# todo: Run this in  thread to enable api to redirect URL
-	proc = subprocess.Popen(f"yt-dlp -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
-	#./yt.sh jfKfPfyJRdk 91 192.168.2.10 3345 rdo
-	#os.system(f"yt.sh {c} {p} {sip} {port} {pswd} &")
+	proc = subprocess.Popen(f"yt-dlp -q -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
+
+	return proc
 
 # Bring YouTube Live streams to an Internet Radio with ICECAST2, FFMPEG and YT-DLP
 @background
 def ytradio(c = "jfKfPfyJRdk", p = "91", port = "3345", pswd = "rdo"):
-	pid = 0
+	#t_uuid = uuid.uuid4()
+	thread_yt = 0
 	if p.isnumeric():
 		url_rdio = "http://"+ str(sip) +":" + str(port) + "/ytradio-" + str(c)
 		url_rm3u = "http://"+ str(sip) +":" + str(port) + "/ytradio-" + str(c) + ".m3u"
 
-		play_yt(str(c), str(p), str(port), str(pswd))
-		return pid
+		thread_yt = Thread(target=lambda: play_yt(str(c), str(p), str(port), str(pswd)))
+		thread_yt.start()
+		return thread_yt
 	else:
-		return pid
+		return thread_yt
 
 
 if __name__ == "__main__":

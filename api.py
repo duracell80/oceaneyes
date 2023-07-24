@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 import os, sys, subprocess, requests, urllib.parse, time, logging
+from threading import Thread
+
 import oceaneyes as oe
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -299,7 +301,8 @@ async def listen_cdradio(s = "https://hls.somafm.com/hls/groovesalad/FLAC/progra
 @app.get("/v1/listen/ytradio/{c}/{p}", status_code=200)
 async def listen_ytradio(c = "jfKfPfyJRdk", p = "91" ):
 	if p.isnumeric():
-		pid = oe.ytradio(str(c), str(p), "3345", "rdo")
+		thread_yt = Thread(target=lambda: oe.ytradio(str(c), str(p), "3345", "rdo"))
+		thread_yt.start()
 		time.sleep(10)
 		url_rdio = "http://" + str(sip) + ":3345/ytradio-" + str(c)
 		url_rm3u = "http://" + str(sip) + ":3345/ytradio-" + str(c) + ".m3u"
