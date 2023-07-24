@@ -1835,6 +1835,9 @@ def play_yt(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", psw
 	logging.info("[i] : Contacting YouTube to obtain HLS stream")
 	proc = subprocess.Popen(f"yt-dlp -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
 
+	# AAC WIP
+	#proc = subprocess.Popen(f"yt-dlp -q -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libfdk_aac -profile:a aac_he_v2 -ab 48k -f adts -content_type audio/aac icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
+
 	return proc
 
 # Bring YouTube Live streams to an Internet Radio with ICECAST2, FFMPEG and YT-DLP
