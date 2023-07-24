@@ -1846,6 +1846,13 @@ def ytradio(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", psw
 		url_rdio = "http://"+ str(sip) +":" + str(port) + "/ytradio-" + str(c)
 		url_rm3u = "http://"+ str(sip) +":" + str(port) + "/ytradio-" + str(c) + ".m3u"
 
+		# Find if stream already in database
+		streams = Query()
+		result  = dby.get(streams.vid == str(c))
+		if result == None:
+			dby.update({'vid': str(c), 'aid': str(p), 'sid': str(n)}, doc_ids=[int(1)])
+
+		# Update last played stream
 		dby.update({'vid': str(c), 'aid': str(p), 'sid': str(n)}, doc_ids=[int(100)])
 
 		thread_yt = Thread(target=lambda: play_yt(str(c), str(p), str(n), str(port), str(pswd)))
