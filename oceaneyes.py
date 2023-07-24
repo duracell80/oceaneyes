@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys, os, subprocess, time, logging, socket, requests, urllib, urllib.parse, json, uuid
+import sys, os, subprocess, time, logging, socket, requests, urllib, urllib.parse, json
 from threading import Thread
 
 try:
@@ -98,6 +98,24 @@ def get_serverip():
 	return sip
 
 
+
+
+def init_yt():
+	# Store previously played YouTube Radio stations
+	if os.path.isfile("stations_yt.db"):
+		dby     = TinyDB("stations_yt.db")
+
+		if os.path.getsize('stations_yt.db') == 0:
+			for i in range(0,100):
+				dby.insert({'vid': '00000000000', 'aid': '00', 'sid': 'YouTube Stream Name'})
+
+	else:
+		dby     = TinyDB("stations_yt.db")
+		# Create 99 radio stations in YouTube storage with id 100 = last played
+		for i in range(0,100):
+			dby.insert({'vid': '00000000000', 'aid': '00', 'sid': 'YouTube Stream Name'})
+
+
 def init(device = 1):
 	global url, ip, sip, settings
 	sip = get_serverip()
@@ -126,6 +144,9 @@ def init(device = 1):
 		ip = str(conf['ipaddress'])
 	except:
 		init()
+
+	# Setup YouTube Radio storage
+	init_yt()
 
 	settings, url, ip  = switch(int(device))
 	settings = {
@@ -1807,23 +1828,27 @@ def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
 	else:
 		return pid
 
+
+
 @background
-def play_yt(c = "jfKfPfyJRdk", p = "91", port = "3345", pswd = "rdo"):
+def play_yt(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", pswd = "rdo"):
 	logging.info("[i] : Contacting YouTube to obtain HLS stream")
-	proc = subprocess.Popen(f"yt-dlp -q -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
+	proc = subprocess.Popen(f"yt-dlp -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
 
 	return proc
 
 # Bring YouTube Live streams to an Internet Radio with ICECAST2, FFMPEG and YT-DLP
 @background
-def ytradio(c = "jfKfPfyJRdk", p = "91", port = "3345", pswd = "rdo"):
-	#t_uuid = uuid.uuid4()
+def ytradio(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", pswd = "rdo"):
+	dby = TinyDB("stations_yt.db")
 	thread_yt = 0
 	if p.isnumeric():
 		url_rdio = "http://"+ str(sip) +":" + str(port) + "/ytradio-" + str(c)
 		url_rm3u = "http://"+ str(sip) +":" + str(port) + "/ytradio-" + str(c) + ".m3u"
 
-		thread_yt = Thread(target=lambda: play_yt(str(c), str(p), str(port), str(pswd)))
+		dby.update({'vid': str(c), 'aid': str(p), 'sid': str(n)}, doc_ids=[int(100)])
+
+		thread_yt = Thread(target=lambda: play_yt(str(c), str(p), str(n), str(port), str(pswd)))
 		thread_yt.start()
 		return thread_yt
 	else:
