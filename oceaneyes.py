@@ -1833,10 +1833,13 @@ def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
 @background
 def play_yt(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", pswd = "rdo"):
 	logging.info("[i] : Contacting YouTube to obtain HLS stream")
-	proc = subprocess.Popen(f"yt-dlp -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
+	try:
+		proc = subprocess.Popen(f"yt-dlp -q -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
 
-	# AAC WIP
-	#proc = subprocess.Popen(f"yt-dlp -q -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libfdk_aac -profile:a aac_he_v2 -ab 48k -f adts -content_type audio/aac icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
+		# AAC WIP
+		#proc = subprocess.Popen(f"yt-dlp -q -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libfdk_aac -profile:a aac_he_v2 -ab 48k -f adts -content_type audio/aac icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
+	except:
+		proc = False
 
 	return proc
 
@@ -1844,7 +1847,7 @@ def play_yt(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", psw
 @background
 def ytradio(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", pswd = "rdo"):
 	dby = TinyDB("stations_yt.db")
-	thread_yt = 0
+	thread_yt = False
 	if p.isnumeric():
 		url_rdio = "http://"+ str(sip) +":" + str(port) + "/ytradio-" + str(c)
 		url_rm3u = "http://"+ str(sip) +":" + str(port) + "/ytradio-" + str(c) + ".m3u"
@@ -1858,11 +1861,15 @@ def ytradio(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", psw
 		# Update last played stream
 		dby.update({'vid': str(c), 'aid': str(p), 'sid': str(n)}, doc_ids=[int(100)])
 
-		thread_yt = Thread(target=lambda: play_yt(str(c), str(p), str(n), str(port), str(pswd)))
-		thread_yt.start()
-		return thread_yt
+		try:
+			thread_yt = Thread(target=lambda: play_yt(str(c), str(p), str(n), str(port), str(pswd)))
+			thread_yt.start()
+
+			return thread_yt
+		except:
+			return False
 	else:
-		return thread_yt
+		return False
 
 
 if __name__ == "__main__":

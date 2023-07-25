@@ -3,3 +3,4 @@ __pycache__
 *.swp
 *.sql.gz
 *.sql
+stations_yt.db
