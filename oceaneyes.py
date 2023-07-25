@@ -1834,9 +1834,13 @@ def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
 def play_yt(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", pswd = "rdo"):
 	logging.info("[i] : Contacting YouTube to obtain HLS stream")
 	try:
+		# 91 is default and reduces video bandwidth strain (AAC)
+		# MP3 is "mp4a.40.34"
 		proc = subprocess.Popen(f"yt-dlp -q -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
 
 		# AAC WIP
+		# 91 and 92 = HE-AAC "mp4a.40.5"
+		# 93 = AAC-LC "mp4a.40.2"
 		#proc = subprocess.Popen(f"yt-dlp -q -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libfdk_aac -profile:a aac_he_v2 -ab 48k -f adts -content_type audio/aac icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
 	except:
 		proc = False
@@ -1854,9 +1858,25 @@ def ytradio(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", psw
 
 		# Find if stream already in database
 		streams = Query()
-		result  = dby.get(streams.vid == str(c))
-		if result == None:
-			dby.update({'vid': str(c), 'aid': str(p), 'sid': str(n)}, doc_ids=[int(1)])
+		yfound  = dby.get(streams.vid == str(c))
+		nfound  = dby.search(streams.vid == "00000000000")[0]
+		logging.info(f"[i] : The next available YouTube preset slot is {nfound.doc_id}")
+		if yfound == None:
+			if int(nfound.doc_id) > 99:
+				nid = 99
+			else:
+				nid = nfound.doc_id
+
+			logging.info(f"[i] : Adding the stream {c} - {n} to YouTube preset slot {nid}")
+			dby.update({'vid': str(c), 'aid': str(p), 'sid': str(n)}, doc_ids=[int(nid)])
+		else:
+			if int(yfound.doc_id) > 99:
+				yid = 99
+			else:
+				yid = yfound.doc_id
+
+			logging.info(f"[i] : The stream {c} - {n} is found at YouTube preset slot {yid}")
+			dby.update({'vid': str(c), 'aid': str(p), 'sid': str(n)}, doc_ids=[int(yid)])
 
 		# Update last played stream
 		dby.update({'vid': str(c), 'aid': str(p), 'sid': str(n)}, doc_ids=[int(100)])
@@ -1864,7 +1884,6 @@ def ytradio(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", psw
 		try:
 			thread_yt = Thread(target=lambda: play_yt(str(c), str(p), str(n), str(port), str(pswd)))
 			thread_yt.start()
-
 			return thread_yt
 		except:
 			return False
