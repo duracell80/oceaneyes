@@ -1,0 +1,9 @@
+#EXTM3U
+#EXTINF:-1, YouTube Radio - StaySee Music 
+http://192.168.2.10:1929/v1/listen/ytradio/O8bZF_UhPag/91/YouTube%20Radio%20-%20StaySee%20Music
+#EXTINF:-1, YouTube Radio - LoFi Girl: Original 
+http://192.168.2.10:1929/v1/listen/ytradio/jfKfPfyJRdk/91/YouTube%20Radio%20-%20LoFi%20Girl%3A%20Original
+#EXTINF:-1, YouTube Radio - College Music: Vocal LoFi 
+http://192.168.2.10:1929/v1/listen/ytradio/dxUtV-zNv9w/91/YouTube%20Radio%20-%20College%20Music%3A%20Vocal%20LoFi
+#EXTINF:-1, StaySee Music - YouTube Radio 
+http://192.168.2.10:1929/v1/listen/ytradio/O8bZF_UhPag/91/StaySee%20Music%20-%20YouTube%20Radio

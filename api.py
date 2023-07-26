@@ -10,6 +10,7 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.responses import PlainTextResponse
+from fastapi.responses import JSONResponse
 app = FastAPI()
 
 
@@ -204,14 +205,26 @@ async def fav_listen(chid):
 
 @app.get("/v1/fav/playlist/{format}", status_code=200)
 async def fav_playlist(format = "m3u"):
+
 	if format == "pls":
 		list = oe.get_list("pls")
 	elif format == "m3u":
 		list = oe.get_list("m3u")
+	elif format == "m3u-yt":
+		list = oe.get_list("m3u-yt")
 	elif format == "json":
 		list = oe.get_list("json")
+		list = str(list).replace("'", "")
+		response = PlainTextResponse(content=list, status_code=200)
+		response.headers["content-type"] = "application/json"
+
+		return response
 	elif format == "json-yt":
 		list = oe.get_list("json-yt")
+		response = PlainTextResponse(content=list, status_code=200)
+		response.headers["content-type"] = "application/json"
+
+		return response
 	elif format == "csv":
 		list = oe.get_list("csv")
 	elif format == "ssv":

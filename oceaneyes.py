@@ -1035,7 +1035,7 @@ def get_list(format = "plain", enrich = False):
 	csv     = "" # comma
 	ssv     = "" # semicolon
 
-	if format == "json-yt":
+	if format == "m3u-yt":
 		n=0
 		t=0
 		for idx, doc in enumerate(dby.all()):
@@ -1043,9 +1043,40 @@ def get_list(format = "plain", enrich = False):
 			vid = row['vid']
 			if vid != "00000000000":
 				t += 1
-		print(t)
 
-		#http://192.168.2.154:1929/v1/listen/ytradio/O8bZF_UhPag/234/StaySee%20Music%20-%20YouTube%20Radio
+		for idx, doc in enumerate(dby.all()):
+			row = dby.get(doc_id=int(idx+1))
+
+			vid = row['vid']
+			aid = row['aid']
+			sid = row['sid']
+
+			url_prx = f"http://{sip}:1929/v1/listen/ytradio/{vid}/{aid}/{urllib.parse.quote(sid)}"
+			url_icy = f"http://{sip}:3345/ytradio-{vid}"
+			url_web = f"https://www.youtube.com/watch?v={vid}"
+
+			if vid != "00000000000":
+				n += 1
+				m3u += '\n#EXTINF:-1, ' + str(sid) + ' \n'+ str(url_prx)
+
+		list = m3u
+
+		file_out = "export_yt.m3u"
+		with open(file_out, "w") as o:
+			o.write(list)
+
+		m3u = ""
+		return list
+
+	elif format == "json-yt":
+		n=0
+		t=0
+		for idx, doc in enumerate(dby.all()):
+			row = dby.get(doc_id=int(idx+1))
+			vid = row['vid']
+			if vid != "00000000000":
+				t += 1
+
 		for idx, doc in enumerate(dby.all()):
 			row = dby.get(doc_id=int(idx+1))
 
