@@ -210,6 +210,8 @@ async def fav_playlist(format = "m3u"):
 		list = oe.get_list("m3u")
 	elif format == "json":
 		list = oe.get_list("json")
+	elif format == "json-yt":
+		list = oe.get_list("json-yt")
 	elif format == "csv":
 		list = oe.get_list("csv")
 	elif format == "ssv":

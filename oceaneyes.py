@@ -1015,26 +1015,65 @@ def set_list(chid = 0, chname = "not set", churl = "not set", chcountry = "not s
 
 
 def get_list(format = "plain", enrich = False):
-	id, name, url, country, genre = list_get()
-
 	dbs     = TinyDB("stations.db")
+	dby     = TinyDB("stations_yt.db")
 	dbs.truncate()
 	dbs.close()
 
-	n 	= 0
+	n       = 0
 
-	list	= ""
-	pls_1 	= "[playlist]"
-	pls_2 	= "NumberOfEntries=0"
-	pls	= str(pls_1)
-	m3u 	= "#EXTM3U"
-	jsn	= ""
-	jsn_1	= '{"stations":['
-	jsn_2	= ']}'
+	list    = ""
+	pls_1   = "[playlist]"
+	pls_2   = "NumberOfEntries=0"
+	pls     = str(pls_1)
+	m3u     = "#EXTM3U"
+	jsn     = ""
+	jsn_1   = '{"stations":['
+	jsn_2   = ']}'
 	jsn_3   = '"value":['
 	jsn_4   = ']'
-	csv	= "" # comma
-	ssv	= "" # semicolon
+	csv     = "" # comma
+	ssv     = "" # semicolon
+
+	if format == "json-yt":
+		n=0
+		t=0
+		for idx, doc in enumerate(dby.all()):
+			row = dby.get(doc_id=int(idx+1))
+			vid = row['vid']
+			if vid != "00000000000":
+				t += 1
+		print(t)
+
+		#http://192.168.2.154:1929/v1/listen/ytradio/O8bZF_UhPag/234/StaySee%20Music%20-%20YouTube%20Radio
+		for idx, doc in enumerate(dby.all()):
+			row = dby.get(doc_id=int(idx+1))
+
+			vid = row['vid']
+			aid = row['aid']
+			sid = row['sid']
+
+			url_prx = f"http://{sip}:1929/v1/listen/ytradio/{vid}/{aid}/{urllib.parse.quote(sid)}"
+			url_icy = f"http://{sip}:3345/ytradio-{vid}"
+			url_web = f"https://www.youtube.com/watch?v={vid}"
+
+			if vid != "00000000000":
+				n += 1
+				jsn += '{"channel":"' + str(int(idx)+1) + '","name":"' + str(row['sid']) + '","url_prx":"' + str(url_prx) + '","url_icy":"' + str(url_icy) + '","url_web":"' + str(url_web) + '","vid":"' + str(vid) + '", "aid":"' + str(aid) + '"}'
+				if int(int(n)) != int(t):
+					jsn += ','
+
+
+		list = str(jsn_1) + str(jsn) + str(jsn_2)
+		file_out = "export_yt.json"
+		with open(file_out, "w") as o:
+		       o.write(list)
+
+		jsn = ""
+		return list
+
+
+	id, name, url, country, genre = list_get()
 
 	if format == "json-rpp":
 		code = os.system("cinnamon --version")
