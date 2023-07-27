@@ -1,0 +1,8 @@
+asyncio==3.4.3
+uvicorn==0.22.0
+fastapi==0.97.0
+PyAudio==0.2.13
+pyradios==1.0.2
+python-vlc==3.0.18122
+tinydb==4.8.0
+opml==0.5

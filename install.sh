@@ -1,21 +1,39 @@
 #!/usr/bin/bash
-# DEV
-#pip install beautifulsoup4
-#pip install html5lib
-#pip install requests_html
-#pip install pyradios
-
-# PROD
-pip install fastapi uvicorn[standard]
-pip install python-vlc
-pip install opml
-pip install tinydb
+DIR_PWD=$(pwd)
+DIR_ENV=$HOME/python-apps
+DIR_APP=$DIR_ENV/oceaneyes
 
 sudo apt install -y wget vlc icecast2
 sudo sed -i 's|<port>8000</port>|<port>3345</port>|g' /etc/icecast2/icecast.xml
 sudo /etc/init.d/icecast2 restart
 
-#sudo apt install yt-dlp
-sudo wget -O /usr/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux
+#rm -f /usr/bin/yt-dlp
+sudo wget -nc -O /usr/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux
 sudo chmod a+x /usr/bin/yt-dlp
-yt-dlp -U
+
+
+
+# VENV - Setup
+apt install -y python3.10-venv
+mkdir -p $DIR_ENV && cd $DIR_ENV
+
+# VENV - OceanEyes
+python3 -m venv oceaneyes
+source $DIR_APP/bin/activate
+
+
+# VENV - Install requirements
+mkdir -p $DIR_APP/app
+cd $DIR_APP
+
+cp $DIR_PWD/*.sh $DIR_APP/app
+cp $DIR_PWD/*.db $DIR_APP/app
+cp $DIR_PWD/*.py $DIR_APP/app
+
+cp $DIR_PWD/requirements.txt ./
+pip install -r requirements.txt
+
+mv -f $DIR_APP/app/run.sh $DIR_APP
+rm -f $DIR_APP/app/install.sh
+
+$DIR_APP/run.sh
