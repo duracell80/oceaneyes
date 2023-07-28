@@ -200,11 +200,9 @@ def scan():
 					p = 80
 			except:
 				p = 0
-				print("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ")")
-				logging.info("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ")")
+				logging.info(f"[i] Looking for a radio at this address ({str(h)}.{str(i)})")
 			if p == 80:
-				print("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ") [P:80]")
-				logging.info("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ") [P:80]")
+				logging.info(f"[i] Looking for a radio at this address ({str(h)}.{str(i)}) [P:80]")
 
 
 				# test that the radio can be pinged
@@ -215,7 +213,7 @@ def scan():
 		except:
 			p = 0
 			result  = "0 received"
-			print("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ")")
+			#print("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ")")
 
 		if "5 received" in result:
 			try:
@@ -224,8 +222,7 @@ def scan():
 					d+=1
 					devices.append(host)
 					dbc.update({'ipaddress': str(host)}, doc_ids=[int(d)])
-					print("\n[+] Found a radio @" + str(host) + ":80\n\n")
-					logging.info("\n[+] Found a radio @" + str(host) + ":80\n\n")
+					logging.info(f"\n[+] Found a radio @{str(host)}:80\n")
 			except:
 				x=1
 
@@ -234,14 +231,11 @@ def scan():
 	radios = len(devices)
 	if radios > 0:
 		if radios > 1:
-			print("\n[i] Found " + str(radios) + " Skytune radios on the network")
-			logging.info("\n[i] Found " + str(radios) + " Skytune radios on the network")
+			logging.info(f"\n[i] Found {str(radios)} Skytune radios on the network")
 		else:
-			print("\n[i] Found " + str(radios) + " Skytune radio on the network")
-			logging.info("\n[i] Found " + str(radios) + " Skytune radio on the network")
+			logging.info(f"\n[i] Found {str(radios)} Skytune radio on the network")
 		for i in range(0,int(radios)):
-			print("--- Radio " + str(i+1) + " @" + str(devices[i]))
-			logging.info("--- Radio " + str(i+1) + " @" + str(devices[i]))
+			logging.info(f"--- Radio {str(i+1)} @ {str(devices[i])}")
 
 	return hosts, devices
 
