@@ -8,5 +8,5 @@ if [ -d "./bin" ];then
   bash -c ". bin/activate; exec /usr/bin/env bash --rcfile <(echo 'PS1=\"(oceaneyes)\${PS1}\"') -i"
   cd ./app
 else
-  echo "[i] Venv active ... run ./app/main.py"
+  echo "[i] Venv active ... cd ./app && ./main.py"
 fi
