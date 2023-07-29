@@ -52,7 +52,7 @@ def init():
 
 	# Switch to another radio other than the primary one
 	#settings, url, ip = oe.switch(2)
-	time.sleep(120)
+	#time.sleep(120)
 	sip = oe.get_serverip()
 	ip = settings["ipaddress"]
 	url= "http://" + str(ip)

@@ -1893,6 +1893,20 @@ def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
 		return pid
 
 
+# Bring FM to an Internet Radio with ICECAST2, FFMPEG and RTL_FM
+@background
+def fmradio(f = "90.3", n = "FM Radio", port = "3345", pswd = "rdo"):
+	if isfloat(str(f)):
+		logging.info(f"[i] : Tuning the local RTL Radio to {f}Mhz FM")
+		try:
+			proc = subprocess.Popen(f"rtl_fm -f {f}M -M wfm -s 180k -E deemp | sox -traw -r180k -es -b16 -c1 -V1 - -t flac - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/fmradio-{f} &", shell=True, stdin=None, stdout=None, stderr=None)
+			return True
+		except:
+			return False
+	else:
+		logging.info(f"[i] : The given frequency for FM tuning needs to be given as a float, eg 90.3")
+		return False
+
 
 @background
 def play_yt(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", pswd = "rdo"):
