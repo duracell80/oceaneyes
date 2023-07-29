@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!../bin/python3
 import sys, os, subprocess, signal, logging, time
 import oceaneyes as oe
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!../bin/python3
 import os, sys
 
 from tinydb import TinyDB, Query

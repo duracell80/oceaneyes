@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!..bin/python3
 import os, socket, sys, subprocess, requests
 
 sys.exit()

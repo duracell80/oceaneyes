@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!../bin/python3
 import os, sys, subprocess, requests, urllib.parse, time, logging
 from threading import Thread
 
