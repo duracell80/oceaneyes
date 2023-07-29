@@ -29,6 +29,9 @@ cd $DIR_APP
 cp $DIR_PWD/*.sh $DIR_APP/app
 cp $DIR_PWD/*.db $DIR_APP/app
 cp $DIR_PWD/*.py $DIR_APP/app
+cp $DIR_PWD/oe.start $DIR_APP
+cp $DIR_PWD/oe.stop $DIR_APP
+cp $DIR_PWD/oe.status $DIR_APP
 
 cp $DIR_PWD/requirements.txt ./
 pip install -r requirements.txt
