@@ -43,8 +43,9 @@ def init():
 	logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 	# Get the settings from tinydb to know the ip address and language of device
-	global settings, url, sip, ip, pid_nrsc5
+	global settings, url, sip, ip, pid_nrsc5, dir_home
 
+	dir_home = os.path.expanduser('~')
 	settings, url, ip = oe.init()
 	# Backup favourites from primary radio
 	#oe.backup(False)
@@ -72,7 +73,7 @@ def api():
 		logging.info("[i] FastAPI available")
 	if import_safe("uvicorn", "0.22.0"):
 		logging.info("[i] Starting FastAPI as background task")
-		os.system(f"uvicorn api:app --host {sip} --port 1929")
+		os.system(f"{dir_home}/python-apps/oceaneyes/bin/uvicorn api:app --host {sip} --port 1929")
 
 # Bring NRSC5 to Ocean Digital Radios (Requires, NRSC5, Icecast2 (configured), ffmpeg and an RTL-SDR USB dongle)
 @background

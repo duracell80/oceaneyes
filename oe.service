@@ -1,0 +1,13 @@
+[Unit]
+Description=OceanEyes: API and app for Ocean Digital Internet Radios
+
+[Service]
+Type=simple
+User=lee
+group=users
+WorkingDirectory=~/python-apps/oceaneyes/app
+#ExecStart=source ~/python-apps/oceaneyes/bin/activate; exec /usr/bin/env bash --rcfile <(echo 'PS1=\"(oceaneyes)\${PS1}\"') -i
+ExecStart=~/python-apps/oceaneyes/bin/python3 ~/python-apps/oceaneyes/app/main.py
+
+[Install]
+WantedBy=multi-user.target

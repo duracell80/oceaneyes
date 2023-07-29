@@ -36,4 +36,14 @@ pip install -r requirements.txt
 mv -f $DIR_APP/app/run.sh $DIR_APP
 rm -f $DIR_APP/app/install.sh
 
-$DIR_APP/run.sh
+cp $DIR_PWD/oe.service $DIR_PWD/oe.service.tmp
+sed -i "s|~/|$HOME/|g" $DIR_PWD/oe.service.tmp
+sudo mv $DIR_PWD/oe.service.tmp /lib/systemd/system/oe.service
+sudo systemctl daemon-reload
+sudo systemctl enable oe.service
+sudo systemctl start oe.service
+
+sleep 5
+
+sudo systemctl status oe.service
+#$DIR_APP/run.sh
