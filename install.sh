@@ -44,9 +44,11 @@ sed -i "s|~/|$HOME/|g" $DIR_PWD/oe.service.tmp
 sudo mv $DIR_PWD/oe.service.tmp /lib/systemd/system/oe.service
 sudo systemctl daemon-reload
 sudo systemctl enable oe.service
-sudo systemctl start oe.service
-
-sleep 5
-
-sudo systemctl status oe.service
+#sudo systemctl start oe.service
+#sleep 5
+#sudo systemctl status oe.service
 #$DIR_APP/run.sh
+
+cd $DIR_APP
+echo "[i] Installed requirements in the venv ..."
+$DIR_APP/bin/pip list

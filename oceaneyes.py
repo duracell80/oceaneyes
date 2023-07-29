@@ -2,11 +2,11 @@
 import sys, os, subprocess, time, logging, socket, requests, urllib, urllib.parse, json
 from threading import Thread
 
-try:
-	from tinydb import TinyDB, Query
-except ModuleNotFoundError:
-	os.system('pip install tinydb')
-	from tinydb import TinyDB, Query
+#try:
+#	from tinydb import TinyDB, Query
+#except ModuleNotFoundError:
+#	os.system('pip install tinydb')
+from tinydb import TinyDB, Query
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
