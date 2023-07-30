@@ -1913,6 +1913,21 @@ def fmradio(f = "90.3", n = "FM Radio", port = "3345", pswd = "rdo"):
 		return False
 
 
+# Bring Noaa Weather Radio to an Internet Radio with ICECAST2, FFMPEG and RTL_FM
+@background
+def wxradio(f = "162.500", n = "WX Radio", port = "3345", pswd = "rdo"):
+	if isfloat(str(f)):
+		logging.info(f"[i] : Tuning the local RTL Radio to {f}Mhz FM")
+		try:
+			rtl_reset()
+			proc = subprocess.Popen(f"rtl_fm -d 0 -g 50 -f {f}M -M fm -s 115k -E deemp | sox -traw -r 115k -e s -b 16 -c1 -V1 - -t flac - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 128k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/wxradio &", shell=True, stdin=None, stdout=None, stderr=None)
+			return True
+		except:
+			return False
+	else:
+		logging.info(f"[i] : The given frequency for WX tuning needs to be given as a float, eg 162.500")
+		return False
+
 @background
 def play_yt(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", pswd = "rdo"):
 	logging.info("[i] : Contacting YouTube to obtain HLS stream")

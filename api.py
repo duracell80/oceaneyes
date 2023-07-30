@@ -288,7 +288,23 @@ async def listen_fmradio(f = "90.3"):
 		return '{"result": 500, "message": "Supply the FM frequency for example listen/fmradio/90.3"}'
 
 
+@app.get("/v1/listen/wxradio/{f}", status_code=200)
+async def listen_wxradio(f = "162.50"):
+	if isfloat(str(f)):
+		url_rdio = "http://"+ str(sip) +":3345/wxradio"
+		url_rm3u = "http://"+ str(sip) +":3345/wxradio.m3u"
 
+		thread_wx = Thread(target=lambda: oe.wxradio(str(f), f"Local WX Radio - {f}Mhz", "3345", "rdo"))
+		thread_wx.start()
+		time.sleep(8)
+
+		pid_wx = os.system('ps aux | grep -i "rtl_fm" | head -n1 | cut -d " " -f9')
+		logging.info(f"[i] FM Tuner PID: {pid_wx}")
+
+		response = RedirectResponse(url=str(url_rdio))
+		return response
+	else:
+		return '{"result": 500, "message": "Supply the FM frequency for example listen/fmradio/90.3"}'
 
 
 @app.get("/v1/listen/hdradio/{c}/{p}", status_code=200)
