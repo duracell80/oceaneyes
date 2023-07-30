@@ -294,12 +294,14 @@ async def listen_fmradio(f = "90.3"):
 @app.get("/v1/listen/hdradio/{c}/{p}", status_code=200)
 async def listen_hdradio(c = "90.3", p = "0" ):
 	if isfloat(str(c)) and p.isnumeric():
-		url_rdio = "http://"+ str(sip) +":3345/hdradio"
-		url_rm3u = "http://"+ str(sip) +":3345/hdradio.m3u"
-		os.system(f"nrsc5 -q -d 0 {c} {p} -o - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:rdo@{sip}:3345/hdradio")
-		time.sleep(10)
+		url_rdio = "http://"+ str(sip) +":3345/hdradio-" + str(c) + "-" + str(p)
+		url_rm3u = "http://"+ str(sip) +":3345/hdradio-" + str(c) + "-" + str(p) + ".m3u"
 
-		response = RedirectResponse(url=str(url_rm3u))
+		thread_fm = Thread(target=lambda: oe.hdradio(str(c), str(p), f"Local HD Radio - {c}Mhz P:{p}", "3345", "rdo"))
+		thread_fm.start()
+		time.sleep(15)
+
+		response = RedirectResponse(url=str(url_rdio))
 		return response
 	else:
 		return '{"result": 500, "message": "Supply the FM frequency and then the hybrid program index for example listen/hdradio/90.3/0"}'

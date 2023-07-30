@@ -32,7 +32,7 @@ if import_safe("asyncio", "3.4.3"):
 
 
 def signal_handler(signal, frame):
-	os.system('kill -9 ' + pid_nrsc5)
+	os.system('kill -9 ' + pid_hd)
 	print("Exiting gracefully...")
 	sys.exit(0)
 
@@ -74,6 +74,7 @@ def api():
 		logging.info("[i] FastAPI available")
 	if import_safe("uvicorn", "0.22.0"):
 		logging.info("[i] Starting FastAPI as background task")
+		os.system('kill -9 $(ps aux | grep -i "port 1929" | head -n1 | cut -d " " -f9)')
 		os.system(f"{dir_home}/python-apps/oceaneyes/bin/uvicorn api:app --host {sip} --port 1929")
 
 # Bring NRSC5 to Ocean Digital Radios (Requires, NRSC5, Icecast2 (configured), ffmpeg and an RTL-SDR USB dongle)

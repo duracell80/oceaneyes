@@ -117,7 +117,7 @@ def init_yt():
 
 
 def init(device = 1):
-	global url, ip, sip, settings, pid_fm
+	global url, ip, sip, settings, pid_fm, pid_hd
 	sip = get_serverip()
 
 	# Attempt to find or set an ipaddress
@@ -1883,21 +1883,18 @@ def rtl_reset():
 	return
 
 # Bring HDRadio capability to an Internet Radio with ICECAST2, NRSC5 CLI and an RTL-SDR USB dongle
-def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
-	pid = 0
-	pid_nrsc5 = subprocess.getoutput('ps aux | grep -i "nrsc5" | head -n1 | cut -d " " -f10')
-	os.system('kill -9 ' + pid_nrsc5)
+@background
+def hdradio(c = "90.3", p = "0", n = "Local HD Radio", port = "3345", pswd = "rdo"):
+	os.system('kill -9 $(ps aux | grep -i "nrsc5" | head -n1 | cut -d " " -f10)')
 
 	if isfloat(str(c)) and p.isnumeric():
-		url_rdio = "http://"+ str(sip) +":" + str(port) + "/hdradio"
-		url_rm3u = "http://"+ str(sip) +":" + str(port) + "/hdradio.m3u"
-		os.system(f"nrsc5 -q -d 0 {c} {p} -o - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/hdradio &")
-		time.sleep(10)
-		pid = subprocess.getoutput('ps aux | grep -i "nrsc5" | head -n1 | cut -d " " -f10')
+		rtl_reset()
+		proc = subprocess.Popen(f"nrsc5 -q -d 0 {c} {p} -o - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/hdradio-{c}-{p} &", shell=True, stdin=None, stdout=None, stderr=None)
 
-		return pid
+		return True
 	else:
-		return pid
+		logging.info(f"[i] : The given frequency for HD tuning needs to be given as a float and integer, eg 90.3 0")
+		return False
 
 
 # Bring FM to an Internet Radio with ICECAST2, FFMPEG and RTL_FM
@@ -1922,7 +1919,6 @@ def play_yt(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", psw
 	try:
 		# 91 is default and reduces video bandwidth strain (AAC)
 		# MP3 is "mp4a.40.34"
-		rtl_reset()
 		proc = subprocess.Popen(f"yt-dlp -q -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
 
 		# AAC WIP
