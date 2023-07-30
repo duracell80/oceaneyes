@@ -117,7 +117,7 @@ def init_yt():
 
 
 def init(device = 1):
-	global url, ip, sip, settings
+	global url, ip, sip, settings, pid_fm
 	sip = get_serverip()
 
 	# Attempt to find or set an ipaddress
@@ -1874,6 +1874,13 @@ def search_country(cdict = "3", cstring = "Not Set"):
 
 	return int(c), str(l)
 
+def rtl_reset():
+	# Reset Tuner Zero
+	os.system('usbreset $(lsusb | grep -i "rtl283" | cut -d " " -f6 | head -n1)')
+	# Reset Tuner One
+	#os.system('usbreset $(lsusb | grep -i "rtl283" | cut -d " " -f6 | head -n2)')
+
+	return
 
 # Bring HDRadio capability to an Internet Radio with ICECAST2, NRSC5 CLI and an RTL-SDR USB dongle
 def hdradio(c = "90.3", p = "0", port = "3345", pswd = "rdo"):
@@ -1899,7 +1906,8 @@ def fmradio(f = "90.3", n = "FM Radio", port = "3345", pswd = "rdo"):
 	if isfloat(str(f)):
 		logging.info(f"[i] : Tuning the local RTL Radio to {f}Mhz FM")
 		try:
-			proc = subprocess.Popen(f"rtl_fm -f {f}M -M wfm -s 180k -E deemp | sox -traw -r180k -es -b16 -c1 -V1 - -t flac - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/fmradio-{f} &", shell=True, stdin=None, stdout=None, stderr=None)
+			rtl_reset()
+			proc = subprocess.Popen(f"rtl_fm -d 0 -f {f}M -M wfm -s 180k -E deemp | sox -traw -r180k -es -b16 -c1 -V1 - -t flac - | ffmpeg -re -i pipe:0 -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/fmradio-{f} &", shell=True, stdin=None, stdout=None, stderr=None)
 			return True
 		except:
 			return False
@@ -1914,6 +1922,7 @@ def play_yt(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", psw
 	try:
 		# 91 is default and reduces video bandwidth strain (AAC)
 		# MP3 is "mp4a.40.34"
+		rtl_reset()
 		proc = subprocess.Popen(f"yt-dlp -q -f {p} https://www.youtube.com/watch?v={c} -o - | ffmpeg -t 02:00:00 -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/ytradio-{c} &", shell=True, stdin=None, stdout=None, stderr=None)
 
 		# AAC WIP

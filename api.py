@@ -14,7 +14,7 @@ from fastapi.responses import JSONResponse
 app = FastAPI()
 
 
-global sip, ip, url
+global sip, ip, url, pid_fm
 sip = oe.get_serverip()
 settings, url, ip = oe.init()
 
@@ -277,7 +277,10 @@ async def listen_fmradio(f = "90.3"):
 
 		thread_fm = Thread(target=lambda: oe.fmradio(str(f), f"Local FM Radio - {f}Mhz", "3345", "rdo"))
 		thread_fm.start()
-		time.sleep(5)
+		time.sleep(8)
+
+		pid_fm = os.system('ps aux | grep -i "rtl_fm" | head -n1 | cut -d " " -f9')
+		logging.info(f"[i] FM Tuner PID: {pid_fm}")
 
 		response = RedirectResponse(url=str(url_rdio))
 		return response
