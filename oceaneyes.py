@@ -1989,5 +1989,16 @@ def ytradio(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio", port = "3345", psw
 		return False
 
 
+@background
+def bbcradio(c = "m001p1n9", port = "3345", pswd = "rdo"):
+	logging.info("[i] Contacting the BBC to obtain DASH stream")
+	try:
+		proc = os.system(f"yt-dlp -f mf_cloudfront_nonbidi-audio_eng_1=96000-1 https://www.bbc.co.uk/sounds/play/{c} -o - | ffmpeg -v quiet -hide_banner -loglevel quiet -nostats -re -i pipe:0 -vn -codec:a libmp3lame -b:a 192k -f mp3 -content_type audio/mpeg icecast://source:{pswd}@{sip}:{port}/bbcradio-{c} &")
+	except:
+		proc = False
+
+	return proc
+
+
 if __name__ == "__main__":
 	main()

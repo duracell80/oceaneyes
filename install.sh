@@ -3,11 +3,13 @@ DIR_PWD=$(pwd)
 DIR_ENV=$HOME/python-apps
 DIR_APP=$DIR_ENV/oceaneyes
 
-sudo apt install -y wget vlc icecast2
+sudo apt install -y wget vlc ffmpeg icecast2
 sudo sed -i 's|<port>8000</port>|<port>3345</port>|g' /etc/icecast2/icecast.xml
+sudo sed -i 's|hackme|<port>rdo</port>|g' /etc/icecast2/icecast.xml
 sudo /etc/init.d/icecast2 restart
 
 #rm -f /usr/bin/yt-dlp
+sudo mv -f /usr/bin/yt-dlp /usr/bin/yt-dlp.bckup
 sudo wget -nc -O /usr/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux
 sudo chmod a+x /usr/bin/yt-dlp
 

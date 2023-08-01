@@ -352,7 +352,16 @@ async def listen_ytradio(c = "jfKfPfyJRdk", p = "91", n = "YouTube Radio" ):
 	else:
 		return '{"result": 500, "message": "Supply the youtube stream ID as an integer number for example 91"}'
 
+@app.get("/v1/listen/bbcradio/{c}", status_code=200)
+async def listen_bbcradio(c = "m001p1n9"):
+	thread_bbc = Thread(target=lambda: oe.bbcradio(str(c), "3345", "rdo"))
+	thread_bbc.start()
+	time.sleep(15)
+	url_rdio = "http://" + str(sip) + ":3345/bbcradio-" + str(c)
+	url_rm3u = "http://" + str(sip) + ":3345/bbcradio-" + str(c) + ".m3u"
 
+	response = RedirectResponse(url=str(url_rdio))
+	return response
 
 
 @app.get("/v1/listen/tv/{c}", status_code=200)
