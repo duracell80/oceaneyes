@@ -16,7 +16,7 @@ sudo chmod a+x /usr/bin/yt-dlp
 
 
 # VENV - Setup
-apt install -y python3.10-venv
+sudo apt install -y python3.10-venv
 mkdir -p $DIR_ENV && cd $DIR_ENV
 
 # VENV - OceanEyes
