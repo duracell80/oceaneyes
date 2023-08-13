@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 DIR_PWD=$(pwd)
-DIR_ENV=$HOME/python-apps
+DIR_HOME=$HOME
+DIR_ENV=$DIR_HOME/python-apps
 DIR_APP=$DIR_ENV/oceaneyes
 
 sudo apt install -y wget vlc ffmpeg icecast2 portaudio19-dev portaudio19-doc
@@ -34,6 +35,8 @@ cp $DIR_PWD/*.py $DIR_APP/app
 cp $DIR_PWD/oe.start $DIR_APP
 cp $DIR_PWD/oe.stop $DIR_APP
 cp $DIR_PWD/oe.status $DIR_APP
+
+cp -f $DIR_PWD/export-rpp.json $DIR_HOME/.config
 
 cp $DIR_PWD/requirements.txt ./
 pip install -r requirements.txt

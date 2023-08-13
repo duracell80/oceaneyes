@@ -135,14 +135,14 @@
     },
     "color-on": {
         "type": "colorchooser",
-        "default": "#27ae60",
+        "default": "#ffffff",
         "dependency": "icon-type=SYMBOLIC",
         "description": "Color of symbolic icon when playing a radio station",
         "value": "rgb(61,56,70)"
     },
     "color-paused": {
         "type": "colorchooser",
-        "default": "#9fe1e7",
+        "default": "#ffffff",
         "dependency": "icon-type=SYMBOLIC",
         "description": "Color of symbolic icon while a radio station is paused",
         "value": "rgb(36,31,49)"
@@ -189,7 +189,7 @@
             "yt-dlp": "yt-dlp",
             "youtube-dl": "youtube-dl"
         },
-        "value": "youtube-dl"
+        "value": "yt-dlp"
     },
     "music-download-dir-select": {
         "type": "filechooser",
