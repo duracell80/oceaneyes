@@ -10,10 +10,14 @@ sudo /etc/init.d/icecast2 restart
 
 #rm -f /usr/bin/yt-dlp
 sudo mv -f /usr/bin/yt-dlp /usr/bin/yt-dlp.bckup
-sudo wget -nc -O /usr/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux
+
+#X86
+#sudo wget -nc -O /usr/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux
+#sudo chmod a+x /usr/bin/yt-dlp
+
+#RPI
+sudo wget -O /usr/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/download/2023.09.24/yt-dlp_linux_aarch64
 sudo chmod a+x /usr/bin/yt-dlp
-
-
 
 # VENV - Setup
 sudo apt install -y python3.9-venv
