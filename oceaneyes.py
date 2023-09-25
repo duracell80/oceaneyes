@@ -1106,7 +1106,8 @@ def get_list(format = "plain", enrich = False):
 			return jsn_1 + '{"code": 404}' + jsn_2
 		else:
 			print("[i] Exporting to Radio++ ...")
-
+	elif format == "json-rpp-out":
+		print("[i] Exporting to Radio++ ...")
 
 	while n < int(len(name)):
 		if name is not None:
@@ -1151,7 +1152,7 @@ def get_list(format = "plain", enrich = False):
 				jsn += '{"channel":"' + str(int(n)+1) + '","name":"' + str(name[n]) + '","url":"' + str(churl) + '","country":"' + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + '","genre":"' + str(genre_str).replace("and", "&") + '"}'
 				if int(int(n)+1) != int(len(name)):
 					jsn += ','
-			elif format == "json-rpp":
+			elif format == "json-rpp" or format == "json-rpp-out":
 				jsn += '\n\t{\n\t"inc": true,\n\t"name":"' + str(name[n]) + '",\n\t"url":"' + str(churl) + '"\n\t}'
 				if int(int(n)+1) != int(len(name)):
 					jsn += ','
@@ -1190,13 +1191,15 @@ def get_list(format = "plain", enrich = False):
 		# Linux Mint - Radio++ Applet
 		list = str(jsn_3) + str(jsn) + str(jsn_4)
 
-		file_rpp  = str(os.path.expanduser('~') + "/.config/export-rpp.json")
+		file_rpp  = "./export-rpp.json"
 		file_out1 = str(os.path.expanduser('~') + "/Radio/rpp-conf.json")
 		file_out2 = str(os.path.expanduser('~') + "/.config/cinnamon/spices/radio@driglu4it/radio@driglu4it.json")
+		file_out3 = str(os.path.expanduser('~') + "/.cinnamon/configs/radio@driglu4it/radio@driglu4it.json")
 
 
 		os.system("mkdir -p " + str(os.path.expanduser('~') + "/Radio"))
 		os.system("cp -f " + str(os.path.expanduser('~') + "/.config/cinnamon/spices/radio@driglu4it/radio@driglu4it.json " + str(os.path.expanduser('~') + "/Radio/rpp-conf_") + str(int(time.time())) + ".json"))
+		os.system("cp -f " + str(os.path.expanduser('~') + "/.cinnamon/configs/radio@driglu4it/radio@driglu4it.json " + str(os.path.expanduser('~') + "/Radio/rpp-conf_") + str(int(time.time())) + ".json"))
 
 		# https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html
 		os.system('notify-send --urgency=normal --category=transfer.complete --icon=audio-x-generic-symbolic "Radio++ Stations Updated" "Favourite presets have been synced with your physical internet radio device!"')
@@ -1210,12 +1213,24 @@ def get_list(format = "plain", enrich = False):
 		with open(file_out2, "w") as j:
 			j.write(nt)
 
+		with open(file_out3, "w") as s:
+                        s.write(nt)
+
 		i.close()
 		o.close()
 		j.close()
+		s.close()
 
 
 		return "Exported stations from your Ocean Digital radio to your ~/Radio directory and imported these stations for you!"
+	elif format == "json-rpp-out":
+		list = str(jsn_3) + str(jsn) + str(jsn_4)
+		file_rpp  = "./export-rpp.json"
+
+		with open(file_rpp) as i:
+                        nt=i.read().replace('"stations": [{"name":"toreplace"}]', str(list))
+		i.close()
+		return str(nt)
 	else:
 		list = str(name_placeholder) + "," + str(url_placeholder)
 

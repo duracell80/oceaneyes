@@ -11,6 +11,7 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.responses import PlainTextResponse
 from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse
 app = FastAPI()
 
 
@@ -237,14 +238,25 @@ async def fav_playlist(format = "m3u"):
 	response = PlainTextResponse(content=str(list), status_code=200)
 	return response
 
-installed_cinnamon = subprocess.getoutput('cinnamon --version')
-if "cinnamon" in installed_cinnamon.lower():
-	@app.get("/v1/fav/sync/linux-mint", status_code=200)
-	async def fav_rpp(format = "json-rpp"):
-		message = oe.get_list("json-rpp")
-		code = 200
+#installed_cinnamon = subprocess.getoutput('cinnamon --version')
+#if "cinnamon" in installed_cinnamon.lower():
+@app.get("/v1/fav/sync/linux-mint", status_code=200)
+async def fav_rpp(format = "json-rpp"):
+	message = oe.get_list("json-rpp")
+	code = 200
 
-		return '{"result": ' + str(code) + ', "message": ' + str(message) + '}'
+	return '{"result": ' + str(code) + ', "message": ' + str(message) + '}'
+
+@app.get("/v1/fav/sync/radioplusplus", status_code=200)
+async def fav_rpp(format = "json-rpp-out"):
+	message = oe.get_list("json-rpp-out")
+	#code = 200
+	#return '{"result": ' + str(code) + ', "message": ' + str(message) + '}'
+
+	response = PlainTextResponse(content=message, status_code=200)
+	response.headers["content-type"] = "application/json"
+
+	return response
 
 
 @app.get("/v1/fav/move/{r}", status_code=200)

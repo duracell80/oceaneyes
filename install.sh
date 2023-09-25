@@ -1,10 +1,9 @@
 #!/usr/bin/bash
 DIR_PWD=$(pwd)
-DIR_HOME=$HOME
-DIR_ENV=$DIR_HOME/python-apps
+DIR_ENV=$HOME/python-apps
 DIR_APP=$DIR_ENV/oceaneyes
 
-sudo apt install -y wget vlc ffmpeg icecast2 portaudio19-dev portaudio19-doc
+sudo apt install -y wget vlc ffmpeg icecast2
 sudo sed -i 's|<port>8000</port>|<port>3345</port>|g' /etc/icecast2/icecast.xml
 sudo sed -i 's|hackme|<port>rdo</port>|g' /etc/icecast2/icecast.xml
 sudo /etc/init.d/icecast2 restart
@@ -17,7 +16,7 @@ sudo chmod a+x /usr/bin/yt-dlp
 
 
 # VENV - Setup
-sudo apt install -y python3.10-venv
+sudo apt install -y python3.9-venv
 mkdir -p $DIR_ENV && cd $DIR_ENV
 
 # VENV - OceanEyes
@@ -32,11 +31,11 @@ cd $DIR_APP
 cp $DIR_PWD/*.sh $DIR_APP/app
 cp $DIR_PWD/*.db $DIR_APP/app
 cp $DIR_PWD/*.py $DIR_APP/app
+cp $DIR_PWD/export-rpp.json $DIR_APP/app
+
 cp $DIR_PWD/oe.start $DIR_APP
 cp $DIR_PWD/oe.stop $DIR_APP
 cp $DIR_PWD/oe.status $DIR_APP
-
-cp -f $DIR_PWD/export-rpp.json $DIR_HOME/.config
 
 cp $DIR_PWD/requirements.txt ./
 pip install -r requirements.txt
