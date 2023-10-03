@@ -3,24 +3,39 @@ DIR_PWD=$(pwd)
 DIR_ENV=$HOME/python-apps
 DIR_APP=$DIR_ENV/oceaneyes
 
-sudo apt install -y wget vlc ffmpeg icecast2
-sudo sed -i 's|<port>8000</port>|<port>3345</port>|g' /etc/icecast2/icecast.xml
-sudo sed -i 's|hackme|<port>rdo</port>|g' /etc/icecast2/icecast.xml
-sudo /etc/init.d/icecast2 restart
+# Deal with YouTube Downloading
+# yt-dlp: The minimum recommended Python version has been raised to 3.8
 
 #rm -f /usr/bin/yt-dlp
-sudo mv -f /usr/bin/yt-dlp /usr/bin/yt-dlp.bckup
+#sudo mv -f /usr/bin/yt-dlp /usr/bin/yt-dlp.bckup
 
-#X86
-#sudo wget -nc -O /usr/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux
-#sudo chmod a+x /usr/bin/yt-dlp
+# Detect Raspberry Pi ARM
+ARC=$(uname -m)
 
-#RPI
-sudo wget -O /usr/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/download/2023.09.24/yt-dlp_linux_aarch64
-sudo chmod a+x /usr/bin/yt-dlp
+if [[ "${ARC}" == "aarch64" ]]; then
+	# RPI
+	sudo wget -O /usr/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/download/2023.09.24/yt-dlp_linux_aarch64
+	sudo chmod a+x /usr/bin/yt-dlp
+else
+    	# X86
+	sudo wget -nc -O /usr/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux
+	sudo chmod a+x /usr/bin/yt-dlp
+fi
+
+
+#sudo apt install -y wget vlc ffmpeg icecast2
+#sudo sed -i 's|<port>8000</port>|<port>3345</port>|g' /etc/icecast2/icecast.xml
+#sudo sed -i 's|hackme|<port>rdo</port>|g' /etc/icecast2/icecast.xml
+#sudo /etc/init.d/icecast2 restart
 
 # VENV - Setup
-sudo apt install -y python3.9-venv
+VER_PYT=$(python3 --version | cut -d " " -f2 | cut -d "." -f1-2 | cut -d "" -f1)
+if (( $(echo "$VER_PYT == 3.9" | bc -l ) )); then
+	sudo apt install -y python3.9-venv
+else
+	sudo apt install -y python3-venv
+fi
+
 mkdir -p $DIR_ENV && cd $DIR_ENV
 
 # VENV - OceanEyes

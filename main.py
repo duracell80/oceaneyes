@@ -216,7 +216,7 @@ def main():
 
 
 if __name__ == "__main__":
-	time.sleep(120)
+	time.sleep(20)
 	init()
 	api()
 	main()
