@@ -22,11 +22,11 @@ else
 	sudo chmod a+x /usr/bin/yt-dlp
 fi
 
-
-#sudo apt install -y wget vlc ffmpeg icecast2
-#sudo sed -i 's|<port>8000</port>|<port>3345</port>|g' /etc/icecast2/icecast.xml
-#sudo sed -i 's|hackme|<port>rdo</port>|g' /etc/icecast2/icecast.xml
-#sudo /etc/init.d/icecast2 restart
+sudo apt install -y portaudio19-dev
+sudo apt install -y wget vlc ffmpeg icecast2
+sudo sed -i 's|<port>8000</port>|<port>3345</port>|g' /etc/icecast2/icecast.xml
+sudo sed -i 's|hackme|<port>rdo</port>|g' /etc/icecast2/icecast.xml
+sudo /etc/init.d/icecast2 restart
 
 # VENV - Setup
 VER_PYT=$(python3 --version | cut -d " " -f2 | cut -d "." -f1-2 | cut -d "" -f1)
@@ -37,6 +37,8 @@ else
 fi
 
 mkdir -p $DIR_ENV && cd $DIR_ENV
+
+$HOME/python-apps/oceaneyes/bin/pip3 install -r $HOME/python-apps/oceaneyes/requirements.txt
 
 # VENV - OceanEyes
 python3 -m venv oceaneyes
