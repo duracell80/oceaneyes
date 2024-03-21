@@ -39,14 +39,26 @@ oe.add_import("./import.pls", False)
 200,OpenFM - House,http://stream.open.fm/5
 ```
 
-### Run in terminal
+### Install from terminal
 
 ```
 $ chmod +x *.sh
 $ chmod +x *.py
 $ ./install.sh
-$ ./main.py
 ```
+
+### Running without Systemd
+```
+$ cd ~/python-apps/oceaneyes
+$ source bin/activate oceaneyes
+$ cd app
+$ ../bin/python3 main.py
+```
+
+Load a browser at the address replacing the ipaddr with yours found with ifconfig | grep "192":
+
+`firefox http://192.168.xxx.xxx:1929/docs`
+
 
 ### REST API (Work currently in progress)
 Running api.sh in the root directory of the repo will run a FastAPI server that uses the oe module to interact with the device via OceanEyes. 
