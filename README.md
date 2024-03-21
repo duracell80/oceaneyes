@@ -57,7 +57,7 @@ $ ../bin/python3 main.py
 
 Load a browser at the address replacing the ipaddr with yours found with ifconfig | grep "192":
 
-`firefox http://192.168.xxx.xxx:1929/docs`
+`firefox http://192.168.x.xx:1929/docs`
 
 
 ### REST API (Work currently in progress)
@@ -65,11 +65,11 @@ Running api.sh in the root directory of the repo will run a FastAPI server that 
 
 - Run ./api.sh
 - Open a web browser
-- Type http://127.0.0.1:1929/docs for all the methods so far.
+- Type http://192.168.x.xx:1929/docs for all the methods so far.
 
 ```
 # Search for a station in the Community Radio Browser
-http://127.0.0.1:1929/v1/search/radiobrowser/bbc radio 4
+http://192.168.x.xx:1929/v1/search/radiobrowser/bbc radio 4
 ```
 
 
