@@ -22,6 +22,7 @@ else
 	sudo chmod a+x /usr/bin/yt-dlp
 fi
 
+sudo apt install -y python3-dev
 sudo apt install -y portaudio19-dev
 sudo apt install -y wget vlc ffmpeg icecast2
 sudo sed -i 's|<port>8000</port>|<port>3345</port>|g' /etc/icecast2/icecast.xml
@@ -54,6 +55,8 @@ cp $DIR_PWD/*.db $DIR_APP/app
 cp $DIR_PWD/*.py $DIR_APP/app
 cp $DIR_PWD/export-rpp.json $DIR_APP/app
 
+
+# TODO: Support other init systems
 cp $DIR_PWD/oe.start $DIR_APP
 cp $DIR_PWD/oe.stop $DIR_APP
 cp $DIR_PWD/oe.status $DIR_APP
@@ -66,6 +69,8 @@ rm -f $DIR_APP/app/install.sh
 
 cp $DIR_PWD/oe.service $DIR_PWD/oe.service.tmp
 sed -i "s|~/|$HOME/|g" $DIR_PWD/oe.service.tmp
+
+# TODO: Support other init systems
 sudo mv $DIR_PWD/oe.service.tmp /lib/systemd/system/oe.service
 sudo systemctl daemon-reload
 sudo systemctl enable oe.service
@@ -78,4 +83,5 @@ echo "[i] Installed requirements in the venv ..."
 $DIR_APP/bin/pip list
 sleep 3
 
-watch systemctl status oe.service
+# TODO: Support other init systems
+# watch systemctl status oe.service
