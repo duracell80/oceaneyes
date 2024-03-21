@@ -61,13 +61,12 @@ Load a browser at the address replacing the ipaddr with yours found with ifconfi
 
 
 ### REST API (Work currently in progress)
-Running api.sh in the root directory of the repo will run a FastAPI server that uses the oe module to interact with the device via OceanEyes. 
-
-- Run ./api.sh
-- Open a web browser
-- Type http://192.168.x.xx:1929/docs for all the methods so far.
+Running api.sh in the root directory of the repo will run a FastAPI server at port 1929 that uses the oe module to interact with the device via OceanEyes. 
 
 ```
+# Read the API endpoints
+http://192.168.x.xx:1929/docs
+
 # Search for a station in the Community Radio Browser
 http://192.168.x.xx:1929/v1/search/radiobrowser/bbc radio 4
 ```
