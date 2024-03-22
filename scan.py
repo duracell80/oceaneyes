@@ -14,7 +14,7 @@ hosts   = []
 devices = []
 
 print("[i] LAN scan in progress ... takes about 5 minutes")
-for i in range(19,22):
+for i in range(1,256):
 	host 	= h + "." + str(i)
 	result 	= str(os.popen("ping " + str(host) + " -w 1").read())
 	if "1 received" in result:
@@ -26,7 +26,7 @@ for i in range(19,22):
 radios = len(devices)
 if radios > 0:
 	if radios > 1:
-		print("\n[i] Found " + str(radios) + " Skytune radio1 on the network")
+		print("\n[i] Found " + str(radios) + " Skytune radio on the network")
 	else:
 		print("\n[i] Found " + str(radios) + " Skytune radios on the network")
 	for i in range(0,int(radios)):

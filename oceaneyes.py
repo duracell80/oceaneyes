@@ -191,7 +191,7 @@ def scan():
 	print("Press Ctrl + C if scanning seems to be stuck\n\n")
 	print("--- Tip: Take note of these numbers and then set")
 	print("--- static routes on the router for these devices\n\n")
-	for i in range(1,255):
+	for i in range(1,256):
 		host    = h + "." + str(i)
 		try:
 			try:

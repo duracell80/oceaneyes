@@ -34,6 +34,7 @@ if import_safe("asyncio", "3.4.3"):
 def signal_handler(signal, frame):
 	os.system('kill -9 ' + pid_hd)
 	print("Exiting gracefully...")
+	os.system('kill -9 $(ps aux | grep "oceaneyes/bin/uvicorn" | head -n1 | cut -d " " -f9)')
 	sys.exit(0)
 
 

@@ -7,6 +7,7 @@ DIR_BSE=$HOME/python-apps/$APP_NME
 
 
 PIP_INS=$(which python | sed -n "s/.*\(${APP_NME}\).*/\1/p" | wc -l)
+kill -9 $(ps aux | grep "oceaneyes/bin/uvicorn" | head -n1 | cut -d " " -f9)
 
 if [ ! -f "./bin/activate" ]; then
 	#echo "[!] Venv not detected try running this script from ~/python-apps/${APP_NME}"
