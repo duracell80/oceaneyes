@@ -104,6 +104,10 @@ install_startup () {
 	echo -e "$ cd ~/python-apps/oceaneyes/app"
 	echo -e "$ ./scan.py"
 
+	cd $DIR_APP/app
+	$DIR_APP/app/scan.py
+	cd $DIR_PWD
+
 }
 
 while true; do
@@ -121,9 +125,3 @@ echo "[i] When done, set your active radio device index in a browser tab http://
 echo "[i] To play preset 16 copy to a browser tab http://yourip:1929/v1/fav/play/16"
 echo -e "\n\n"
 echo -e "\n[i] To test the rest of the API go to http://yourip:1929/docs\n\n"
-
-sleep 5
-
-cd $DIR_APP/app
-$DIR_APP/app/scan.py
-cd $DIR_PWD
