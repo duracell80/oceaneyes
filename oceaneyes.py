@@ -575,10 +575,10 @@ def get_remaining(thing = "fav"):
 	return int(t)
 
 
-def get_status():
+def get_status(sip):
 	status = "Unknown"
 	try:
-		r = requests.get("http://" + str(ip) + "/php/playing.php")
+		r = requests.get("http://" + str(sip) + "/php/playing.php")
 		d = json.loads(str(r.text).replace("'", '"'))
 
 		if d["result"] == "success":
@@ -696,7 +696,7 @@ def play(ch = "0"):
 	if int(ch) <= t:
 		r = requests.get(url + "/doApi.cgi", params = {"AI":"16", "CI": str(int(ch) - 1)})
 		if r.status_code == 200:
-			code, status, playing = get_status()
+			code, status, playing = get_status(ip)
 			message = "Changing channel"
 			return code, message, playing
 		else:
@@ -844,7 +844,7 @@ def add_current():
 	t = 0
 	c = get_total("fav")
 
-	code, status, playing = get_status()
+	code, status, playing = get_status(ip)
 	if "stopped" in status.lower():
 		station = "None"
 	else:
@@ -853,7 +853,7 @@ def add_current():
 		t = get_total("fav")
 
 		# Read currently playing
-		code, status, playing = get_status()
+		code, status, playing = get_status(ip)
 		station = playing
 
 	if t > c:
@@ -868,7 +868,7 @@ def del_current():
 	t = 0
 	c = get_total("fav")
 
-	code, status, playing = get_status()
+	code, status, playing = get_status(ip)
 	if "stopped" in status.lower():
 		station = "None"
 	else:
@@ -877,7 +877,7 @@ def del_current():
 		t = get_total("fav")
 
 		# Read currently playing
-		code, status, playing = get_status()
+		code, status, playing = get_status(ip)
 		station = playing
 
 	if t < c:
@@ -907,7 +907,7 @@ def move(f = "2", t = "1"):
 		return code, string
 
 
-def volume(dir = "down"):
+def volume(device = 1, dir = "down"):
 	# volume down 	VL=-1
 	# volume up	VL=1
 	# mute 		VL=128
@@ -926,7 +926,9 @@ def volume(dir = "down"):
 		else:
 			inc = "-1"
 
-		r = requests.get(url + "/php/doVol.php", params = {"VL":str(inc)})
+		settings, settings_url, settings_ip = switch(device)
+
+		r = requests.get(settings_url + "/php/doVol.php", params = {"VL":str(inc)})
 		d = json.loads(str(r.text).replace("'", '"'))
 
 

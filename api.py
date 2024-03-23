@@ -59,61 +59,72 @@ async def scan():
 		return '{"result": 404, "message": "No radios found on this network", "webhosts": "' + str(hosts) + '"}'
 
 
-@app.get("/v1/device/status/{device}", status_code=200)
+@app.get("/v1/{device}/status", status_code=200)
 async def online(device):
-	#global settings, url, ip
-	ssettings, surl, sip = oe.init(device)
+	settings, surl, sip = oe.init(device)
 
-	if oe.is_online():
+	if oe.is_online() and device.isnumeric():
 		logging.info(f"[i] Status of radio@{ip}: online")
 		return '{"result": 200, "status": "online", "ipaddr": ' + str(sip)  + '}'
 	else:
 		logging.info(f"[i] Status of radio@{ip}: offline")
 		return '{"result": 400, "status": "offline, "ipaddr": ' + str(sip)  + '}'
 
-@app.get("/v1/device/switch/{device}", status_code=200)
+@app.get("/v1/{device}/activate", status_code=200)
 async def switch(device):
-	global settings, url, ip
-	settings, url, ip = oe.init(device)
+	if device.isnumeric():
+		global settings, url, ip
+		settings, url, ip = oe.init(device)
 
-	return '{"result": 200, "status": "active", "message": "Active device switched to radio "' + str(device)  + ', "ipaddr": ' + str(ip)  + '}'
+		return '{"result": 200, "status": "active", "message": "Active device switched to radio "' + str(device)  + ', "ipaddr": ' + str(ip)  + '}'
+	else:
+		return '{"result": 500, "status": "error", "message": "Device index needs to be a number", "ipaddr": 0.0.0.0}'
 
-
-
-@app.get("/v1/device/app", status_code=200)
-async def loadapp():
-	if oe.is_online():
-		logging.info(f"[i] Loading the native webapp of radio@{ip}")
-		response = RedirectResponse(url=str(url))
+@app.get("/v1/{device}/app", status_code=200)
+async def loadapp_device(device):
+	settings, settings_url, settings_ip = oe.switch(device)
+	if oe.is_online(settings_ip) and device.isnumeric():
+		logging.info(f"[i] Loading the native webapp of radio@{settings_ip}")
+		response = RedirectResponse(url=str(settings_url))
 		return response
 	else:
 		return '{"result": 200, "status": "offline", "message": "Please turn on the radio", "ipaddr": ' + str(ip)  + '}'
 
-@app.get("/v1/playing", status_code=200)
-async def status():
-	code, status, playing = oe.get_status()
-	if code == 200:
-		logging.info(f"[i] Status of radio@{ip}: playing - {playing} [{code}]")
-		return '{"result": 200, "status": "playing", "message": "' + str(playing)  + '", "ipaddr": ' + str(ip)  + '}'
+
+@app.get("/v1/{device}/playing", status_code=200)
+async def status(device):
+	settings, settings_url, settings_ip = oe.switch(device)
+
+	if oe.is_online(settings_ip) and device.isnumeric():
+		code, status, playing = oe.get_status(settings_ip)
+		if code == 200:
+			logging.info(f"[i] Status of radio@{settings_ip}: playing - {playing} [{code}]")
+			return '{"result": 200, "status": "playing", "message": "' + str(playing)  + '", "ipaddr": ' + str(ip)  + '}'
+		else:
+			logging.info(f"[i] Status of radio@{settings_ip}: stopped (or FM/DAB playing)")
+			return '{"result": 200, "status": "stopped", "message": "None or FM/DAB", "ipaddr": ' + str(ip)  + '}'
 	else:
-		logging.info(f"[i] Status of radio@{ip}: stopped (or FM/DAB playing)")
-		return '{"result": 200, "status": "stopped", "message": "None", "ipaddr": ' + str(ip)  + '}'
+		return '{"result": 500, "status": "error", "message": "Device index needs to be a number", "ipaddr": 0.0.0.0}'
 
-@app.get("/v1/volume/up", status_code=200)
-async def volume_up():
-	return str(oe.volume("up"))
+@app.get("/v1/{device}/volume/up", status_code=200)
+async def volume_up(device):
+	settings, settings_url, settings_ip = oe.switch(device)
+	return str(oe.volume(int(device), "up"))
 
-@app.get("/v1/volume/down", status_code=200)
-async def volume_dn():
-	return str(oe.volume("down"))
+@app.get("/v1/{device}/volume/down", status_code=200)
+async def volume_dn(device):
+	settings, settings_url, settings_ip = oe.switch(device)
+	return str(oe.volume(int(device), "down"))
 
-@app.get("/v1/volume/mute", status_code=200)
-async def volume_mu():
-	return str(oe.volume("mute"))
+@app.get("/v1/{device}/volume/mute", status_code=200)
+async def volume_mu(device):
+	settings, settings_url, settings_ip = oe.switch(device)
+	return str(oe.volume(int(device), "mute"))
 
-@app.get("/v1/volume/unmute", status_code=200)
-async def volume_um():
-	return str(oe.volume("unmute"))
+@app.get("/v1/{device}/volume/unmute", status_code=200)
+async def volume_um(device):
+	settings, settings_url, settings_ip = oe.switch(device)
+	return str(oe.volume(int(device), "unmute"))
 
 @app.get("/v1/fav/vacant", status_code=200)
 async def fav_remaining():
@@ -258,7 +269,7 @@ async def fav_rpp(format = "json-rpp-out"):
 
 	return response
 
-
+# INPUT FORMAT - from:to for example move channel 20 to 25 ... /v1/fav/move/20:25
 @app.get("/v1/fav/move/{r}", status_code=200)
 async def fav_move(r):
 	if ":" in r:

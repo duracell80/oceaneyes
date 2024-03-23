@@ -102,7 +102,7 @@ def main():
 
 	if oe.is_online(ip):
 
-		code, status, playing = oe.get_status()
+		code, status, playing = oe.get_status(ip)
 		if code == 200:
 			print("[i] Radio @" + str(ip) + " status: " + str(status) + " (" + str(playing)  + ")")
 		elif code == 400:
