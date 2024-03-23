@@ -187,7 +187,7 @@ def scan():
 	dev_radios = []
 	dev_tuners = []
 	d	= 0
-	e	= 0
+	e	= 99
 	logging.info("[i] Auto detecting Skytune radios on the LAN, this may take some time ...")
 	print("[i] Auto detecting Skytune radios on the LAN ...\n\n")
 	print("--- Tip: Take note of these numbers and then set")
