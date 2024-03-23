@@ -20,7 +20,8 @@ def scan():
 	s.close()
 
 	hosts   = []
-	devices = []
+	dev_radios = []
+	dev_tuners = []
 	d       = 0
 	e	= 99
 	logging.info("[i] Auto detecting Skytune radios on the LAN, this may take some time ...")
@@ -28,7 +29,7 @@ def scan():
 	print("Press Ctrl + C if scanning seems to be stuck\n\n")
 	print("--- Tip: Take note of these numbers and then set")
 	print("--- static routes on the router for these devices\n\n")
-	for i in range(1,256):
+	for i in range(2,256):
 		host    = h + "." + str(i)
 		try:
 			try:
@@ -57,10 +58,11 @@ def scan():
 				# Detect Skytune Radio
 				r = requests.get("http://" + str(host) + "/php/favList.php?PG=0")
 				if r.status_code == 200:
-					d+=1
-					devices.append(host)
-					dbc.update({'ipaddress': str(host)}, doc_ids=[int(d)])
-					logging.info(f"\n[+] Found a skytune radio @{str(host)}:80\n")
+					if 'favListInfo' in r.text:
+						d+=1
+						dev_radios.append(host)
+						dbc.update({'ipaddress': str(host)}, doc_ids=[int(d)])
+						logging.info(f"\n[+] Found a skytune radio @{str(host)}:80\n")
 
 			except:
 				x=1
@@ -69,9 +71,9 @@ def scan():
 				# Detect HDHomeRun
 				g = requests.get("http://" + str(host) + "/lineup.html")
 				if g.status_code == 200:
-					if "<title>HDHomeRun Lineup</title>" in g.text:
+					if '<title>HDHomeRun Lineup</title>' in g.text:
 						e+=1
-						devices.append(host)
+						dev_tuners.append(host)
 						dbc.update({'ipaddress': str(host)}, doc_ids=[int(e)])
 
 						logging.info(f"\n[+] Found a hdhomerun @{str(host)}:80\n")
@@ -81,16 +83,28 @@ def scan():
 			hosts.append(host)
 
 
-	radios = len(devices)
+	radios = len(dev_radios)
+
 	if radios > 0:
 		if radios > 1:
-			logging.info(f"\n[i] Found {str(radios)} tuners on the network")
+			logging.info(f"\n[i] Found {str(radios)} radios on the network")
 		else:
-			logging.info(f"\n[i] Found {str(radios)} tuner on the network")
+			logging.info(f"\n[i] Found {str(radios)} radio on the network")
 
 		for i in range(0,int(radios)):
-			logging.info(f"--- Tuner {str(i+1)} @ {str(devices[i])}")
+			logging.info(f"--- Radio {str(i+1)} @ {str(dev_radios[i])}")
 
-	return hosts, devices
+	tuners = len(dev_tuners)
+
+	if tuners > 0:
+		if tuners > 1:
+			logging.info(f"\n[i] Found {str(tuners)} tuners on the network")
+		else:
+			logging.info(f"\n[i] Found {str(tuners)} tuner on the network")
+
+		for i in range(0,int(tuners)):
+			logging.info(f"--- Tuner {str(i+1)} @ {str(dev_tuners[i])}")
+
+	return hosts, dev_radios
 
 scan()
