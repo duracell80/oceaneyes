@@ -184,14 +184,16 @@ def scan():
 	s.close()
 
 	hosts   = []
-	devices = []
+	dev_radios = []
+	dev_tuners = []
 	d	= 0
+	e	= 0
 	logging.info("[i] Auto detecting Skytune radios on the LAN, this may take some time ...")
-	print("[i] Auto detecting Skytune radios on the LAN ... \n\nPress Ctrl + Z when all known devices are found")
-	print("Press Ctrl + C if scanning seems to be stuck\n\n")
+	print("[i] Auto detecting Skytune radios on the LAN ...\n\n")
 	print("--- Tip: Take note of these numbers and then set")
 	print("--- static routes on the router for these devices\n\n")
-	for i in range(1,256):
+
+	for i in range(2,256):
 		host    = h + "." + str(i)
 		try:
 			try:
@@ -201,9 +203,9 @@ def scan():
 			except:
 				p = 0
 				logging.info(f"[i] Looking for a radio at this address ({str(h)}.{str(i)})")
+
 			if p == 80:
 				logging.info(f"[i] Looking for a radio at this address ({str(h)}.{str(i)}) [P:80]")
-
 
 				# test that the radio can be pinged
 				result  = str(os.popen("ping " + str(host) + " -w 5 -W 5").read())
@@ -213,31 +215,60 @@ def scan():
 		except:
 			p = 0
 			result  = "0 received"
-			#print("[i] Looking for a radio at this address (" + str(h) + "." + str(i) + ")")
+
 
 		if "5 received" in result:
 			try:
+				# Detect Skytune Radio
 				r = requests.get("http://" + str(host) + "/php/favList.php?PG=0")
-				if r.status_code == 200:
+				if r.status_code == 200 and 'favListInfo' in r.text:
 					d+=1
-					devices.append(host)
+					dev_radios.append(host)
 					dbc.update({'ipaddress': str(host)}, doc_ids=[int(d)])
-					logging.info(f"\n[+] Found a radio @{str(host)}:80\n")
+					logging.info(f"\n[+] Found a skytune radio @{str(host)}:80\n")
+
+			except:
+				x=1
+
+			try:
+				# Detect HDHomeRun
+				g = requests.get("http://" + str(host) + "/lineup.html")
+				if g.status_code == 200 and '<title>HDHomeRun Lineup</title>' in g.text:
+						e+=1
+						dev_tuners.append(host)
+						dbc.update({'ipaddress': str(host)}, doc_ids=[int(e)])
+
+						logging.info(f"\n[+] Found a hdhomerun @{str(host)}:80\n")
 			except:
 				x=1
 
 			hosts.append(host)
 
-	radios = len(devices)
+
+	radios = len(dev_radios)
+
 	if radios > 0:
 		if radios > 1:
-			logging.info(f"\n[i] Found {str(radios)} Skytune radios on the network")
+			logging.info(f"\n[i] Found {str(radios)} radios on the network")
 		else:
-			logging.info(f"\n[i] Found {str(radios)} Skytune radio on the network")
-		for i in range(0,int(radios)):
-			logging.info(f"--- Radio {str(i+1)} @ {str(devices[i])}")
+			logging.info(f"\n[i] Found {str(radios)} radio on the network")
 
-	return hosts, devices
+		for i in range(0,int(radios)):
+			logging.info(f"--- Radio {str(i+1)} @ {str(dev_radios[i])}")
+
+	tuners = len(dev_tuners)
+
+	if tuners > 0:
+		if tuners > 1:
+			logging.info(f"\n[i] Found {str(tuners)} tuners on the network")
+		else:
+			logging.info(f"\n[i] Found {str(tuners)} tuner on the network")
+
+		for i in range(0,int(tuners)):
+			logging.info(f"--- Tuner {str(i+1)} @ {str(dev_tuners[i])}")
+
+	return hosts, dev_radios
+
 
 
 def convert_l2d(lst):
