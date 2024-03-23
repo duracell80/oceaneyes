@@ -57,12 +57,11 @@ def scan():
 			try:
 				# Detect Skytune Radio
 				r = requests.get("http://" + str(host) + "/php/favList.php?PG=0")
-				if r.status_code == 200:
-					if 'favListInfo' in r.text:
-						d+=1
-						dev_radios.append(host)
-						dbc.update({'ipaddress': str(host)}, doc_ids=[int(d)])
-						logging.info(f"\n[+] Found a skytune radio @{str(host)}:80\n")
+				if r.status_code == 200 and 'favListInfo' in r.text:
+					d+=1
+					dev_radios.append(host)
+					dbc.update({'ipaddress': str(host)}, doc_ids=[int(d)])
+					logging.info(f"\n[+] Found a skytune radio @{str(host)}:80\n")
 
 			except:
 				x=1
@@ -70,13 +69,11 @@ def scan():
 			try:
 				# Detect HDHomeRun
 				g = requests.get("http://" + str(host) + "/lineup.html")
-				if g.status_code == 200:
-					if '<title>HDHomeRun Lineup</title>' in g.text:
-						e+=1
-						dev_tuners.append(host)
-						dbc.update({'ipaddress': str(host)}, doc_ids=[int(e)])
-
-						logging.info(f"\n[+] Found a hdhomerun @{str(host)}:80\n")
+				if g.status_code == 200 and '<title>HDHomeRun Lineup</title>' in g.text:
+					e+=1
+					dev_tuners.append(host)
+					dbc.update({'ipaddress': str(host)}, doc_ids=[int(e)])
+					logging.info(f"\n[+] Found a hdhomerun @{str(host)}:80\n")
 			except:
 				x=1
 

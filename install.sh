@@ -89,11 +89,21 @@ install_service () {
 }
 
 install_startup () {
-	echo -e "[i] To start the server in a python venv follow these steps:\n"
+	echo -e "\n\n"
+	echo -e "[i] To run go to ~/python-apps/oceaneyes"
+	echo -e "$ ./run.sh\n\n"
+
+	echo -e "[i] OR to manually start the server in a python venv follow these steps:\n"
 	echo "$ cd ~/python-apps/oceaneyes"
 	echo "$ source bin/activate oceaneyes"
 	echo "$ cd app"
 	echo "$ ../bin/python3 main.py"
+
+	echo -e "\n\n"
+	echo -e "[i] To re/scan for radios on the network, make sure all your known devices are switched on ..."
+	echo -e "$ cd ~/python-apps/oceaneyes/app"
+	echo -e "$ ./scan.py"
+
 }
 
 while true; do
