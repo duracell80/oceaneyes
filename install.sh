@@ -116,10 +116,14 @@ while true; do
 done
 
 echo -e "\n\n[i] While the server is starting, turn on your internet radio device then open a browser tab to http://yourip:1929/v1/device/scan"
-echo "[i] Scanning may take about 5 minutes"
+echo "[i] Scanning for devices may take about 5 minutes"
 echo "[i] When done, set your active radio device index in a browser tab http://yourip:1929/v1/device/switch/1"
 echo "[i] To play preset 16 copy to a browser tab http://yourip:1929/v1/fav/play/16"
 echo -e "\n\n"
 echo -e "\n[i] To test the rest of the API go to http://yourip:1929/docs\n\n"
 
-#$DIR_APP/run.sh
+sleep 5
+
+cd $DIR_APP/app
+$DIR_APP/app/scan.py
+cd $DIR_PWD
