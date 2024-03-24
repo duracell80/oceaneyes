@@ -101,8 +101,9 @@ def ytradio(c = "jfKfPfyJRdk", p = "91", port = "3345", pswd = "rdo"):
 def main():
 
 	if oe.is_online(ip):
-
+		device = 1
 		code, status, playing = oe.get_status(ip)
+
 		if code == 200:
 			print("[i] Radio @" + str(ip) + " status: " + str(status) + " (" + str(playing)  + ")")
 		elif code == 400:
@@ -110,8 +111,8 @@ def main():
 		else:
 			print("[i] Radio @" + str(ip) + " status: Offline")
 
-		fav_remaining  = oe.get_remaining("fav")
-		fav_total      = oe.get_total("fav")
+		fav_remaining  = oe.get_remaining(device, "fav")
+		fav_total      = oe.get_total(device, "fav")
 
 		print("Presets: Total=" + str(fav_total) + " Remaining=" + str(fav_remaining))
 

@@ -555,10 +555,12 @@ def enrich_url(chname = "BBC Radio 1"):
 		return url_placeholder
 
 
-def get_total(thing = "fav"):
+def get_total(device = 1, thing = "fav"):
 	t = 0
+	settings, settings_url, settings_ip = switch(device)
+
 	if thing == "fav":
-		r = requests.get(url + "/php/favList.php?PG=0")
+		r = requests.get(settings_url + "/php/favList.php?PG=0")
 		s = str(r.text).split("\n")
 		i = len(s)
 		c = s[i-2].split(":")
@@ -567,10 +569,12 @@ def get_total(thing = "fav"):
 
 	return t
 
-def get_remaining(thing = "fav"):
+def get_remaining(device = 1, thing = "fav"):
 	t = 0
+	settings, settings_url, settings_ip = switch(device)
+
 	if thing == "fav":
-		f = int(get_total("fav"))
+		f = int(get_total(int(device), "fav"))
 		t = 99 - f
 	return int(t)
 
@@ -1041,7 +1045,9 @@ def set_list(chid = 0, chname = "not set", churl = "not set", chcountry = "not s
 	return None
 
 
-def get_list(format = "plain", enrich = False):
+def get_list(device = 1, format = "plain", enrich = False):
+	settings, settings_url, settings_ip = switch(device)
+
 	dbs     = TinyDB("stations.db")
 	dby     = TinyDB("stations_yt.db")
 	dbs.truncate()

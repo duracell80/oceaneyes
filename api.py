@@ -126,15 +126,17 @@ async def volume_um(device):
 	settings, settings_url, settings_ip = oe.switch(device)
 	return str(oe.volume(int(device), "unmute"))
 
-@app.get("/v1/fav/vacant", status_code=200)
-async def fav_remaining():
-	return '{"value": "' + str(oe.get_remaining("fav")) + '"}'
+@app.get("/v1/{device}/fav/vacant", status_code=200)
+async def fav_remaining(device):
+	settings, settings_url, settings_ip = oe.switch(device)
+	return '{"value": "' + str(oe.get_remaining(int(device), "fav")) + '"}'
 
-@app.get("/v1/fav/engaged", status_code=200)
-async def fav_total():
-	return '{"value": "' + str(oe.get_total("fav")) + '"}'
+@app.get("/v1/{device}/fav/engaged", status_code=200)
+async def fav_total(device):
+	settings, settings_url, settings_ip = oe.switch(device)
+	return '{"value": "' + str(oe.get_total(int(device), "fav")) + '"}'
 
-@app.get("/v1/fav/save", status_code=200)
+@app.get("/v1/fav/save-current", status_code=200)
 async def fav_save():
 	code, station = oe.add_current()
 	if code == 200:
@@ -142,12 +144,14 @@ async def fav_save():
 	else:
 		return '{"result": 400, "message": "Currently playing station not saved to favourites"}'
 
-@app.get("/v1/fav/backup", status_code=200)
-async def fav_backup():
-	list = oe.get_list("backup", False)
-	message = "Exported from radio@" + str(ip) + " to local database stations.db"
-	logging.info(f"[i] : {message}")
-	return '{"result": 200, "message": "' + str(message) + '", "stations:", "' + str(list) + '"}'
+#@app.get("/v1/{device}/fav/backup", status_code=200)
+#async def fav_backup(device):
+#	settings, settings_url, settings_ip = oe.switch(device)
+
+#	list = oe.get_list(int(device), "backup", False)
+#	message = "Exported from radio@" + str(settings_ip) + " to local database stations.db"
+#	logging.info(f"[i] : {message}")
+#	return '{"result": 200, "message": "' + str(message) + '", "stations:", "' + str(list) + '"}'
 
 @app.get("/v1/fav/play/{c}", status_code=200)
 async def fav_play(c):
@@ -215,36 +219,38 @@ async def fav_listen(chid):
 
 
 
-@app.get("/v1/fav/playlist/{format}", status_code=200)
-async def fav_playlist(format = "m3u"):
+@app.get("/v1/{device}/fav/playlist/{format}", status_code=200)
+async def fav_playlist(device = 1, format = "m3u"):
+
+	settings, settings_url, settings_ip = oe.switch(device)
 
 	if format == "pls":
-		list = oe.get_list("pls")
+		list = oe.get_list(int(device), "pls")
 	elif format == "m3u":
-		list = oe.get_list("m3u")
+		list = oe.get_list(int(device), "m3u")
 	elif format == "m3u-yt":
-		list = oe.get_list("m3u-yt")
+		list = oe.get_list(int(device), "m3u-yt")
 	elif format == "json":
-		list = oe.get_list("json")
+		list = oe.get_list(int(device), "json")
 		list = str(list).replace("'", "")
 		response = PlainTextResponse(content=list, status_code=200)
 		response.headers["content-type"] = "application/json"
 
 		return response
 	elif format == "json-yt":
-		list = oe.get_list("json-yt")
+		list = oe.get_list(int(device), "json-yt")
 		response = PlainTextResponse(content=list, status_code=200)
 		response.headers["content-type"] = "application/json"
 
 		return response
 	elif format == "csv":
-		list = oe.get_list("csv")
+		list = oe.get_list(int(device), "csv")
 	elif format == "ssv":
-		list = oe.get_list("ssv")
+		list = oe.get_list(int(device), "ssv")
 	elif format == "plain":
-		list = oe.get_list("plain")
+		list = oe.get_list(int(device), "plain")
 	else:
-		list = oe.get_list("m3u")
+		list = oe.get_list(int(device), "m3u")
 
 	response = PlainTextResponse(content=str(list), status_code=200)
 	return response
