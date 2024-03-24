@@ -116,6 +116,11 @@ async def volume_dn(device):
 	settings, settings_url, settings_ip = oe.switch(device)
 	return str(oe.volume(int(device), "down"))
 
+#@app.get("/v1/{device}/volume/toggle", status_code=200)
+#async def volume_tg(device):
+#	settings, settings_url, settings_ip = oe.switch(device)
+#	return str(oe.volume(int(device), "toggle"))
+
 @app.get("/v1/{device}/volume/mute", status_code=200)
 async def volume_mu(device):
 	settings, settings_url, settings_ip = oe.switch(device)
@@ -153,22 +158,27 @@ async def fav_save():
 #	logging.info(f"[i] : {message}")
 #	return '{"result": 200, "message": "' + str(message) + '", "stations:", "' + str(list) + '"}'
 
-@app.get("/v1/fav/play/{c}", status_code=200)
-async def fav_play(c):
+@app.get("/v1/{device}/fav/play/{c}", status_code=200)
+async def fav_play(device = 1, c = 1):
 	if c.isnumeric():
-		logging.info(f"[i] Request to play preset {str(c)} on radio@{ip} ... checking stream")
-		chid, chname, churl, country_str, genre_str = oe.info_get(str(c))
-		if oe.is_streamable(str(churl), False):
-			code, message, playing = oe.play(str(c))
+		settings, settings_url, settings_ip = oe.switch(device)
+
+		logging.info(f"[i] Request to play preset {str(c)} on radio@{settings_ip} ... checking stream")
+		chid, chname, churl, country_str, genre_str = oe.info_get(int(device), str(c))
+		#streamable = oe.is_streamable(str(churl), False)
+		streamable = True
+
+		if streamable:
+			code, message, playing = oe.play(int(device), str(c))
 			if code == 200:
-				logging.info(f"[i] Playing preset {str(int(chid) + 1)} on radio@{ip}")
+				logging.info(f"[i] Playing preset {str(int(chid) + 1)} on radio@{settings_ip}")
 				logging.info(f"--- {churl}")
 				return '{"result": ' + str(code) + ', "message": "' + str(message) + '"}'
 			else:
-				logging.info(f"[i] Cannot play preset {str(int(chid) + 1)} on radio@{ip} ... Preset out of range")
+				logging.info(f"[i] Cannot play preset {str(int(chid) + 1)} on radio@{settings_ip} ... Preset out of range")
 				return '{"result": ' + str(code) + ', "message": "Preset may be out of range"}'
 		else:
-			logging.info(f"[i] Cannot play preset {str(int(chid) + 1)} on radio@{ip}")
+			logging.info(f"[i] Cannot play preset {str(int(chid) + 1)} on radio@{settings_ip}")
 			logging.info(f"--- {churl}")
 			return '{"result": 404, "message": "Station not streamable"}'
 	else:

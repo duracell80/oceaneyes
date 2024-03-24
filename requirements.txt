@@ -6,3 +6,4 @@ pyradios==1.0.2
 python-vlc==3.0.18122
 tinydb==4.8.0
 opml==0.5
+xmltodict==0.13.0

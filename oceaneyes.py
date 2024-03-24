@@ -1,5 +1,5 @@
 #!../bin/python3
-import sys, os, subprocess, time, logging, socket, requests, urllib, urllib.parse, json
+import sys, os, subprocess, time, logging, socket, requests, urllib, urllib.parse, json, xmltodict
 from threading import Thread
 
 #try:
@@ -223,9 +223,20 @@ def scan():
 				r = requests.get("http://" + str(host) + "/php/favList.php?PG=0")
 				if r.status_code == 200 and 'favListInfo' in r.text:
 					d+=1
-					dev_radios.append(host)
-					dbc.update({'ipaddress': str(host)}, doc_ids=[int(d)])
+
+					#http://deviceip/device.xml
 					logging.info(f"\n[+] Found a skytune radio @{str(host)}:80\n")
+
+					dev_xml = "http://" + str(host) + "/device.xml"
+					dev_inf = requests.get(dev_xml)
+					dev_dat = xmltodict.parse(dev_inf.content)
+
+					dev_radios.append(host)
+
+					dbc.update({'ipaddress': str(host)}, doc_ids=[int(d)])
+					dbc.update({'name': str(dev_dat["root"]["device"]["friendlyName"])}, doc_ids=[int(d)])
+					dbc.update({'make': str(dev_dat["root"]["device"]["modelName"])}, doc_ids=[int(d)])
+					dbc.update({'uuid': str(dev_dat["root"]["device"]["UDN"]).replace("uuid:", "")}, doc_ids=[int(d)])
 
 			except:
 				x=1
@@ -602,10 +613,11 @@ def get_status(sip):
 	return  code, status, playing
 
 
-def info_get(chid = "1"):
+def info_get(device = 1, chid = "1"):
 	chid = str(int(chid)-1)
+	settings, settings_url, settings_ip = switch(device)
 
-	t = get_total("fav")
+	t = get_total(device, "fav")
 
 	if int(chid) > t:
 		chname = str(name_placeholder)
@@ -660,7 +672,7 @@ def info_cached(chid = "1"):
 
 def edit(chid = "0", newchname = name_placeholder, newchurl = url_placeholder, forcechcountry = "3;17;-1", forcechgenre = "1;45", forceskytune = "0"):
 	if str(chid).isnumeric():
-		t = get_total("fav")
+		t = get_total(device, "fav")
 
 		if int(chid) <= t:
 			data 	  = info_get(str(chid))
@@ -695,10 +707,13 @@ def edit(chid = "0", newchname = name_placeholder, newchurl = url_placeholder, f
 		return code, str("Null"), str("Null"), str("Null"), str("Null"), str("Null"), str(skyt)
 
 
-def play(ch = "0"):
-	t = get_total("fav")
+def play(device = 1, ch = "0"):
+	t = get_total(device, "fav")
+
+	settings, settings_url, settings_ip = switch(device)
+
 	if int(ch) <= t:
-		r = requests.get(url + "/doApi.cgi", params = {"AI":"16", "CI": str(int(ch) - 1)})
+		r = requests.get(settings_url + "/doApi.cgi", params = {"AI":"16", "CI": str(int(ch) - 1)})
 		if r.status_code == 200:
 			code, status, playing = get_status(ip)
 			message = "Changing channel"
@@ -717,9 +732,10 @@ def play(ch = "0"):
 
 
 
-def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp3", chcountry = "-1", chgenre = "-1", chplay = False):
+def add(device = 1, chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp3", chcountry = "-1", chgenre = "-1", chplay = False):
+	settings, settings_url, settings_ip = switch(device)
 	t = 0
-	c = get_total("fav")
+	c = get_total(device, "fav")
 
 	if c > 99:
 		code = 403
@@ -751,10 +767,12 @@ def add(chname = "Local Streaming", churl = "http://192.168.1.200:1234/stream.mp
 
 
 
-def add_import(filename = "./import.pls", encode = False, chpreview = False):
+def add_import(device = 1, filename = "./import.pls", encode = False, chpreview = False):
 	c=0
 	s=0
 	added = ""
+
+	settings, settings_url, settings_ip = switch(device)
 
 	if ".pls" in filename:
 		print("[i] Importing station presets from " + str(filename))
@@ -776,7 +794,7 @@ def add_import(filename = "./import.pls", encode = False, chpreview = False):
 
 				if is_streamable(churl, chpreview):
 					chplays		= True
-					code, station 	= add(chname, churl, chcountry, chgenre, False)
+					code, station 	= add(device, chname, churl, chcountry, chgenre, False)
 				else:
 					code 		= 404
 					station 	= chname
@@ -819,7 +837,7 @@ def add_import(filename = "./import.pls", encode = False, chpreview = False):
 
 			if is_streamable(churl, chpreview):
 				chplays         = True
-				code, station   = add(chname, churl, chcountry, chgenre, False)
+				code, station   = add(device, chname, churl, chcountry, chgenre, False)
 			else:
 				code            = 404
 				station         = chname
@@ -843,21 +861,23 @@ def add_import(filename = "./import.pls", encode = False, chpreview = False):
 
 
 
-def add_current():
+def add_current(device = 1):
 	# Get current number of favs first
+	settings, settings_url, settings_ip = switch(device)
+
 	t = 0
-	c = get_total("fav")
+	c = get_total(device, "fav")
 
 	code, status, playing = get_status(ip)
 	if "stopped" in status.lower():
 		station = "None"
 	else:
 		# Set new fav
-		r = requests.get(url + "/doApi.cgi", params = {"AI":"8"})
+		r = requests.get(settings_url + "/doApi.cgi", params = {"AI":"8"})
 		t = get_total("fav")
 
 		# Read currently playing
-		code, status, playing = get_status(ip)
+		code, status, playing = get_status(settings_ip)
 		station = playing
 
 	if t > c:
@@ -867,21 +887,23 @@ def add_current():
 
 	return code, station
 
-def del_current():
+def del_current(device = 1):
 	# Get current number of favs first
+	settings, settings_url, settings_ip = switch(device)
+
 	t = 0
-	c = get_total("fav")
+	c = get_total(device, "fav")
 
 	code, status, playing = get_status(ip)
 	if "stopped" in status.lower():
 		station = "None"
 	else:
 		# Del currently playing
-		r = requests.get(url + "/doApi.cgi", params = {"AI":"4"})
+		r = requests.get(settings_url + "/doApi.cgi", params = {"AI":"4"})
 		t = get_total("fav")
 
 		# Read currently playing
-		code, status, playing = get_status(ip)
+		code, status, playing = get_status(settings_ip)
 		station = playing
 
 	if t < c:
@@ -891,20 +913,22 @@ def del_current():
 
 	return code, station
 
-def move(f = "2", t = "1"):
+def move(device = 1, f = "2", t = "1"):
 	#/moveCh.cgi?CI=49&DI=48&EX=0
 	# offset by 1 so -1 off values supplied in method
 	f = int(int(f)-1)
 	t = int(int(t)-1)
 
-	c = get_total("fav")
+	settings, settings_url, settings_ip = switch(device)
+
+	c = get_total(device, "fav")
 
 	if f > 99 or t > 99 or t > c or f > c or f < 0 or t < 0:
 		code   = 400
 		string = "Cannot move - presets out of range"
 		return code, string
 	else:
-		r = requests.post(url + "/moveCh.cgi?EX=0&CI="+ str(int(f)) +"&DI="+ str(int(t)))
+		r = requests.post(settings_url + "/moveCh.cgi?EX=0&CI="+ str(int(f)) +"&DI="+ str(int(t)))
 
 		code   = 200
 		string = "Moved preset " + str(int(f)+1) + " to " + str(int(t)+1)
@@ -919,6 +943,8 @@ def volume(device = 1, dir = "down"):
 	inc = "1"
 
 	if dir.isnumeric() == False:
+		settings, settings_url, settings_ip = switch(device)
+
 		if dir == "down":
 			inc = "-" + str(inc)
 		elif dir == "up":
@@ -927,10 +953,29 @@ def volume(device = 1, dir = "down"):
 			inc = "128"
 		elif dir == "unmute":
 			inc = "0"
+		elif dir == "toggle":
+			r = requests.get(settings_url + "/php/doVol.php", params = {"VL":str(inc)})
+			d = json.loads(str(r.text).replace("'", '"'))
+
+			data_level = d["level"]
+			data_muted = d["muted"]
+
+			if "false" in str(data_muted):
+				r = requests.get(settings_url + "/php/doVol.php", params = {"VL":"128"})
+				d = json.loads(str(r.text).replace("'", '"'))
+				data_level = d["level"]
+
+				return data_level
+
+			elif "true" in str(data_muted):
+				r = requests.get(settings_url + "/php/doVol.php", params = {"VL":"0"})
+				d = json.loads(str(r.text).replace("'", '"'))
+				data_level = d["level"]
+
+				return data_level
 		else:
 			inc = "-1"
 
-		settings, settings_url, settings_ip = switch(device)
 
 		r = requests.get(settings_url + "/php/doVol.php", params = {"VL":str(inc)})
 		d = json.loads(str(r.text).replace("'", '"'))
@@ -945,14 +990,16 @@ def volume(device = 1, dir = "down"):
 
 
 
-def list_get():
+def list_get(device = 1):
 	station_countries 	= []
 	station_genres		= []
 	station_names 		= []
 	station_urls  		= []
 	station_ids		= []
 
-	r = requests.get(url + "/php/favList.php?PG=0")
+	settings, settings_url, settings_ip = switch(device)
+
+	r = requests.get(settings_url + "/php/favList.php?PG=0")
 	s = str(r.text).split("\n")
 	f = str(s[int(len(s)-2)]).split(":")
 	n = (str(f[2])).split(",")
@@ -969,7 +1016,7 @@ def list_get():
 	h = 0
 	while i < data_page:
 		c = 0
-		r = requests.get(url + "/php/favList.php?PG=" + str(i))
+		r = requests.get(settings_url + "/php/favList.php?PG=" + str(i))
 		s = str(r.text).split("\n")
 
 		while c < int(len(s)):
@@ -1282,11 +1329,13 @@ def backup(enrich = False):
 	list = get_list("backup", enrich)
 	return list
 
-def delete(chid = "100"):
+def delete(device = 1, chid = "100"):
+	settings, settings_url, settings_ip = switch(device)
+
 	chid = str(int(chid)-1)
-	r = requests.get(url + "/delCh.cgi?CI="+str(chid))
+	r = requests.get(settings_url + "/delCh.cgi?CI="+str(chid))
 	if r.status_code == 200:
-		print("[i] Deleted channel " + str(int(chid)+1) + " from radio @" + str(ip))
+		print("[i] Deleted channel " + str(int(chid)+1) + " from radio @" + str(settings_ip))
 		return True
 	else:
 		return False
@@ -1322,7 +1371,7 @@ def restore(enrich = False):
 				chcountry	= record["country"].replace(",", ";")
 				chgenre		= record["genre"].replace(",", ";")
 
-				add(chname, churl, chcountry, chgenre, False)
+				add(device, chname, churl, chcountry, chgenre, False)
 				time.sleep(2)
 
 			i+=1
