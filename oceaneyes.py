@@ -916,7 +916,7 @@ def volume(device = 1, dir = "down"):
 	# volume up	VL=1
 	# mute 		VL=128
 	# unmute 	VL=0
-	inc = "0"
+	inc = "1"
 
 	if dir.isnumeric() == False:
 		if dir == "down":
