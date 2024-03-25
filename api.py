@@ -141,22 +141,24 @@ async def fav_total(device):
 	settings, settings_url, settings_ip = oe.switch(device)
 	return '{"value": "' + str(oe.get_total(int(device), "fav")) + '"}'
 
-@app.get("/v1/fav/save-current", status_code=200)
-async def fav_save():
-	code, station = oe.add_current()
+@app.get("/v1/{device}/fav/save-current", status_code=200)
+async def fav_save(device):
+	settings, settings_url, settings_ip = oe.switch(device)
+
+	code, station = oe.add_current(int(device))
 	if code == 200:
 		return '{"result": 200", "message": "' + str(station)  + ' added to favourites"}'
 	else:
 		return '{"result": 400, "message": "Currently playing station not saved to favourites"}'
 
-#@app.get("/v1/{device}/fav/backup", status_code=200)
-#async def fav_backup(device):
-#	settings, settings_url, settings_ip = oe.switch(device)
+@app.get("/v1/{device}/fav/backup", status_code=200)
+async def fav_backup(device):
+	settings, settings_url, settings_ip = oe.switch(device)
 
-#	list = oe.get_list(int(device), "backup", False)
-#	message = "Exported from radio@" + str(settings_ip) + " to local database stations.db"
-#	logging.info(f"[i] : {message}")
-#	return '{"result": 200, "message": "' + str(message) + '", "stations:", "' + str(list) + '"}'
+	list = oe.get_list(int(device), "backup", False)
+	message = "Exported from radio@" + str(settings_ip) + " to local database ~/python-apps/oceaneys/stations_device{str(device)}.db"
+	logging.info(f"[i] : {message}")
+	return '{"result": 200, "message": "' + str(message) + '", "stations:", "' + str(list) + '"}'
 
 @app.get("/v1/{device}/fav/play/{c}", status_code=200)
 async def fav_play(device = 1, c = 1):
@@ -185,10 +187,12 @@ async def fav_play(device = 1, c = 1):
 		return '{"result": 500, "message": "Preset not a number, try requesting with an integer value"}'
 
 
-@app.get("/v1/fav/listen/vlc/{chid}", status_code=200)
-async def fav_listen(chid):
+@app.get("/v1/{device}/streamto/vlc/{chid}", status_code=200)
+async def fav_stream_vlc(device = 1, chid = 1):
 	if chid.isnumeric():
-		code, message = oe.listen(str(chid))
+		settings, settings_url, settings_ip = oe.switch(device)
+
+		code, message = oe.listen(int(device), str(chid))
 		if code == 200:
 			return '{"result": ' + str(code) + ', "message": "' + str(message) + '"}'
 		else:
@@ -198,27 +202,29 @@ async def fav_listen(chid):
 		return '{"result": 500, "message": "Preset index not a number, try requesting with an integer value"}'
 
 
-@app.get("/v1/fav/listen/browser/{chid}", status_code=200)
-async def fav_listen(chid):
+@app.get("/v1/{device}/streamto/browser/{chid}", status_code=200)
+async def fav_stream_browser(device = 1, chid = 1):
 	if chid.isnumeric():
+		settings, settings_url, settings_ip = oe.switch(device)
+
 		ichid 		= chid
 		chname 		= "not set"
 		churl		= "not set"
 		country_str	= "not set"
 		genre_str	= "not set"
 
-		if oe.is_online():
-			chid, chname, churl, country_str, genre_str = oe.info_get(str(int(chid)))
+		if oe.is_online(settings_ip):
+			chid, chname, churl, country_str, genre_str = oe.info_get(int(device), str(int(chid)))
 		else:
-			chid, chname, churl, chcountry, chgenre = oe.info_cached(str(int(chid)))
+			chid, chname, churl, chcountry, chgenre = oe.info_cached(int(device), str(int(chid)))
 
 		if "http" in str(churl):
-			logging.info(f"[i] Listening to preset {str(int(chid) + 1)} from radio@{ip} on a local device")
+			logging.info(f"[i] Listening to preset {str(int(chid) + 1)} from radio@{settings_ip} on a local browser")
 			logging.info(f"--- proxyto={churl}")
 			response = RedirectResponse(url=str(churl))
 			return response
 		else:
-			logging.info(f"[i] Listening to preset {chid} from radio@{ip} not possible or is masked by skytune")
+			logging.info(f"[i] Listening to preset {chid} from radio@{settings_ip} not possible or is masked by skytune")
 			return '{"result": 400, "message": "Prest may not be playable"}'
 
 	else:
@@ -286,12 +292,14 @@ async def fav_rpp(format = "json-rpp-out"):
 	return response
 
 # INPUT FORMAT - from:to for example move channel 20 to 25 ... /v1/fav/move/20:25
-@app.get("/v1/fav/move/{r}", status_code=200)
-async def fav_move(r):
+@app.get("/v1/{device}/fav/move/{r}", status_code=200)
+async def fav_move(device = 1, r = "1:2"):
+	settings, settings_url, settings_ip = oe.switch(device)
+
 	if ":" in r:
 		r_bits = r.split(":")
 		if r_bits[0].isnumeric() and r_bits[1].isnumeric() and r_bits[0].isdigit() and r_bits[1].isdigit():
-			code, message = oe.move(str(r_bits[0]), str(r_bits[1]))
+			code, message = oe.move(int(device), str(r_bits[0]), str(r_bits[1]))
 			if code == 200:
 				logging.info(f"[i] Moved preset from {r_bits[0]} to {r_bits[1]}")
 				return '{"result": ' + str(code) + ', "message": ' + str(message) + '}'

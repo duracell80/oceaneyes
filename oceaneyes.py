@@ -343,17 +343,17 @@ def is_streamable(churl = url_placeholder, chpreview = False):
 	return result
 
 
-def listen(chid = "1", chduration = 21600):
+def listen(device = 1, chid = "1", chduration = 21600):
 	if int(chid) > 99 or chduration > 21600:
 		code = 500
 		message = "Duration or channel preset out of range, must be below 100 and less than 1 hour playback"
 	else:
 		try:
 			import vlc
-			if is_online():
-				chid, chname, churl, country_str, genre_str = info_get(str(int(chid)))
+			if is_online(settings_ip):
+				chid, chname, churl, country_str, genre_str = info_get(int(device), str(int(chid)))
 			else:
-				chid, chname, churl, country_str, genre_str = info_cached(str(int(chid)))
+				chid, chname, churl, country_str, genre_str = info_cached(int(device), str(int(chid)))
 
 			print("[i] Playing " + str(chname) + " locally ...")
 
@@ -866,7 +866,7 @@ def add_current(device = 1):
 	settings, settings_url, settings_ip = switch(device)
 
 	t = 0
-	c = get_total(device, "fav")
+	c = get_total(int(device), "fav")
 
 	code, status, playing = get_status(ip)
 	if "stopped" in status.lower():
@@ -874,7 +874,7 @@ def add_current(device = 1):
 	else:
 		# Set new fav
 		r = requests.get(settings_url + "/doApi.cgi", params = {"AI":"8"})
-		t = get_total("fav")
+		t = get_total(int(device), "fav")
 
 		# Read currently playing
 		code, status, playing = get_status(settings_ip)
@@ -921,7 +921,7 @@ def move(device = 1, f = "2", t = "1"):
 
 	settings, settings_url, settings_ip = switch(device)
 
-	c = get_total(device, "fav")
+	c = get_total(int(device), "fav")
 
 	if f > 99 or t > 99 or t > c or f > c or f < 0 or t < 0:
 		code   = 400
@@ -1085,8 +1085,10 @@ def list_get(device = 1):
 
 	return station_ids, station_names, station_urls, station_countries, station_genres
 
-def set_list(chid = 0, chname = "not set", churl = "not set", chcountry = "not set", chgenre = "not set"):
-	dbs = TinyDB("stations.db")
+def set_list(device = 1, chid = 0, chname = "not set", churl = "not set", chcountry = "not set", chgenre = "not set"):
+	settings, settings_url, settings_ip = switch(device)
+
+	dbs = TinyDB(f"stations_device{device}.db")
 	dbs.insert({'channel': int(chid), 'name': str(chname), 'url': str(churl), 'country': str(chcountry), 'genre': str(chgenre)})
 	dbs.close()
 	return None
@@ -1095,8 +1097,8 @@ def set_list(chid = 0, chname = "not set", churl = "not set", chcountry = "not s
 def get_list(device = 1, format = "plain", enrich = False):
 	settings, settings_url, settings_ip = switch(device)
 
-	dbs     = TinyDB("stations.db")
-	dby     = TinyDB("stations_yt.db")
+	dbs     = TinyDB(f"stations_device{device}.db")
+	dby     = TinyDB(f"stations_yt.db")
 	dbs.truncate()
 	dbs.close()
 
@@ -1222,7 +1224,7 @@ def get_list(device = 1, format = "plain", enrich = False):
 
 			# Update offline storage of favourites
 			if format == "backup":
-				set_list(str(int(n)+1), str(name[n]), str(churl), str(chcountry), str(chgenre))
+				set_list(int(device), str(int(n)+1), str(name[n]), str(churl), str(chcountry), str(chgenre))
 				list += str(int(n)+1) + ":" + name[n] + " [url=" + churl + "] [genre=" + str(genre_str)  + "] [country=" + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + "\n"
 			elif format == "plain":
 				list += str(int(n)+1) + ":" + name[n] + " [url=" + churl + "] [genre=" + str(genre_str)  + "] [country=" + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + "\n"
@@ -1247,7 +1249,7 @@ def get_list(device = 1, format = "plain", enrich = False):
 			n+=1
 
 	if format == "backup":
-		with open('stations.db', 'r') as file:
+		with open(f'stations_device{device}.db', 'r') as file:
 			data = file.read()
 		return data
 
@@ -1325,8 +1327,10 @@ def get_list(device = 1, format = "plain", enrich = False):
 
 
 
-def backup(enrich = False):
-	list = get_list("backup", enrich)
+def backup(device = 1, enrich = False):
+	settings, settings_url, settings_ip = switch(device)
+	list = get_list(int(device), "backup", enrich)
+
 	return list
 
 def delete(device = 1, chid = "100"):
@@ -1355,9 +1359,11 @@ def cleaner():
 
 	return int(s)
 
-def restore(enrich = False):
+def restore(device = 1, enrich = False):
+	settings, settings_url, settings_ip = switch(device)
+
 	list 	= []
-	dbs	= TinyDB("stations.db")
+	dbs	= TinyDB(f"stations_device{device}.db")
 
 	deleted = cleaner()
 
