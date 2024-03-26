@@ -1223,6 +1223,8 @@ def get_list(device = 1, format = "plain", enrich = False):
 				churl = str(url[n])
 
 			# Update offline storage of favourites
+			logging.info(f"[i] : Exporting preset (device={str(device)}, index={str(int(n)+1)}, name={str(name[n])}, url={str(churl)}, country={str(chcountry)}, genre={str(chgenre)}")
+
 			if format == "backup":
 				set_list(int(device), str(int(n)+1), str(name[n]), str(churl), str(chcountry), str(chgenre))
 				list += str(int(n)+1) + ":" + name[n] + " [url=" + churl + "] [genre=" + str(genre_str)  + "] [country=" + str(decode_country(country_bits[0], country_bits[1], country_bits[2])) + "\n"
@@ -1550,6 +1552,8 @@ def decode_country(code_1 = 3, code_2 = 17, code_3 = -1):
 	# 1  = United States
 	# 34 = Alabama
 
+	string = "Not Set"
+
 	R5 = {
 		"name" : "Africa",
 		"data" : {
@@ -1652,6 +1656,22 @@ def decode_country(code_1 = 3, code_2 = 17, code_3 = -1):
 					"81": "West Virgina",
 					"82": "Wisconsin",
 					"83": "Wyoming"
+				},
+				"02": "Canada",
+				"2" : {
+					"134": "Alberta",
+					"135": "British Columbia",
+					"136": "Manitoba",
+					"137": "New Brunswick",
+					"138": "Newfoundland",
+					"139": "Northwest Territories",
+					"140": "Nova Scotia",
+					"141": "Nunavut",
+					"142": "Ontario",
+					"143": "Prince Albert Island",
+					"144": "Qubec",
+					"145": "Saskatchewan",
+					"146": "Yukon"
 				}
 			},
 			"country": "Canada",
@@ -1904,9 +1924,15 @@ def decode_country(code_1 = 3, code_2 = 17, code_3 = -1):
  		string = "Not Set"
 	else:
 		if str(code_3) == "-1":
-			string = str(locations["R"+str(code_1)]["data"][str(code_1)][str(code_2)])
+			try:
+				string = str(locations["R"+str(code_1)]["data"][str(code_1)][str(code_2)])
+			except:
+				string = "Not Set"
 		else:
-			string = str(locations["R"+str(code_1)]["data"][str(code_1)][str(code_2)][str(code_3)]) + ":" + str(locations["R"+str(code_1)]["data"][str(code_1)][str(code_2)]["-1"])
+			try:
+				string = str(locations["R"+str(code_1)]["data"][str(code_1)][str(code_2)][str(code_3)]) + ":" + str(locations["R"+str(code_1)]["data"][str(code_1)][str(code_2)]["-1"])
+			except:
+				string = "Not Set"
 
 	return string
 

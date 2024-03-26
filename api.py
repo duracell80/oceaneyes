@@ -156,7 +156,7 @@ async def fav_backup(device):
 	settings, settings_url, settings_ip = oe.switch(device)
 
 	list = oe.get_list(int(device), "backup", False)
-	message = "Exported from radio@" + str(settings_ip) + " to local database ~/python-apps/oceaneys/stations_device{str(device)}.db"
+	message = "Exported from radio@" + str(settings_ip) + " to local database ~/python-apps/oceaneyes/app/stations_device" + str(device) + ".db"
 	logging.info(f"[i] : {message}")
 	return '{"result": 200, "message": "' + str(message) + '", "stations:", "' + str(list) + '"}'
 
