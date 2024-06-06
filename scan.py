@@ -29,6 +29,8 @@ def scan():
 	print("Press Ctrl + C if scanning seems to be stuck\n\n")
 	print("--- Tip: Take note of these numbers and then set")
 	print("--- static routes on the router for these devices\n\n")
+	os.system('notify-send --urgency=normal "OceanEyes: Auto detecting Skytune radios" "Please wait for the scan to complete before attempting to use the API"')
+
 	for i in range(2,256):
 		host    = h + "." + str(i)
 		try:
@@ -102,6 +104,7 @@ def scan():
 		for i in range(0,int(tuners)):
 			logging.info(f"--- Tuner {str(i+1)} @ {str(dev_tuners[i])}")
 
+	os.system('notify-send --urgency=normal "OceanEyes: Scanning complete" "You can now use the API at your local ip port 1929"')
 	return hosts, dev_radios
 
 scan()

@@ -193,6 +193,11 @@ def scan():
 	print("--- Tip: Take note of these numbers and then set")
 	print("--- static routes on the router for these devices\n\n")
 
+	#os.system('export DISPLAY=:0')
+	#os.system('env DBUS_SESSION_BUS_ADDRESS=unix:path=/run/lee/$(id -u)/bus')
+
+	#os.system('notify-send --urgency=normal "OceanEyes: Auto detecting Skytune radios" "Please wait for the scan to complete before attempting to use the API"')
+
 	for i in range(2,256):
 		host    = h + "." + str(i)
 		try:
@@ -266,6 +271,7 @@ def scan():
 
 		for i in range(0,int(radios)):
 			logging.info(f"--- Radio {str(i+1)} @ {str(dev_radios[i])}")
+			os.system(f'notify-send --urgency=normal "OceanEyes: Found Radio" "A SkyTune radio was found at IP address: {str(dev_radios[i])}"')
 
 	tuners = len(dev_tuners)
 
@@ -278,6 +284,9 @@ def scan():
 		for i in range(0,int(tuners)):
 			logging.info(f"--- Tuner {str(i+1)} @ {str(dev_tuners[i])}")
 
+	sip = get_serverip()
+
+	#os.system(f'notify-send --urgency=normal "OceanEyes: Scanning complete" "You can now use the API at http://{sip}:1929"')
 	return hosts, dev_radios
 
 

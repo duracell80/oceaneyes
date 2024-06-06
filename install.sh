@@ -6,6 +6,19 @@ DIR_APP=$DIR_ENV/oceaneyes
 chmod +x $DIR_PWD/*.sh
 chmod +x $DIR_PWD/*.py
 
+echo -e "[i] Please make sure that your known SkyTune Radios are connected to the same network as this server"
+echo -e "    - And that they are turned on so they can be detected!\n\n"
+
+while true; do
+    read -p "[Q] Radios on and ready to continue? (y/n)" yn
+    case $yn in
+        [Yy]* ) echo "" ; break;;
+        [Nn]* ) exit; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+
 # Deal with YouTube Downloading
 # yt-dlp: The minimum recommended Python version has been raised to 3.8
 
@@ -85,7 +98,13 @@ install_service () {
 	sudo systemctl enable oe.service
 	sudo systemctl start oe.service
 
+	echo -e "\n[i] An automated scan will take about 5 to 10 minutes to complete, please wait for this to complete."
+
 	# watch systemctl status oe.service
+	gnome-terminal -e "watch systemctl status oe.service" &
+
+	sleep 300
+	firefox http://$(ifconfig | grep inet | tail -n 2 | head -n 1 | cut -d " " -f10):1929/docs &
 }
 
 install_startup () {
