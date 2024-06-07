@@ -169,6 +169,9 @@ def init(device = 1):
 	return settings, url, ip
 
 def scan():
+	home = os.path.expanduser("~/")
+	os.system(f"rm {home}/.oceaneyes")
+
 	if os.path.isfile("settings.db"):
 		dbc     = TinyDB("settings.db")
 	else:
@@ -287,6 +290,8 @@ def scan():
 	sip = get_serverip()
 
 	#os.system(f'notify-send --urgency=normal "OceanEyes: Scanning complete" "You can now use the API at http://{sip}:1929"')
+	os.system(f"touch {home}/.oceaneyes")
+
 	return hosts, dev_radios
 
 

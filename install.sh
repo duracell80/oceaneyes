@@ -103,8 +103,15 @@ install_service () {
 	# watch systemctl status oe.service
 	gnome-terminal -e "watch systemctl status oe.service" &
 
-	sleep 300
-	firefox http://$(ifconfig | grep inet | tail -n 2 | head -n 1 | cut -d " " -f10):1929/docs &
+	while true
+	do
+		sleep 5
+		if [ -f $HOME/.oceaneyes ]; then
+			firefox http://$(hostname -I | awk '{print $1}'):1929/docs &
+			break
+			rm $HOME/.oceaneyes
+		fi
+	done
 }
 
 install_startup () {
@@ -140,7 +147,11 @@ done
 
 echo -e "\n\n[i] While the server is starting, turn on your internet radio device then open a browser tab to http://yourip:1929/v1/device/scan"
 echo "[i] Scanning for devices may take about 5 minutes"
-echo "[i] When done, set your active radio device index in a browser tab http://yourip:1929/v1/device/switch/1"
-echo "[i] To play preset 16 copy to a browser tab http://yourip:1929/v1/fav/play/16"
+echo "[i] When done ..."
+echo "[i] - Try setting your active radio device index in a browser tab: http://yourip:1929/v1/1/activate"
+echo "[i] - Try seeing if the status of your device is online: http://yourip:1929/v1/1/status"
+echo "[i] - Try seeing what online radio station is currently playing on your device: http://yourip:1929/v1/1/playing"
+echo "[i] - To play preset 16 copy to a browser tab: http://yourip:1929/v1/1/fav/play/16"
+echo "[i] - To back up the non-skytune URL's on your device: http://yourip:1929/v1/1/fav/backup'"
 echo -e "\n\n"
 echo -e "\n[i] To test the rest of the API go to http://yourip:1929/docs\n\n"
